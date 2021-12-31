@@ -19,6 +19,7 @@ sh = gc.open("Data Get Test Sheet")
 abilities = sh.worksheet("Abilities Data")
 features = sh.worksheet("Features Data")
 items = sh.worksheet("Inventory Data")
+edges = sh.worksheet("Edges Data")
 
 
 def get_ability_data(name):
@@ -56,3 +57,15 @@ def get_item_data(name):
         item_name = items.cell(row, 28).value
         item_eff = items.cell(row, 29).value
         return [item_name, item_eff]
+
+
+def get_edge_data(name):
+    match = edges.find(name, in_column=1)
+    if match is None:
+        return ["There is no edge by that name"]
+    else:
+        row = match.row
+        edge_name = edges.cell(row, 1).value
+        edge_freq = edges.cell(row, 2).value
+        edge_eff = edges.cell(row, 3).value
+        return [edge_name, edge_freq, edge_eff]
