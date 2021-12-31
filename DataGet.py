@@ -18,6 +18,7 @@ gc = gspread.service_account_from_dict(credentials)
 sh = gc.open("Data Get Test Sheet")
 abilities = sh.worksheet("Abilities Data")
 features = sh.worksheet("Features Data")
+items = sh.worksheet("Inventory Data")
 
 
 def get_ability_data(name):
@@ -44,3 +45,14 @@ def get_feature_data(name):
         feature_freq = features.cell(row, 4).value
         feature_eff = features.cell(row, 5).value
         return [feature_name, feature_pre, feature_tag, feature_freq, feature_eff]
+
+
+def get_item_data(name):
+    match = items.find(name, in_column=28)
+    if match is None:
+        return ["There is no item by that name"]
+    else:
+        row = match.row
+        item_name = items.cell(row, 28).value
+        item_eff = items.cell(row, 29).value
+        return [item_name, item_eff]
