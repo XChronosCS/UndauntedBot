@@ -1,5 +1,6 @@
 import gspread
 import random
+import pygsheets
 
 credentials = {
     "type": "service_account",
@@ -15,9 +16,15 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
+pg = pygsheets.authorize(service_file='service_account_credentials.json')
 
 sh = gc.open("Data Get Test Sheet")
+sp = pg.open("Data Undaunted Egg Rolls")
+sg = gc.open("Data Undaunted Egg Rolls")
 pokemon = sh.worksheet("Poke Data")
+eggs = sp.worksheet_by_title("Eggs")
+# Need Temp to help find the row and column of specific cell
+eggs_temp = sg.worksheet("Eggs")
 p_names = pokemon.col_values(1)
 max_pokemon = len(p_names)
 egg_list = pokemon.findall("None", in_column=32)
@@ -57,3 +64,19 @@ def roll_egg(p_type):
     rand_list = intersection(baby_list_index, exclusion(type_list_index, egg_list_index))
     index = random.randint(0, len(rand_list))
     return p_names[rand_list[index] - 1]
+
+
+def roll_egg_move(p_type):
+    first_string = roll_egg(p_type)
+    cell = eggs_temp.find(first_string)
+    cell_row = cell.row
+    cell_col = cell.col
+    n_cell = eggs.cell((cell_row, cell_col))
+    note = n_cell.note
+    egg_moves = note.splitlines()
+    del egg_moves[:2]
+    index = random.randint(0, len(egg_moves))
+    temp_list = egg_moves[index].split(" ")
+    del temp_list[:1]
+    ret_string = first_string + " with the egg move " + ' '.join(temp_list)
+    return ret_string
