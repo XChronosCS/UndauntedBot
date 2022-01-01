@@ -14,15 +14,21 @@ credentials = {
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/undaunted%40undaunteddiscordbot.iam.gserviceaccount.com"
 }
 
+gc = gspread.service_account_from_dict(credentials)
+
+sh = gc.open("Test Town Tracker Sheet")
+worksheet = sh.worksheet("Town Data")
+
 
 def get_town_event():
-    gc = gspread.service_account_from_dict(credentials)
-
-    sh = gc.open("Test Town Tracker Sheet")
-    worksheet = sh.worksheet("Town Data")
     town_event_effects = worksheet.col_values(8)
     town_event_names = worksheet.col_values(7)
-
-    index = random.randint(1, 18)
+    index = random.randint(1, len(town_event_names))
     return town_event_names[index], town_event_effects[index]
 
+
+def get_uprising_event():
+    up_event_effects = worksheet.col_values(10)
+    up_event_names = worksheet.col_values(9)
+    index = random.randint(1, len(up_event_names))
+    return up_event_names[index], up_event_effects[index]

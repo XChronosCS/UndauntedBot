@@ -1,3 +1,5 @@
+import itertools
+
 import gspread
 import random
 import pygsheets
@@ -25,16 +27,9 @@ pokemon = sh.worksheet("Poke Data")
 eggs = sp.worksheet_by_title("Eggs")
 # Need Temp to help find the row and column of specific cell
 eggs_temp = sg.worksheet("Eggs")
-p_names = pokemon.col_values(1)
+p_with_megas = pokemon.col_values(1)
+p_names = [x for x in p_with_megas if " Mega" not in x]
 max_pokemon = len(p_names)
-egg_list = pokemon.findall("None", in_column=32)
-egg_list_index = []
-for v in egg_list:
-    egg_list_index.append(v.row)
-baby_list = pokemon.findall("1", in_column=34)
-baby_list_index = []
-for g in baby_list:
-    baby_list_index.append(g.row)
 
 
 def exclusion(lst1, lst2):
@@ -53,17 +48,11 @@ def roll_mon():
 
 
 def roll_egg(p_type):
-    type_list_1 = pokemon.findall(p_type, in_column=2)
-    type_list_2 = pokemon.findall(p_type, in_column=3)
-    type_list = type_list_1 + type_list_2
-    if len(type_list) == 0:
-        return "There is no type by that name. Please try again"
-    type_list_index = []
-    for x in type_list:
-        type_list_index.append(x.row)
-    rand_list = intersection(baby_list_index, exclusion(type_list_index, egg_list_index))
-    index = random.randint(0, len(rand_list))
-    return p_names[rand_list[index] - 1]
+    type_col = eggs_temp.find(p_type).col
+    roll_list = eggs_temp.col_values(type_col)
+    del roll_list[:1]
+    index = random.randint(0, len(roll_list))
+    return roll_list[index]
 
 
 def roll_egg_move(p_type):

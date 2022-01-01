@@ -1,5 +1,6 @@
 # client.py
 import os
+import string
 
 import discord
 from discord.ext import commands
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 from TownEvents import *
 from DataGet import *
 from PokeRoller import *
+from TableRoller import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -22,9 +24,16 @@ async def townevent(ctx):
     await ctx.send(result[1])
 
 
+@bot.command(name='uprising')
+async def uprising(ctx):
+    result = get_uprising_event()
+    await ctx.send(result[0])
+    await ctx.send(result[1])
+
+
 @bot.command(name='ability')
 async def ability(ctx, *arg):
-    arg_full = ' '.join(arg).lower().title()
+    arg_full = string.capwords(' '.join(arg).lower())
     result = get_ability_data(arg_full)
     for x in result:
         await ctx.send(x)
@@ -32,7 +41,7 @@ async def ability(ctx, *arg):
 
 @bot.command(name='feature')
 async def feature(ctx, *arg):
-    arg_full = ' '.join(arg).lower().title()
+    arg_full = string.capwords(' '.join(arg).lower())
     result = get_feature_data(arg_full)
     for x in result:
         await ctx.send(x)
@@ -40,8 +49,25 @@ async def feature(ctx, *arg):
 
 @bot.command(name='items')
 async def items(ctx, *arg):
-    arg_full = ' '.join(arg).lower().title()
+    arg_full = string.capwords(' '.join(arg).lower())
+    print(arg_full)
     result = get_item_data(arg_full)
+    for x in result:
+        await ctx.send(x)
+
+
+@bot.command(name='edge')
+async def edge(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    result = get_edge_data(arg_full)
+    for x in result:
+        await ctx.send(x)
+
+
+@bot.command(name='move')
+async def move(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    result = get_move_data(arg_full)
     for x in result:
         await ctx.send(x)
 
@@ -54,18 +80,40 @@ async def pokerandom(ctx):
 
 @bot.command(name='eggroll')
 async def eggroll(ctx, *arg):
-    arg_full = ' '.join(arg).lower().title()
+    arg_full = string.capwords(' '.join(arg).lower())
     result = roll_egg(arg_full)
     ret_string = "Your egg hatched into a " + result + "!"
     await ctx.send(ret_string)
 
 
-@bot.command(name='edge')
-async def edge(ctx, *arg):
-    arg_full = ' '.join(arg).lower().title()
-    result = get_edge_data(arg_full)
-    for x in result:
-        await ctx.send(x)
+@bot.command(name='chaos')
+async def chaos(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    entry_string = "You summon the powers of chaos..."
+    result = chaos_roller(arg_full)
+    await ctx.send(entry_string)
+    await ctx.send(result)
+
+
+@bot.command(name='fossil')
+async def fossil(ctx):
+    result = fossil_roller()
+    ret_string = "You have unearthed a " + result + "!"
+    await ctx.send(ret_string)
+
+
+@bot.command(name="eggmove")
+async def eggmove(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    result = roll_egg_move(arg_full)
+    ret_string = "Your egg hatched into a " + result + "!"
+    await ctx.send(ret_string)
+
+
+@bot.command(name="turbo")
+async def turbo(ctx):
+    emote = "<a:WoolooTurbo:701937147862843412>"
+    await ctx.send(emote)
 
 
 bot.run(TOKEN)
