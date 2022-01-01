@@ -4,7 +4,6 @@ import string
 import dice
 import re
 import discord
-import numexpr
 from discord.ext import commands
 from dotenv import load_dotenv
 from TownEvents import *
@@ -113,12 +112,14 @@ async def eggmove(ctx, *arg):
     await ctx.send(ret_string)
 
 
+# command to post the WoolooTurbo emote
 @bot.command(name="turbo")
 async def turbo(ctx):
     emote = "<a:WoolooTurbo:701937147862843412>"
     await ctx.send(emote)
 
 
+# Dice Rolling Command
 @bot.command(aliases=['droll'])
 async def diceroll(ctx, *args):
     arg_full = ' '.join(args)
@@ -126,6 +127,7 @@ async def diceroll(ctx, *args):
     modifier_string = None
     multiplier = 1
     dice_string = None
+    reroll_value = None
     if '#' in arg_full:
         args_array = arg_full.split('#', 1)
         dice_string = args_array[0]
@@ -149,6 +151,25 @@ async def diceroll(ctx, *args):
         result = eval(result_string)
         ret_string = text_string + rolls + " = " + str(result)
         await ctx.send(ret_string)
+
+
+@bot.command(name='details')
+async def details(ctx):
+    await ctx.send(roll_details())
+
+
+@bot.command(name='finance')
+async def finance(ctx, arg):
+    try:
+        sum_total = RollingCommands.roll_interest(int(arg))
+        await ctx.send(sum_total)
+    except TypeError:
+        await ctx.send("This is not a valid amount of money. Please try again.")
+
+
+@bot.command(name='offerings')
+async def offerings(ctx):
+    await ctx.send(roll_deity())
 
 
 bot.run(TOKEN)

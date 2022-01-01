@@ -83,5 +83,5 @@ def roll_details():
     gender = RollingCommands.gender()
     ability = random.randint(0, 2)
     result_array = [nature, gender, ability]
-    return "This pokemon has a {0[0]} nature, is a {0[1]} gender, and has ability option {0[2]} " \
-           "if there are multiple options."
+    return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
+           "if there are multiple options.".format(result_array)

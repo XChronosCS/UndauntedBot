@@ -7,12 +7,12 @@ GENDER = ["Male", "Female"]
 
 
 def nature():
-    index = random.randint(0, len(NATURES))
+    index = random.randrange(0, len(NATURES))
     return NATURES[index]
 
 
 def gender():
-    index = random.randint(0, 2)
+    index = random.randrange(0, 2)
     return GENDER[index]
 
 
@@ -39,3 +39,25 @@ def roll_result(match):
                 ret_val += int(num_string)
                 num_string = ''
     return str(ret_val)
+
+
+def roll_interest(bank):
+    interest_rate = (random.randint(1, 4) + random.randint(1, 4)) / 100
+    interest = bank * interest_rate
+    return "Through the power of savings, you have earned $" + str(interest) + ", meaning you" \
+                                                                               " now have $" + str(bank + interest)
+
+
+def roll_deity():
+    dice_roll = random.randint(1, 50)
+    cash = dice_roll * 100
+    stamina = 0
+    patron_points = 0
+    if dice_roll >= 40:
+        stamina = 3
+    if dice_roll == 50:
+        stamina = 6
+        patron_points = 3
+    format_string = "You rolled a {dice}, which means...\n You gain ${money}\nYou gain {stam} Stamina\nYou gain {pp} " \
+                    "Patron Points"
+    return format_string.format(dice=dice_roll, money=cash, stam=stamina, pp=patron_points)
