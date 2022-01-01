@@ -1,14 +1,17 @@
 # client.py
 import os
 import string
-
+import dice
+import re
 import discord
+import numexpr
 from discord.ext import commands
 from dotenv import load_dotenv
 from TownEvents import *
 from DataGet import *
 from PokeRoller import *
 from TableRoller import *
+from RollingCommands import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -114,6 +117,38 @@ async def eggmove(ctx, *arg):
 async def turbo(ctx):
     emote = "<a:WoolooTurbo:701937147862843412>"
     await ctx.send(emote)
+
+
+@bot.command(aliases=['droll'])
+async def diceroll(ctx, *args):
+    arg_full = ' '.join(args)
+    text_string = ''
+    modifier_string = None
+    multiplier = 1
+    dice_string = None
+    if '#' in arg_full:
+        args_array = arg_full.split('#', 1)
+        dice_string = args_array[0]
+        text_string = '**' + args_array[1] + ":** "
+    else:
+        text_string = '**Roll:** '
+        dice_string = arg_full
+    if 'R' in dice_string:
+        mod_array = dice_string.split('R', 1)
+        dice_string = mod_array[0]
+        modifier_string = mod_array[1]
+    if modifier_string is not None:
+        multiplier = int(modifier_string)
+        await ctx.send("Performing " + str(multiplier) + " iterations...")
+    for i in range(multiplier):
+        roll_string = re.sub("[^\d+\-*\/d]", '', dice_string)
+        # turns the XdY rolls into the values being rolled
+        rolls = re.sub('(\d+d\d+)', roll_vals, roll_string)
+        # Takes the arrays of numbers in string and turns them into the sums
+        result_string = re.sub('\[.*\]', roll_result, rolls)
+        result = eval(result_string)
+        ret_string = text_string + rolls + " = " + str(result)
+        await ctx.send(ret_string)
 
 
 bot.run(TOKEN)

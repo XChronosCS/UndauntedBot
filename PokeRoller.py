@@ -4,6 +4,8 @@ import gspread
 import random
 import pygsheets
 
+import RollingCommands
+
 credentials = {
     "type": "service_account",
     "project_id": "undaunteddiscordbot",
@@ -43,7 +45,7 @@ def intersection(lst1, lst2):
 
 
 def roll_mon():
-    index = random.randint(1, max_pokemon)
+    index = random.randrange(1, max_pokemon)
     return p_names[index]
 
 
@@ -51,10 +53,11 @@ def roll_egg(p_type):
     type_col = eggs_temp.find(p_type).col
     roll_list = eggs_temp.col_values(type_col)
     del roll_list[:1]
-    index = random.randint(0, len(roll_list))
+    index = random.randrange(0, len(roll_list))
     return roll_list[index]
 
 
+# noinspection PyBroadException
 def roll_egg_move(p_type):
     first_string = roll_egg(p_type)
     cell = eggs_temp.find(first_string)
@@ -62,10 +65,23 @@ def roll_egg_move(p_type):
     cell_col = cell.col
     n_cell = eggs.cell((cell_row, cell_col))
     note = n_cell.note
-    egg_moves = note.splitlines()
-    del egg_moves[:2]
-    index = random.randint(0, len(egg_moves))
-    temp_list = egg_moves[index].split(" ")
-    del temp_list[:1]
-    ret_string = first_string + " with the egg move " + ' '.join(temp_list)
-    return ret_string
+    try:
+        egg_moves = note.splitlines()
+        del egg_moves[:2]
+        index = random.randrange(0, len(egg_moves))
+        temp_list = egg_moves[index].split(" ")
+        del temp_list[:1]
+        ret_egg = ' '.join(temp_list)
+        ret_string = first_string + " with the egg move " + ret_egg
+        return ret_string
+    except:
+        return first_string + " with the egg move [PORY404 ERROR -> EGG MOVES NOT FOUND]"
+
+
+def roll_details():
+    nature = RollingCommands.nature()
+    gender = RollingCommands.gender()
+    ability = random.randint(0, 2)
+    result_array = [nature, gender, ability]
+    return "This pokemon has a {0[0]} nature, is a {0[1]} gender, and has ability option {0[2]} " \
+           "if there are multiple options."

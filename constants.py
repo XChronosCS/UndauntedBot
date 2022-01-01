@@ -974,3 +974,9 @@ FOSSIL = [{
     "poke": "Mystery"
 }
 ]
+
+NATURES = ["Composed",
+           "Cuddly", "Distracted", "Proud", "Decisive", "Patient", "Hardy", "Desperate", "Lonely", "Adamant", "Naughty",
+           "Brave", "Docile", "Stark", "Bold", "Impish", "Lax", "Relaxed", "Bashful", "Curious", "Modest", "Mild",
+           "Rash", "Quiet", "Quirky", "Dreamy", "Calm", "Gentle", "Careful", "Sassy", "Serious", "Skittish", "Timid",
+           "Hasty", "Jolly", "Naive"]
