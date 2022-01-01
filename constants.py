@@ -980,3 +980,7 @@ NATURES = ["Composed",
            "Brave", "Docile", "Stark", "Bold", "Impish", "Lax", "Relaxed", "Bashful", "Curious", "Modest", "Mild",
            "Rash", "Quiet", "Quirky", "Dreamy", "Calm", "Gentle", "Careful", "Sassy", "Serious", "Skittish", "Timid",
            "Hasty", "Jolly", "Naive"]
+
+TYPES = [
+    "Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "Ghost", "Grass", "Ground", "Ice",
+    "Normal", "Poison", "Psychic", "Rock", "Steel", "Water"]

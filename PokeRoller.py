@@ -3,7 +3,7 @@ import itertools
 import gspread
 import random
 import pygsheets
-
+from constants import TYPES
 import RollingCommands
 
 credentials = {
@@ -50,6 +50,8 @@ def roll_mon():
 
 
 def roll_egg(p_type):
+    if p_type == 'Random':
+        p_type = TYPES[random.randrange(0, len(TYPES))]
     type_col = eggs_temp.find(p_type).col
     roll_list = eggs_temp.col_values(type_col)
     del roll_list[:1]
@@ -81,7 +83,7 @@ def roll_egg_move(p_type):
 def roll_details():
     nature = RollingCommands.nature()
     gender = RollingCommands.gender()
-    ability = random.randint(0, 2)
+    ability = random.randint(1, 2)
     result_array = [nature, gender, ability]
     return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
            "if there are multiple options.".format(result_array)

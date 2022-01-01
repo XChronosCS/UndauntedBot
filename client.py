@@ -22,15 +22,17 @@ bot = commands.Bot(command_prefix='!')
 @bot.command(name='townevent')
 async def townevent(ctx):
     result = get_town_event()
-    await ctx.send(result[0])
-    await ctx.send(result[1])
+    ret_string = "Event Invoked By: " + ctx.author.mention + "\n" + result[0] + "\n" + result[1]
+    await ctx.send(ret_string)
+    await ctx.message.delete()
 
 
 @bot.command(name='uprising')
 async def uprising(ctx):
     result = get_uprising_event()
-    await ctx.send(result[0])
-    await ctx.send(result[1])
+    ret_string = "Event Invoked By: " + ctx.author.mention + "\n" + result[0] + "\n" + result[1]
+    await ctx.send(ret_string)
+    await ctx.message.delete()
 
 
 @bot.command(name='ability')
@@ -80,6 +82,13 @@ async def pokerandom(ctx):
     await ctx.send(ret_string)
 
 
+@bot.command(name='eggrandom')
+async def eggrandom(ctx):
+    result = roll_egg('Random')
+    ret_string = "Your egg hatched into a " + result + "!"
+    await ctx.send(ret_string)
+
+
 @bot.command(name='eggroll')
 async def eggroll(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
@@ -117,6 +126,7 @@ async def eggmove(ctx, *arg):
 async def turbo(ctx):
     emote = "<a:WoolooTurbo:701937147862843412>"
     await ctx.send(emote)
+    await ctx.message.delete()
 
 
 # Dice Rolling Command
@@ -127,7 +137,7 @@ async def diceroll(ctx, *args):
     modifier_string = None
     multiplier = 1
     dice_string = None
-    reroll_value = None
+    # reroll_value = None
     if '#' in arg_full:
         args_array = arg_full.split('#', 1)
         dice_string = args_array[0]
@@ -150,7 +160,8 @@ async def diceroll(ctx, *args):
         result_string = re.sub('\[.*\]', roll_result, rolls)
         result = eval(result_string)
         ret_string = text_string + rolls + " = " + str(result)
-        await ctx.send(ret_string)
+        await ctx.send(ctx.author.mention + "\n" + ret_string)
+        await ctx.message.delete()
 
 
 @bot.command(name='details')
@@ -170,6 +181,12 @@ async def finance(ctx, arg):
 @bot.command(name='offerings')
 async def offerings(ctx):
     await ctx.send(roll_deity())
+
+
+@bot.command(name='testdelete')
+async def testdelete(ctx):
+    await ctx.message.delete()
+    await ctx.send("This is a test of the message delete function")
 
 
 bot.run(TOKEN)
