@@ -20,6 +20,7 @@ abilities = sh.worksheet("Abilities Data")
 features = sh.worksheet("Features Data")
 items = sh.worksheet("Inventory Data")
 edges = sh.worksheet("Edges Data")
+moves = sh.worksheet("Moves Data")
 
 
 def get_ability_data(name):
@@ -69,3 +70,25 @@ def get_edge_data(name):
         edge_freq = edges.cell(row, 2).value
         edge_eff = edges.cell(row, 3).value
         return [edge_name, edge_freq, edge_eff]
+
+
+def get_move_data(name):
+    if name == "Roar Of Time":
+        name = "Roar of Time"
+    if name == "Cone Of Force":
+        name = "Cone of Force"
+    match = moves.find(name, in_column=1)
+    if match is None:
+        return ["There is no move by that name"]
+    else:
+        row = match.row
+        move_name = "Name: " + moves.cell(row, 1).value
+        move_type = "Type: " + moves.cell(row, 2).value
+        move_class = moves.cell(row, 3).value
+        move_freq = moves.cell(row, 4).value
+        move_range = moves.cell(row, 5).value
+        move_ac = "AC: " + str(moves.cell(row, 6).value)
+        move_db = "DB: " + str(moves.cell(row, 7).value)
+        move_eff = "Effect: " + moves.cell(row, 8).value
+        move_tag = "Style Tag: " + moves.cell(row, 9).value
+        return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
