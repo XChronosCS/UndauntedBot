@@ -11,6 +11,7 @@ from DataGet import *
 from PokeRoller import *
 from TableRoller import *
 from RollingCommands import *
+from EncounterRoller import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -39,16 +40,20 @@ async def uprising(ctx):
 async def ability(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
     result = get_ability_data(arg_full)
+    ret_string = ''
     for x in result:
-        await ctx.send(x)
+        ret_string += x
+    await ctx.send(ret_string)
 
 
 @bot.command(name='feature')
 async def feature(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
     result = get_feature_data(arg_full)
+    ret_string = ''
     for x in result:
-        await ctx.send(x)
+        ret_string += x
+    await ctx.send(ret_string)
 
 
 @bot.command(name='items')
@@ -56,24 +61,30 @@ async def items(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
     print(arg_full)
     result = get_item_data(arg_full)
+    ret_string = ''
     for x in result:
-        await ctx.send(x)
+        ret_string += x
+    await ctx.send(ret_string)
 
 
 @bot.command(name='edge')
 async def edge(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
     result = get_edge_data(arg_full)
+    ret_string = ''
     for x in result:
-        await ctx.send(x)
+        ret_string += x
+    await ctx.send(ret_string)
 
 
 @bot.command(name='move')
 async def move(ctx, *arg):
     arg_full = string.capwords(' '.join(arg).lower())
     result = get_move_data(arg_full)
+    ret_string = ''
     for x in result:
-        await ctx.send(x)
+        ret_string += x
+    await ctx.send(ret_string)
 
 
 @bot.command(name='pokerandom')
@@ -189,6 +200,15 @@ async def offerings(ctx):
 async def testdelete(ctx):
     await ctx.message.delete()
     await ctx.send("This is a test of the message delete function")
+
+
+@bot.command(name='encounter')
+async def encounter(ctx, *arg):
+    roll = arg[0]
+    del arg[0]
+    area = ' '.join(arg)
+    ret_string = find_mon(area, roll)
+    await ctx.send(ret_string)
 
 
 bot.run(TOKEN)

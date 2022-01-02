@@ -1,8 +1,14 @@
 import gspread
 import random
 import pygsheets
-from constants import TYPES
-import RollingCommands
+
+LEVEL_COLUMN = 1
+NAME_ROW = 2
+TYPE_ROW = 3
+EXPLO_MOD = 3
+ADV_MOD = 23
+ANDIEL_MOD = 4
+GARDENS_MOD = 73
 
 credentials = {
     "type": "service_account",
@@ -20,68 +26,44 @@ credentials = {
 gc = gspread.service_account_from_dict(credentials)
 pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
 
-sh = gc.open("Data Get Test Sheet")
-sp = pg.open("Data Undaunted Egg Rolls")
-sg = gc.open("Data Undaunted Egg Rolls")
-pokemon = sh.worksheet("Poke Data")
-eggs = sp.worksheet_by_title("Eggs")
-# Need Temp to help find the row and column of specific cell
-eggs_temp = sg.worksheet("Eggs")
-p_with_megas = pokemon.col_values(1)
-p_names = [x for x in p_with_megas if " Mega" not in x]
-max_pokemon = len(p_names)
+sh = gc.open("Data Encounter Sheet")
+ws = pg.open("Data Encounter Sheet")
+encounters = sh.worksheet("Encounter Tables")
+notesheet = ws.worksheet_by_title("Encounter Tables")
+
+area_names = encounters.row_values(2)
 
 
-def exclusion(lst1, lst2):
-    lst3 = [value for value in lst1 if value not in lst2]
-    return lst3
-
-
-def intersection(lst1, lst2):
-    lst3 = [value for value in lst1 if value in lst2]
-    return lst3
-
-
-def roll_mon():
-    index = random.randrange(1, max_pokemon)
-    return p_names[index]
-
-
-def roll_egg(p_type):
-    if p_type == 'Random':
-        p_type = TYPES[random.randrange(0, len(TYPES))]
-    type_col = eggs_temp.find(p_type).col
-    roll_list = eggs_temp.col_values(type_col)
-    del roll_list[:1]
-    index = random.randrange(0, len(roll_list))
-    return roll_list[index]
-
-
-# noinspection PyBroadException
-def roll_egg_move(p_type):
-    first_string = roll_egg(p_type)
-    cell = eggs_temp.find(first_string)
-    cell_row = cell.row
-    cell_col = cell.col
-    n_cell = eggs.cell((cell_row, cell_col))
-    note = n_cell.note
-    try:
-        egg_moves = note.splitlines()
-        del egg_moves[:2]
-        index = random.randrange(0, len(egg_moves))
-        temp_list = egg_moves[index].split(" ")
-        del temp_list[:1]
-        ret_egg = ' '.join(temp_list)
-        ret_string = first_string + " with the egg move " + ret_egg
-        return ret_string
-    except:
-        return first_string + " with the egg move [PORY404 ERROR -> EGG MOVES NOT FOUND]"
-
-
-def roll_details():
-    nature = RollingCommands.nature()
-    gender = RollingCommands.gender()
-    ability = random.randint(1, 2)
-    result_array = [nature, gender, ability]
-    return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
-           "if there are multiple options.".format(result_array)
+def find_mon(area, roll):
+    ret_string = None
+    selection = None
+    note = None
+    level_mod = None
+    modifier = 0
+    if area in area_names:
+        area_cell = encounters.find(area)
+        if "Andeil Forest" in area_cell.value:
+            modifier = ANDIEL_MOD
+        elif "Gabrien Gardens" in area_cell.value:
+            modifier = GARDENS_MOD
+        elif encounters.cell(TYPE_ROW, area_cell.col).value == 'Exploration':
+            modifier = EXPLO_MOD
+        else:
+            modifier = ADV_MOD
+        select_cell = encounters.cell(int(roll) + modifier, area_cell.col)
+        note_check = notesheet.cell((select_cell.row, select_cell.col))
+        if note_check.note is not None:
+            note = "\nNote: " + note_check.note
+        else:
+            note = ''
+        selection = select_cell.value
+        level_mod = encounters.cell(select_cell.row, LEVEL_COLUMN).value
+    else:
+        return "This encounter area does not exist. Please try again."
+    ret_array = [area, roll, selection, level_mod, note]
+    if "Non-Valid" in selection:
+        ret_string = "In {0[0]}, a roll of {0[1]} is a {0[2]}".format(ret_array)
+    else:
+        ret_string = "In {0[0]}, a roll of {0[1]} is a(n) {0[2]}.\nIt's Average Level Modifier is {0[3]}, unless it " \
+                     "is a Treasure or is overwritten by the note.{0[4]}".format(ret_array)
+    return ret_string
