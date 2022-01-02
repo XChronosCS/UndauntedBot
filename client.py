@@ -137,6 +137,7 @@ async def diceroll(ctx, *args):
     modifier_string = None
     multiplier = 1
     dice_string = None
+    ret_string = ''
     # reroll_value = None
     if '#' in arg_full:
         args_array = arg_full.split('#', 1)
@@ -149,9 +150,10 @@ async def diceroll(ctx, *args):
         mod_array = dice_string.split('R', 1)
         dice_string = mod_array[0]
         modifier_string = mod_array[1]
+    ret_string += ctx.author.mention
     if modifier_string is not None:
         multiplier = int(modifier_string)
-        await ctx.send("Performing " + str(multiplier) + " iterations...")
+        ret_string += "\nPerforming " + str(multiplier) + " iterations..."
     for i in range(multiplier):
         roll_string = re.sub("[^\d+\-*\/d]", '', dice_string)
         # turns the XdY rolls into the values being rolled
@@ -159,9 +161,9 @@ async def diceroll(ctx, *args):
         # Takes the arrays of numbers in string and turns them into the sums
         result_string = re.sub('\[.*\]', roll_result, rolls)
         result = eval(result_string)
-        ret_string = text_string + rolls + " = " + str(result)
-        await ctx.send(ctx.author.mention + "\n" + ret_string)
-        await ctx.message.delete()
+        ret_string += "\n**" + dice_string + "**\n" + text_string + rolls + " = " + str(result)
+    await ctx.send(ret_string)
+    await ctx.message.delete()
 
 
 @bot.command(name='details')
