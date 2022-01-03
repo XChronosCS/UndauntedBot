@@ -7,6 +7,7 @@ NAME_ROW = 2
 TYPE_ROW = 3
 EXPLO_MOD = 3
 ADV_MOD = 23
+EVENT_MOD = 3
 ANDIEL_MOD = 4
 GARDENS_MOD = 73
 
@@ -30,11 +31,14 @@ sh = gc.open("Data Encounter Sheet")
 ws = pg.open("Data Encounter Sheet")
 encounters = sh.worksheet("Encounter Tables")
 notesheet = ws.worksheet_by_title("Encounter Tables")
+events = sh.worksheet("Area Events")
+event_notes = ws.worksheet_by_title("Area Events")
 
 area_names = encounters.row_values(2)
+e_area_names = events.row_values(2)
 
 
-def find_mon(area, roll):
+def find_mon(area, roll, pl=None):
     ret_string = None
     selection = None
     note = None
@@ -58,12 +62,82 @@ def find_mon(area, roll):
             note = ''
         selection = select_cell.value
         level_mod = encounters.cell(select_cell.row, LEVEL_COLUMN).value
+        if pl is not None:
+            level_mod = eval(pl + level_mod)
     else:
         return "This encounter area does not exist. Please try again."
     ret_array = [area, roll, selection, level_mod, note]
     if "Non-Valid" in selection:
         ret_string = "In {0[0]}, a roll of {0[1]} is a {0[2]}".format(ret_array)
     else:
-        ret_string = "In {0[0]}, a roll of {0[1]} is a(n) {0[2]}.\nIt's Average Level Modifier is {0[3]}, unless it " \
-                     "is a Treasure or is overwritten by the note.{0[4]}".format(ret_array)
+        ret_string = "{0[2]} Level {0[3]}".format(ret_array)
     return ret_string
+
+
+def roll_exploration(area, sk, tl, pl):
+    luck_roll = random.randint(1, 20)
+    note_roll = random.randint(1, 4)
+    swarm_flag = True if int(tl) > 15 else False
+    swarm_check = True if luck_roll == 1 else False
+    note_flag = True if luck_roll == 20 else False
+    sc_array = [False, False, False]  # in order: 1 Below, 1 Above, 2 Above
+    ret_string = 'Encounter Stating Results:\nYou Rolled a {0} for your luck roll.\n\nYour Options are '.format(str(luck_roll))
+    skill = int(sk)
+    if 11 > skill > 6:
+        sc_array[0] = True
+    if 16 > skill > 10:
+        sc_array[1] = True
+    if 21 > skill > 15:
+        sc_array[0] = True
+        sc_array[1] = True
+    if skill > 20:
+        sc_array[0] = True
+        sc_array[1] = True
+        sc_array[2] = True
+    if sc_array[0]:
+        t1 = luck_roll - 1
+        if t1 == 1:
+            swarm_check = True
+        ret_string += find_mon(area, str
+(t1), pl) + ", "
+    ret_string += find_mon(area, str(luck_roll), pl)
+    if note_flag:
+        ret_string += " Option {0}".format(str(note_roll))
+    if sc_array[1] and luck_roll < 20:
+        t2 = str(luck_roll + 1)
+        ret_string += ", " + find_mon(area, t2, pl)
+    if sc_array[2] and luck_roll < 19:
+        t3 = str(luck_roll + 2)
+        ret_string += ", " + find_mon(area, t3, pl)
+    if swarm_flag and swarm_check:
+        ret_string += "\n\n You are a high enough level to qualify for a swarm encounter. If chosen, have your GM roll 2 " \
+                      "more pokemon for the encounter."
+    return ret_string
+  
+  
+  
+def choose_event(area):
+    dice_roll = None
+    event_name = None
+    note = None
+    if area in area_names:
+        area_cell = events.find(area)
+        if events.cell(TYPE_ROW, area_cell.col).value == 'Exploration':
+            dice_roll = random.randint(1, 10) + EVENT_MOD
+        else:
+            dice_roll = random.randint(1, 20) + EVENT_MOD
+        event_name = events.cell(dice_roll, area_cell.col).value
+        print(event_name)
+        note_check = event_notes.cell((dice_roll, area_cell.col))
+        if note_check.note is not None:
+            note = "\nNote: " + note_check.note
+        else:
+            note = ''
+    else:
+        return "This encounter area does not exist. Please try again."
+    ret_array = [dice_roll - EVENT_MOD, event_name, note]
+    ret_string = "Event {0[0]}: {0[1]}\n{0[2]}".format(ret_array)
+    return ret_string
+  
+  
+  

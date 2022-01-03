@@ -59,6 +59,8 @@ def roll_egg(p_type):
 
 # noinspection PyBroadException
 def roll_egg_move(p_type):
+    if p_type == 'Random':
+        p_type = TYPES[random.randrange(0, len(TYPES))]
     first_string = roll_egg(p_type)
     cell = eggs_temp.find(first_string)
     cell_row = cell.row

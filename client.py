@@ -130,6 +130,13 @@ async def eggmove(ctx, *arg):
     result = roll_egg_move(arg_full)
     ret_string = "Your egg hatched into a " + result + "!"
     await ctx.send(ret_string)
+    
+
+@bot.command(name='erm')
+async def eggrandom(ctx):
+    result = roll_egg_move('Random')
+    ret_string = "Your egg hatched into a " + result + "!"
+    await ctx.send(ret_string)
 
 
 # command to post the WoolooTurbo emote
@@ -196,19 +203,33 @@ async def offerings(ctx):
     await ctx.send(roll_deity())
 
 
-@bot.command(name='testdelete')
-async def testdelete(ctx):
-    await ctx.message.delete()
-    await ctx.send("This is a test of the message delete function")
-
-
 @bot.command(name='encounter')
 async def encounter(ctx, *arg):
-    roll = arg[0]
-    del arg[0]
-    area = ' '.join(arg)
+    roll = arg[-1]
+    list_arg = list(arg)
+    del list_arg[-1:]
+    area = ' '.join(list_arg)
     ret_string = find_mon(area, roll)
     await ctx.send(ret_string)
 
+
+    
+@bot.command(name='exploration')
+async def exploration(ctx, *arg):
+    pl = arg[-1]
+    tl = arg[-2]
+    skill = arg[-3]
+    list_arg = list(arg)
+    del list_arg[-3:]
+    area = ' '.join(list_arg)
+    ret_string = roll_exploration(area, skill, tl, pl)
+    await ctx.send(ret_string)
+    
+
+@bot.command(name='areaevent')
+async def areaevent(ctx, *arg):
+  area = ' '.join(arg)
+  ret_string = choose_event(area)
+  await ctx.send(ret_string)
 
 bot.run(TOKEN)
