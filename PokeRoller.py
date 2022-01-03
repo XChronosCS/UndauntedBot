@@ -18,7 +18,7 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
-pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
+pg = pygsheets.authorize(service_file='service_account_credentials.json')
 
 sh = gc.open("Data Get Test Sheet")
 sp = pg.open("Data Undaunted Egg Rolls")

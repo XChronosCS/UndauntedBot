@@ -130,7 +130,7 @@ async def eggmove(ctx, *arg):
     result = roll_egg_move(arg_full)
     ret_string = "Your egg hatched into a " + result + "!"
     await ctx.send(ret_string)
-    
+
 
 @bot.command(name='erm')
 async def eggrandom(ctx):
@@ -213,7 +213,6 @@ async def encounter(ctx, *arg):
     await ctx.send(ret_string)
 
 
-    
 @bot.command(name='exploration')
 async def exploration(ctx, *arg):
     pl = arg[-1]
@@ -222,14 +221,18 @@ async def exploration(ctx, *arg):
     list_arg = list(arg)
     del list_arg[-3:]
     area = ' '.join(list_arg)
-    ret_string = roll_exploration(area, skill, tl, pl)
+    note_message = ['']
+    ret_string = roll_exploration(area, skill, tl, pl, note_message)
     await ctx.send(ret_string)
-    
+    if note_message[0] != "":
+        await ctx.author.send(note_message[0])
+
 
 @bot.command(name='areaevent')
 async def areaevent(ctx, *arg):
-  area = ' '.join(arg)
-  ret_string = choose_event(area)
-  await ctx.send(ret_string)
+    area = ' '.join(arg)
+    ret_string = choose_event(area)
+    await ctx.send(ret_string)
+
 
 bot.run(TOKEN)

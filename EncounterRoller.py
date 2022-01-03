@@ -25,7 +25,7 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
-pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
+pg = pygsheets.authorize(service_file='service_account_credentials.json')
 
 sh = gc.open("Data Encounter Sheet")
 ws = pg.open("Data Encounter Sheet")
@@ -57,13 +57,13 @@ def find_mon(area, roll, pl=None):
         select_cell = encounters.cell(int(roll) + modifier, area_cell.col)
         note_check = notesheet.cell((select_cell.row, select_cell.col))
         if note_check.note is not None:
-            note = "\nNote: " + note_check.note
+            note = "\nNote:\n" + note_check.note
         else:
             note = ''
         selection = select_cell.value
         level_mod = encounters.cell(select_cell.row, LEVEL_COLUMN).value
         if pl is not None:
-            level_mod = eval(pl + level_mod)
+            level_mod = eval(pl + level_mod) if roll != 1 else "???"
     else:
         return "This encounter area does not exist. Please try again."
     ret_array = [area, roll, selection, level_mod, note]
@@ -71,17 +71,18 @@ def find_mon(area, roll, pl=None):
         ret_string = "In {0[0]}, a roll of {0[1]} is a {0[2]}".format(ret_array)
     else:
         ret_string = "{0[2]} Level {0[3]}".format(ret_array)
-    return ret_string
+    return ret_string, ret_array[4]
 
 
-def roll_exploration(area, sk, tl, pl):
+def roll_exploration(area, sk, tl, pl, author_note):
     luck_roll = random.randint(1, 20)
-    note_roll = random.randint(1, 4)
+    note_roll = random.randint(1, 5)
     swarm_flag = True if int(tl) > 15 else False
     swarm_check = True if luck_roll == 1 else False
     note_flag = True if luck_roll == 20 else False
     sc_array = [False, False, False]  # in order: 1 Below, 1 Above, 2 Above
-    ret_string = 'Encounter Stating Results:\nYou Rolled a {0} for your luck roll.\n\nYour Options are '.format(str(luck_roll))
+    ret_string = 'Encounter Stating Results:\nYou Rolled a {0} for your luck roll.\n\nYour Options are '.format(
+        str(luck_roll))
     skill = int(sk)
     if 11 > skill > 6:
         sc_array[0] = True
@@ -98,46 +99,70 @@ def roll_exploration(area, sk, tl, pl):
         t1 = luck_roll - 1
         if t1 == 1:
             swarm_check = True
-        ret_string += find_mon(area, str
-(t1), pl) + ", "
-    ret_string += find_mon(area, str(luck_roll), pl)
+        mon_tuple = find_mon(area, str(t1), pl)
+        ret_string += mon_tuple[0] + ", "
+        if mon_tuple[1] != "":
+            author_note[0] += "{0[0]} Note: \n{0[1]}".format(mon_tuple)
+    mon_tuple = find_mon(area, str(luck_roll), pl)
+    ret_string += mon_tuple[0]
+    if mon_tuple[1] != "":
+        author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if note_flag:
         ret_string += " Option {0}".format(str(note_roll))
     if sc_array[1] and luck_roll < 20:
         t2 = str(luck_roll + 1)
-        ret_string += ", " + find_mon(area, t2, pl)
+        mon_tuple = find_mon(area, str(t2), pl)
+        ret_string += ", " + mon_tuple[0]
+        if mon_tuple[1] != "":
+            author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if sc_array[2] and luck_roll < 19:
         t3 = str(luck_roll + 2)
-        ret_string += ", " + find_mon(area, t3, pl)
+        mon_tuple = find_mon(area, str(t3), pl)
+        ret_string += ", " + mon_tuple[0]
+        if mon_tuple[1] != "":
+            author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if swarm_flag and swarm_check:
-        ret_string += "\n\n You are a high enough level to qualify for a swarm encounter. If chosen, have your GM roll 2 " \
+        ret_string += "\n\n You are a high enough level to qualify for a swarm encounter. If chosen, have your GM " \
+                      "roll 2 " \
                       "more pokemon for the encounter."
+        swarm = [find_mon(area, str(random.randint(2, 20), pl))[0], find_mon(area, str(random.randint(2, 20), pl))[0]]
+        author_note[0] += "\nAdditional Swarm Pokemon are: {0[0]}, {0[1]}\n".format(swarm)
+    author_note[0] += "\n\nArea Event: " + choose_event(area, pl)
     return ret_string
-  
-  
-  
-def choose_event(area):
+
+
+def choose_event(area, pl=None):
     dice_roll = None
     event_name = None
     note = None
+    alpha_check = False
     if area in area_names:
         area_cell = events.find(area)
         if events.cell(TYPE_ROW, area_cell.col).value == 'Exploration':
             dice_roll = random.randint(1, 10) + EVENT_MOD
+            if dice_roll - EVENT_MOD == 10:
+                alpha_check = True
         else:
             dice_roll = random.randint(1, 20) + EVENT_MOD
         event_name = events.cell(dice_roll, area_cell.col).value
-        print(event_name)
         note_check = event_notes.cell((dice_roll, area_cell.col))
         if note_check.note is not None:
-            note = "\nNote: " + note_check.note
+            note = "\n" + note_check.note
         else:
             note = ''
     else:
         return "This encounter area does not exist. Please try again."
     ret_array = [dice_roll - EVENT_MOD, event_name, note]
     ret_string = "Event {0[0]}: {0[1]}\n{0[2]}".format(ret_array)
+    if alpha_check and pl is not None:
+        alpha_roll = random.randint(2, 20)
+        alpha_tuple = find_mon(area, str(alpha_roll), pl)
+        alpha_mon = alpha_tuple[0].split()
+        alpha_mon[-1] = eval(pl + "+ 5")
+        alpha = " ".join(alpha_mon)
+        ret_string += "Your Alpha Pokemon is " + alpha
+        if alpha_roll == 20:
+            ret_string += " Option {0}".format(str(random.randint(1, 5)))
+        if alpha_tuple[1] != "":
+            ret_string += "\n{0[0]} Note: \n{0[1]}".format(alpha_tuple)
     return ret_string
-  
-  
-  
