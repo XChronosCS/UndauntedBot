@@ -36,6 +36,7 @@ def get_ability_data(name):
 
 
 def get_feature_data(name):
+    print(name)
     match = features.find(name, in_column=1)
     if match is None:
         return ["There is no feature by that name"]

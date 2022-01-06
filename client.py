@@ -38,7 +38,7 @@ async def uprising(ctx):
 
 @bot.command(name='ability')
 async def ability(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
+    arg_full = ' '.join(arg)
     result = get_ability_data(arg_full)
     ret_string = ''
     for x in result:
@@ -48,7 +48,7 @@ async def ability(ctx, *arg):
 
 @bot.command(name='feature')
 async def feature(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
+    arg_full = ' '.join(arg)
     result = get_feature_data(arg_full)
     ret_string = ''
     for x in result:
@@ -58,7 +58,7 @@ async def feature(ctx, *arg):
 
 @bot.command(name='items')
 async def items(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
+    arg_full = ' '.join(arg)
     print(arg_full)
     result = get_item_data(arg_full)
     ret_string = ''
@@ -69,7 +69,7 @@ async def items(ctx, *arg):
 
 @bot.command(name='edge')
 async def edge(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
+    arg_full = ' '.join(arg)
     result = get_edge_data(arg_full)
     ret_string = ''
     for x in result:
@@ -79,7 +79,7 @@ async def edge(ctx, *arg):
 
 @bot.command(name='move')
 async def move(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
+    arg_full = ' '.join(arg)
     result = get_move_data(arg_full)
     ret_string = ''
     for x in result:
@@ -209,7 +209,7 @@ async def encounter(ctx, *arg):
     list_arg = list(arg)
     del list_arg[-1:]
     area = ' '.join(list_arg)
-    ret_string = find_mon(area, roll)
+    ret_string = find_mon(area, roll)[0]
     await ctx.send(ret_string)
 
 
@@ -233,6 +233,73 @@ async def areaevent(ctx, *arg):
     area = ' '.join(arg)
     ret_string = choose_event(area)
     await ctx.send(ret_string)
+    
+@bot.command(name='adventure')
+async def adventure(ctx, *arg):
+    pl = arg[-1]
+    tl = arg[-2]
+    list_arg = list(arg)
+    del list_arg[-2:]
+    area = ' '.join(list_arg)
+    channel = ctx.channel
+    user = ctx.author
+    status = 0 # 1 means yes treasure hunting, 2 means yes forcing mons, 4 means yes forcing events, and 8 means yes extra players
+    th = None
+    target = None
+    force_mon = None
+    force_event = None
+    extra_players = 0
+    
+    def extra_check(m):
+      return user == m.author and m.channel == channel and m.content in ['1', '2', '3']
+    
+    
+    def target_check(m):
+      return user == m.author and m.channel == channel and m.content in ['1', '10', '20', '30', '40', '50']
+    
+    def th_check(m):
+      return user == m.author and m.channel == channel and m.content in ['1', '2', '3', '4', '5', '6','7','8','9']
+    
+    def f_mon_check(m):
+      return user == m.author and m.channel == channel and int(m.content) in range(1, 51)
+    
+    
+    def f_event_check(m): 
+      return user == m.author and m.channel == channel and int(m.content) in range(1, 21)
+    
+    def check(m):
+      return m.author == user and m.channel == channel and m.content.lower() in ["y", "n"]
+    
+    await ctx.send("Are they treasure hunting anything? Respond with y for yes or n for no")
+    msg = await bot.wait_for("message", check=check)
+    if msg.content.lower() == "y":
+      await ctx.send("How many times are they treasure hunting? Please type a number between 1 and 9")
+      msg = await bot.wait_for("message", check=th_check)
+      th = msg.content
+      await ctx.send("What slot are they Treasure Hunting for? Please type one of the following numbers: 1, 10, 20, 30, 40 and 50")
+      msg = await bot.wait_for("message", check=target_check)
+      target = msg.content
+    await ctx.send("Are they forcing a pokemon slot or treasure slot? Respond with y for yes or n for no")
+    msg = await bot.wait_for("message", check=check)
+    if msg.content.lower() == "y":
+      await ctx.send("What slot are they forcing? Please type a number between 1 and 50.")
+      msg = await bot.wait_for("message", check=f_mon_check)
+      force_mon = msg.content
+    await ctx.send("Are they forcing an event slot? Respond with y for yes or n for no")
+    msg = await bot.wait_for("message", check=check)
+    if msg.content.lower() == "y":
+      await ctx.send("What slot are they forcing? Please type a number between 1 and 20.")
+      msg = await bot.wait_for("message", check=f_event_check)
+      force_event = msg.content
+    await ctx.send("Is there more than one player in this party? Respond with y for yes or n for no")
+    msg = await bot.wait_for("message", check=check)
+    if msg.content.lower() == "y":
+      await ctx.send("How many extra players? Please type a number between 1 and 3.")
+      msg = await bot.wait_for("message", check=extra_check)
+      extra_players = int(msg.content)
+    await ctx.send("Now generating adventure...")
+    ret_string = roll_adventure(area, tl, pl, th, target, force_mon, force_event, extra_players)
+    await ctx.author.send(ret_string)
 
 
 bot.run(TOKEN)

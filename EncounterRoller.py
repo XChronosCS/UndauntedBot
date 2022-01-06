@@ -1,6 +1,8 @@
 import gspread
 import random
 import pygsheets
+import numpy
+import math
 
 LEVEL_COLUMN = 1
 NAME_ROW = 2
@@ -10,6 +12,7 @@ ADV_MOD = 23
 EVENT_MOD = 3
 ANDIEL_MOD = 4
 GARDENS_MOD = 73
+TREASURE_SLOTS = [1, 10, 20, 30, 40, 50]
 
 credentials = {
     "type": "service_account",
@@ -25,7 +28,7 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
-pg = pygsheets.authorize(service_file='service_account_credentials.json')
+pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
 
 sh = gc.open("Data Encounter Sheet")
 ws = pg.open("Data Encounter Sheet")
@@ -33,9 +36,10 @@ encounters = sh.worksheet("Encounter Tables")
 notesheet = ws.worksheet_by_title("Encounter Tables")
 events = sh.worksheet("Area Events")
 event_notes = ws.worksheet_by_title("Area Events")
-
+disp_sheet = sh.worksheet("Disposition")
 area_names = encounters.row_values(2)
 e_area_names = events.row_values(2)
+
 
 
 def find_mon(area, roll, pl=None):
@@ -74,28 +78,51 @@ def find_mon(area, roll, pl=None):
     return ret_string, ret_array[4]
 
 
+def find_disposition(area):
+    dispo = ''
+    ret_string = ''
+    # Altar of Dreams 3 roll is roll again
+    if area in area_names:
+        area_cell = disp_sheet.find(area)
+        roll = random.randint(1, 5)
+        dispo += disp_sheet.cell(roll+1, area_cell.col).value
+    else:
+        return "This area does not exist. Please try again"
+    return "\n\nThe starting disposition of this encounter is " + dispo
+
+
 def roll_exploration(area, sk, tl, pl, author_note):
     luck_roll = random.randint(1, 20)
     note_roll = random.randint(1, 5)
     swarm_flag = True if int(tl) > 15 else False
+    if swarm_flag:
+        luck_roll = random.randint(2, 20)
     swarm_check = True if luck_roll == 1 else False
     note_flag = True if luck_roll == 20 else False
     sc_array = [False, False, False]  # in order: 1 Below, 1 Above, 2 Above
+    note_array = ["", "", "", ""]
     ret_string = 'Encounter Stating Results:\nYou Rolled a {0} for your luck roll.\n\nYour Options are '.format(
         str(luck_roll))
     skill = int(sk)
     if 11 > skill > 6:
         sc_array[0] = True
+        note_array[0] = str(note_roll - 1)
     if 16 > skill > 10:
         sc_array[1] = True
+        note_array[1] = str(note_roll + 1)
     if 21 > skill > 15:
         sc_array[0] = True
         sc_array[1] = True
+        note_array[0] = str(note_roll - 1)
+        note_array[1] = str(note_roll + 1)
     if skill > 20:
         sc_array[0] = True
         sc_array[1] = True
         sc_array[2] = True
-    if sc_array[0]:
+        note_array[0] = str(note_roll - 1)
+        note_array[1] = str(note_roll + 1)
+        note_array[2] = str(note_roll + 2)
+    if sc_array[0] and luck_roll > 1:
         t1 = luck_roll - 1
         if t1 == 1:
             swarm_check = True
@@ -108,7 +135,9 @@ def roll_exploration(area, sk, tl, pl, author_note):
     if mon_tuple[1] != "":
         author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if note_flag:
-        ret_string += " Option {0}".format(str(note_roll))
+        note_array[3] = str(note_roll)
+        note_string = ", ".join(note_array)
+        ret_string += " Option {0}".format(note_string)
     if sc_array[1] and luck_roll < 20:
         t2 = str(luck_roll + 1)
         mon_tuple = find_mon(area, str(t2), pl)
@@ -125,25 +154,38 @@ def roll_exploration(area, sk, tl, pl, author_note):
         ret_string += "\n\n You are a high enough level to qualify for a swarm encounter. If chosen, have your GM " \
                       "roll 2 " \
                       "more pokemon for the encounter."
-        swarm = [find_mon(area, str(random.randint(2, 20), pl))[0], find_mon(area, str(random.randint(2, 20), pl))[0]]
+        swarm = [find_mon(area, str(random.randint(2, 20)), pl)[0], find_mon(area, str(random.randint(2, 20)), pl)[0]]
         author_note[0] += "\nAdditional Swarm Pokemon are: {0[0]}, {0[1]}\n".format(swarm)
-    author_note[0] += "\n\nArea Event: " + choose_event(area, pl)
+    author_note[0] += "\n\nArea Event: " + choose_event(area, pl, swarm_check)
     return ret_string
 
 
-def choose_event(area, pl=None):
+def choose_event(area, pl=None, tl=0, event_choice=None):
     dice_roll = None
     event_name = None
     note = None
     alpha_check = False
+    swarm_check = False
     if area in area_names:
         area_cell = events.find(area)
-        if events.cell(TYPE_ROW, area_cell.col).value == 'Exploration':
-            dice_roll = random.randint(1, 10) + EVENT_MOD
+        if event_choice is None:
+            if events.cell(TYPE_ROW, area_cell.col).value == 'Exploration':
+                if event_choice is None:
+                    dice_roll = random.randint(1, 10) + EVENT_MOD
+                if dice_roll - EVENT_MOD == 10:
+                    alpha_check = True
+                if dice_roll - EVENT_MOD == 1:
+                    swarm_check = True
+            else:
+                dice_roll = random.randint(1, 20) + EVENT_MOD
+                if dice_roll - EVENT_MOD == 20 and int(tl) < 20:
+                    dice_roll = random.randint(1, 19) + EVENT_MOD
+        else:
+            dice_roll = int(event_choice) + EVENT_MOD
             if dice_roll - EVENT_MOD == 10:
                 alpha_check = True
-        else:
-            dice_roll = random.randint(1, 20) + EVENT_MOD
+            if dice_roll - EVENT_MOD == 20 and tl < 20:
+                dice_roll = random.randint(1, 19) + EVENT_MOD
         event_name = events.cell(dice_roll, area_cell.col).value
         note_check = event_notes.cell((dice_roll, area_cell.col))
         if note_check.note is not None:
@@ -158,11 +200,116 @@ def choose_event(area, pl=None):
         alpha_roll = random.randint(2, 20)
         alpha_tuple = find_mon(area, str(alpha_roll), pl)
         alpha_mon = alpha_tuple[0].split()
-        alpha_mon[-1] = eval(pl + "+ 5")
+        alpha_mon[-1] = str(eval(pl + "+ 5"))
         alpha = " ".join(alpha_mon)
         ret_string += "Your Alpha Pokemon is " + alpha
         if alpha_roll == 20:
             ret_string += " Option {0}".format(str(random.randint(1, 5)))
         if alpha_tuple[1] != "":
             ret_string += "\n{0[0]} Note: \n{0[1]}".format(alpha_tuple)
+    if swarm_check and pl is not None:
+        swarm = [find_mon(area, str(random.randint(2, 20)), pl)[0], find_mon(area, str(random.randint(2, 20)), pl)[0]]
+        ret_string += "\nAdditional Swarm Pokemon are: {0[0]}, {0[1]}\n".format(swarm)
+    return ret_string
+
+
+def roll_exclude():
+    randInt = random.randint(1, 50)
+    return roll_exclude() if randInt in TREASURE_SLOTS else randInt
+
+
+def roll_adventure(area, tl, pl, th=None, target=None, force_mon=None, force_event=None, extra_players=0):
+    encounter_roll = None
+    treasure_guardian = None
+    encounter = None
+    event = None
+    disposition = None
+    treasure_flag = False
+    ex_treasure_flag = False
+    ret_string = ''
+    alpha_flag = False
+    num_treasure_hunts = 0
+    guardianFlag = True if int(tl) >= 20 else False
+    majorTreasureFlag = True if int(pl) >= 45 else False
+    if force_mon is None:
+        if majorTreasureFlag:
+            encounter_roll = random.randint(1, 50)
+        else:
+            encounter_roll = random.randint(2, 50)
+        if encounter_roll in TREASURE_SLOTS:
+            treasure_flag = True
+            if encounter_roll == 50:
+                alpha_flag = True
+            else:
+                treasure_guardian = find_mon(area, str(roll_exclude()), pl)
+        if th is not None and target is not None and str(encounter_roll) != target:
+            starting_val = 1 if majorTreasureFlag else 2
+            treasure_array = numpy.random.randint(starting_val, 50, size=int(th) * 3)
+            if int(target) in treasure_array:
+                if int(target) == 50:
+                    alpha_flag = True
+                else:
+                    alpha_flag = False
+                encounter_roll = int(target)
+                num_treasure_hunts = int(math.ceil(treasure_array.tolist().index(int(target)) / 3))
+            else:
+                num_treasure_hunts = int(th)
+    else:
+        encounter_roll = int(force_mon)
+        if encounter_roll in TREASURE_SLOTS:
+            treasure_flag = True
+            if encounter_roll == 50:
+                alpha_flag = True
+            else:
+                treasure_guardian = find_mon(area, str(roll_exclude()), pl)
+
+    encounter = find_mon(area, str(encounter_roll), pl)
+    ret_string += "Encounter 1: " + encounter[0]
+    if encounter[1] != "":
+        ret_string += encounter[1]
+    if treasure_flag:
+        if alpha_flag:
+            alpha_mon = find_mon(area, str(roll_exclude()), pl)
+            ret_string += "\nAlpha Mon Selected is: " + alpha_mon[0] + alpha_mon[1]
+            alpha_flag = False
+        else:
+            ret_string += "\nThe treasure guardian is: " + treasure_guardian[0] + treasure_guardian[1]
+    if extra_players > 0:
+        ret_string += "\n\nNow rolling encounters for additional players...\n"
+        encounter_num = int(extra_players)
+        additional_mons = None
+        if treasure_flag:
+            additional_mons = [roll_exclude() for i in range(encounter_num)]
+            treasure_flag = False
+        else:
+            additional_mons = [roll_exclude() for i in range(encounter_num - 1)]
+            if majorTreasureFlag:
+                additional_mons.append(random.randint(1, 50))
+            else:
+                additional_mons.append(random.randint(2, 50))
+            if additional_mons[-1] == 50:
+                alpha_flag = True
+            else:
+                treasure_guardian = find_mon(area, str(roll_exclude()), pl)
+        i = 2
+        print(additional_mons)
+        for x in additional_mons:
+            if x in TREASURE_SLOTS:
+                ex_treasure_flag = True
+            additional_encounter = find_mon(area, str(x), pl)
+            ret_string += "Encounter {0}: ".format(i) + additional_encounter[0] + additional_encounter[1] + "\n"
+            i += 1
+            if ex_treasure_flag:
+                if alpha_flag:
+                    alpha_mon = find_mon(area, str(roll_exclude()), pl)
+                    ret_string += "\nAlpha Mon Selected is: " + alpha_mon[0] + alpha_mon[1] + "\n"
+                else:
+                    ret_string += "\nThe treasure guardian is: " + treasure_guardian[0] + treasure_guardian[1] + "\n"
+    if force_event is not None:
+        ret_string += "\n\nArea Event: " + choose_event(area, pl, tl, force_event)
+    else:
+        ret_string += "\n\nArea Event: " + choose_event(area, pl, tl)
+    if th is not None:
+        ret_string += "\n\nYou Treasure Hunted {0} times and got these results".format(num_treasure_hunts)
+    ret_string += find_disposition(area)
     return ret_string
