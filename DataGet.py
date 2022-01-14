@@ -1,4 +1,7 @@
 import gspread
+import re
+from constants import *
+
 
 credentials = {
     "type": "service_account",
@@ -93,3 +96,50 @@ def get_move_data(name):
         move_eff = "\nEffect: " + moves.cell(row, 8).value
         move_tag = "\nStyle Tag: " + moves.cell(row, 9).value
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
+      
+      
+habitat = gc.open("Data Habitat Areas").worksheet("Data")
+
+
+def get_habitat(name):
+    match = habitat.find(name, in_column=1)
+    if match is None:
+        return "This is either not the species's basic form or it cannot be found anywhere at the moment."
+    else:
+        row = match.row
+        ret_array = []
+        areas = habitat.range(row, 3, row, 12)
+        for x in areas:
+            if x.value is not None and x.value != '':
+                ret_array.append(x.value)
+        ret_string = "This pokemon is found in the following locations: " + ", ".join(ret_array)
+        return ret_string
+
+
+def get_keyword_moves(name):
+    criteria = re.compile(name)
+    match = moves.findall(criteria, in_column=5)
+    if len(match) != 0:
+        ret_array = []
+        for x in match:
+            ret_array.append(moves.cell(x.row, 1).value)
+        ret_string = "Here is a list of all moves with that keyword: " + ", ".join(ret_array)
+        return ret_string
+    else:
+        return "That is not a valid attack Keyword. Please try again"
+      
+
+def poke_ability(name):
+    temp_name = name.title() if name.lower() != "power of alchemy" else "Power of Alchemy"
+    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if temp_name in pokemon['abilities'] or temp_name in pokemon['advabilities'] or temp_name in pokemon['highabilities']]
+    ret_string = "**Here is a list of all the pokemon with the ability " + temp_name + ":** " + ", ".join(ret_array)
+    return ret_string
+  
+  
+  
+def poke_moves(name):
+    first_name = name.title() if name.lower() != "Roar of Time" else "Roar of Time"
+    temp_name = name.title() if name.lower() != "Light of Ruin" else "Light of Ruin"
+    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if any(temp_name in full_name for full_name in pokemon["moves"])]
+    ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(ret_array)
+    return ret_string

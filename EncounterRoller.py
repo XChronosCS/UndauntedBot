@@ -157,6 +157,7 @@ def roll_exploration(area, sk, tl, pl, author_note):
         swarm = [find_mon(area, str(random.randint(2, 20)), pl)[0], find_mon(area, str(random.randint(2, 20)), pl)[0]]
         author_note[0] += "\nAdditional Swarm Pokemon are: {0[0]}, {0[1]}\n".format(swarm)
     author_note[0] += "\n\nArea Event: " + choose_event(area, pl, swarm_check)
+    author_note[0] += find_disposition(area)
     return ret_string
 
 
@@ -184,7 +185,7 @@ def choose_event(area, pl=None, tl=0, event_choice=None):
             dice_roll = int(event_choice) + EVENT_MOD
             if dice_roll - EVENT_MOD == 10:
                 alpha_check = True
-            if dice_roll - EVENT_MOD == 20 and tl < 20:
+            if dice_roll - EVENT_MOD == 20 and int(tl) < 20:
                 dice_roll = random.randint(1, 19) + EVENT_MOD
         event_name = events.cell(dice_roll, area_cell.col).value
         note_check = event_notes.cell((dice_roll, area_cell.col))

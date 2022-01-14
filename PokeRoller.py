@@ -3,6 +3,7 @@ import random
 import pygsheets
 from constants import TYPES
 import RollingCommands
+import re
 
 credentials = {
     "type": "service_account",
@@ -87,3 +88,18 @@ def roll_details():
     result_array = [nature, gender, ability]
     return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
            "if there are multiple options.".format(result_array)
+  
+  
+def poke_cap(name):
+    criteria = re.compile('(?i)' + name)
+    match = pokemon.findall(criteria)
+    if len(match) != 0:
+        temp_array = []
+        random.shuffle(match)
+        for i in range(10):
+            temp_array.append(pokemon.cell(match[i].row, 1).value)
+        ret_array = [p_name for p_name in temp_array if p_name in p_names]
+        ret_string = "**Here is a list of some pokemon with that capability:** " + ", ".join(ret_array)
+        return ret_string
+    else:
+        return "That is not a valid attack Capability. Please try again"

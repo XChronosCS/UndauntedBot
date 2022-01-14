@@ -4,6 +4,7 @@ import string
 import dice
 import re
 import discord
+import random
 from discord.ext import commands
 from dotenv import load_dotenv
 from TownEvents import *
@@ -12,13 +13,13 @@ from PokeRoller import *
 from TableRoller import *
 from RollingCommands import *
 from EncounterRoller import *
+from autostatter import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
 bot = commands.Bot(command_prefix='!')
-
 
 @bot.command(name='townevent')
 async def townevent(ctx):
@@ -86,6 +87,41 @@ async def move(ctx, *arg):
         ret_string += x
     await ctx.send(ret_string)
 
+    
+@bot.command(name='habitat')
+async def habitat(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_habitat(arg_full)
+    await ctx.send(result)
+    
+
+@bot.command(name='keymoves')
+async def keymoves(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_keyword_moves(arg_full)
+    await ctx.send(result)
+    
+    
+@bot.command(name='amons')
+async def amons(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = poke_ability(arg_full)
+    await ctx.send(result)
+
+
+@bot.command(name='lum')
+async def lum(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = poke_moves(arg_full)
+    await ctx.send(result)
+    
+    
+@bot.command(name='cmons')
+async def cmons(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = poke_cap(arg_full)
+    await ctx.send(result)
+
 
 @bot.command(name='pokerandom')
 async def pokerandom(ctx):
@@ -145,15 +181,21 @@ async def turbo(ctx):
     emote = "<a:WoolooTurbo:701937147862843412>"
     await ctx.send(emote)
     await ctx.message.delete()
+    
+    
+@bot.command(name="muffin")
+async def muffin(ctx):
+    muf_var = random.randint(1, 5)
+    await ctx.send(file=discord.File("Images/muffin_{0}.png".format(muf_var)))
 
 
 # Dice Rolling Command
-@bot.command(aliases=['droll'])
+@bot.command(aliases=['droll','dr'])
 async def diceroll(ctx, *args):
     arg_full = ' '.join(args)
     text_string = ''
     modifier_string = None
-    multiplier = 1
+    exclude_string = None
     dice_string = None
     ret_string = ''
     # reroll_value = None
@@ -168,20 +210,13 @@ async def diceroll(ctx, *args):
         mod_array = dice_string.split('R', 1)
         dice_string = mod_array[0]
         modifier_string = mod_array[1]
+    if 'E' in dice_string:
+        re_array = dice_string.split('E', 1)
+        dice_string = re_array[0]
+        exclude_string = re_array[1]
     ret_string += ctx.author.mention
-    if modifier_string is not None:
-        multiplier = int(modifier_string)
-        ret_string += "\nPerforming " + str(multiplier) + " iterations..."
-    for i in range(multiplier):
-        roll_string = re.sub("[^\d+\-*\/d]", '', dice_string)
-        # turns the XdY rolls into the values being rolled
-        rolls = re.sub('(\d+d\d+)', roll_vals, roll_string)
-        # Takes the arrays of numbers in string and turns them into the sums
-        result_string = re.sub('\[.*\]', roll_result, rolls)
-        result = eval(result_string)
-        ret_string += "\n**" + dice_string + "**\n" + text_string + rolls + " = " + str(result)
+    ret_string += roll_calc(dice_string, modifier_string, exclude_string, text_string)
     await ctx.send(ret_string)
-    await ctx.message.delete()
 
 
 @bot.command(name='details')
@@ -219,13 +254,14 @@ async def exploration(ctx, *arg):
     tl = arg[-2]
     skill = arg[-3]
     list_arg = list(arg)
+    post_channel = bot.get_channel(565626984709881886)
     del list_arg[-3:]
     area = ' '.join(list_arg)
     note_message = ['']
     ret_string = roll_exploration(area, skill, tl, pl, note_message)
     await ctx.send(ret_string)
     if note_message[0] != "":
-        await ctx.author.send(note_message[0])
+        await post_channel.send(ctx.author.mention + "\n**" + area + "**\n" + note_message[0])
 
 
 @bot.command(name='areaevent')
@@ -243,6 +279,7 @@ async def adventure(ctx, *arg):
     area = ' '.join(list_arg)
     channel = ctx.channel
     user = ctx.author
+    post_channel = bot.get_channel(565626984709881886)
     status = 0 # 1 means yes treasure hunting, 2 means yes forcing mons, 4 means yes forcing events, and 8 means yes extra players
     th = None
     target = None
@@ -298,8 +335,45 @@ async def adventure(ctx, *arg):
       msg = await bot.wait_for("message", check=extra_check)
       extra_players = int(msg.content)
     await ctx.send("Now generating adventure...")
-    ret_string = roll_adventure(area, tl, pl, th, target, force_mon, force_event, extra_players)
-    await ctx.author.send(ret_string)
+    ret_string = user.mention + "\n**" + area + "**\n" + roll_adventure(area, tl, pl, th, target, force_mon, force_event, extra_players)
+    await post_channel.send(ret_string)
+
+@bot.command(name='autostat')
+async def autostat(ctx, *args):
+    linkmail = args[-1]
+    level = args[-2]
+    list_arg = list(args)
+    del list_arg[-2:]
+    name = ' '.join(list_arg)
+    link = None
+    email = None
+    if '@' in linkmail:
+        email = linkmail
+    else:
+        link = linkmail
+    await ctx.send("Now statting automatically... Please wait...")
+    ret_string = ctx.author.mention + "\n" + autostatter(name, level, email, link)
+    await ctx.send(ret_string)
+    
+    
+@bot.command(name='babystat')
+async def babystat(ctx, *args):
+    baby = True
+    linkmail = args[-1]
+    level = args[-2]
+    list_arg = list(args)
+    del list_arg[-2:]
+    name = ' '.join(list_arg)
+    link = None
+    email = None
+    if '@' in linkmail:
+        email = linkmail
+    else:
+        link = linkmail
+    await ctx.send("Now statting automatically... Please wait...")
+    ret_string = ctx.author.mention + "\n" + autostatter(name, level, email, link, baby)
+    await ctx.send(ret_string)
+    
 
 
 bot.run(TOKEN)
