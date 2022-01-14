@@ -114,12 +114,19 @@ async def lum(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_moves(arg_full)
     await ctx.send(result)
-    
-    
+
+
+@bot.command(name='tm')
+async def tm(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = poke_tutor(arg_full)
+    await ctx.send(result)
+
+
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
     arg_full = ' '.join(arg)
-    result = poke_cap(arg_full)
+    result = poke_capability(arg_full)
     await ctx.send(result)
 
 

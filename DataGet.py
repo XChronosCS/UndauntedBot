@@ -1,5 +1,6 @@
 import gspread
 import re
+import fitz
 from constants import *
 
 
@@ -24,6 +25,7 @@ features = sh.worksheet("Features Data")
 items = sh.worksheet("Inventory Data")
 edges = sh.worksheet("Edges Data")
 moves = sh.worksheet("Moves Data")
+pokedex = fitz.Document("Documents/Phemenon Pokedex")
 
 
 def get_ability_data(name):
@@ -139,7 +141,59 @@ def poke_ability(name):
   
 def poke_moves(name):
     first_name = name.title() if name.lower() != "Roar of Time" else "Roar of Time"
-    temp_name = name.title() if name.lower() != "Light of Ruin" else "Light of Ruin"
+    temp_name = first_name.title() if first_name.lower() != "Light of Ruin" else "Light of Ruin"
     ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if any(temp_name in full_name for full_name in pokemon["moves"])]
     ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(ret_array)
     return ret_string
+
+
+def make_text(words):
+    """Return textstring output of get_text("words").
+    Word items are sorted for reading sequence left to right,
+    top to bottom.
+    """
+    line_dict = {}  # key: vertical coordinate, value: list of words
+    words.sort(key=lambda w: w[0])  # sort by horizontal coordinate
+    for w in words:  # fill the line dictionary
+        y1 = round(w[3], 1)  # bottom of a word: don't be too picky!
+        word = w[4]  # the text of the word
+        line = line_dict.get(y1, [])  # read current line content
+        line.append(word)  # append new word
+        line_dict[y1] = line  # write back to dict
+    lines = list(line_dict.items())
+    lines.sort()  # sort vertically
+    return " ".join([" ".join(line[1]) for line in lines])
+
+
+def poke_tutor(name):
+    temp_name = name.title() if name.lower() != "Light of Ruin" else "Light of Ruin"
+    mon_names = []
+    for entry in pokedex.pages(12, 963):
+        tutor_rect = fitz.Rect(497, 535, 801, 974)
+        name_rect = fitz.Rect(40, 0, 360, 55)
+        word_page = entry.get_text("words")
+        tutor_moves = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(tutor_rect)])
+        if name in tutor_moves:
+            poke_name = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(name_rect)])
+            mon_names.append(poke_name)
+    ret_string = "**Here is a list of all the pokemon with the tutor move " + temp_name + ":** " + ", ".join(
+        mon_names)
+    return ret_string
+
+
+def poke_capability(name):
+    temp_name = name.title()
+    mon_names = []
+    for entry in pokedex.pages(12, 963):
+        cap_rect = fitz.Rect(50, 639, 430, 730)
+        name_rect = fitz.Rect(40, 0, 360, 55)
+        word_page = entry.get_text("words")
+        caps = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(cap_rect)])
+        if name in caps:
+            poke_name = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(name_rect)])
+            mon_names.append(poke_name)
+    ret_string = "**Here is a list of all the pokemon with the capability " + temp_name + ":** " + ", ".join(
+        mon_names)
+    return ret_string
+
+
