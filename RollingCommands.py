@@ -114,3 +114,6 @@ def roll_deity():
     format_string = "You rolled a {dice}, which means...\n You gain ${money}\nYou gain {stam} Stamina\nYou gain {pp} " \
                     "Patron Points"
     return format_string.format(dice=dice_roll, money=cash, stam=stamina, pp=patron_points)
+  
+def roll_dim():
+    return "You have opened a portal to the " + ULTRA_DIM[random.randrange(0, len(ULTRA_DIM))] + " Dimension!"

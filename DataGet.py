@@ -3,7 +3,6 @@ import re
 import fitz
 from constants import *
 
-
 credentials = {
     "type": "service_account",
     "project_id": "undaunteddiscordbot",
@@ -25,11 +24,16 @@ features = sh.worksheet("Features Data")
 items = sh.worksheet("Inventory Data")
 edges = sh.worksheet("Edges Data")
 moves = sh.worksheet("Moves Data")
-pokedex = fitz.Document("Documents/Phemenon Pokedex")
+pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
+extras = sh.worksheet("Class Data")
+misc = sh.worksheet("Misc Data")
+des = gc.open("Data Encounter Sheet")
+encounters = des.worksheet("Encounter Tables")
 
 
 def get_ability_data(name):
-    match = abilities.find(name, in_column=1)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = abilities.find(criteria, in_column=1)
     if match is None:
         return ["There is no ability by that name"]
     else:
@@ -41,8 +45,8 @@ def get_ability_data(name):
 
 
 def get_feature_data(name):
-    print(name)
-    match = features.find(name, in_column=1)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = features.find(criteria, in_column=1)
     if match is None:
         return ["There is no feature by that name"]
     else:
@@ -56,7 +60,8 @@ def get_feature_data(name):
 
 
 def get_item_data(name):
-    match = items.find(name, in_column=28)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = items.find(criteria, in_column=28)
     if match is None:
         return ["There is no item by that name"]
     else:
@@ -67,7 +72,8 @@ def get_item_data(name):
 
 
 def get_edge_data(name):
-    match = edges.find(name, in_column=1)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = edges.find(criteria, in_column=1)
     if match is None:
         return ["There is no edge by that name"]
     else:
@@ -79,11 +85,8 @@ def get_edge_data(name):
 
 
 def get_move_data(name):
-    if name == "Roar Of Time":
-        name = "Roar of Time"
-    if name == "Cone Of Force":
-        name = "Cone of Force"
-    match = moves.find(name, in_column=1)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = moves.find(criteria, in_column=1)
     if match is None:
         return ["There is no move by that name"]
     else:
@@ -98,13 +101,14 @@ def get_move_data(name):
         move_eff = "\nEffect: " + moves.cell(row, 8).value
         move_tag = "\nStyle Tag: " + moves.cell(row, 9).value
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
-      
-      
+
+
 habitat = gc.open("Data Habitat Areas").worksheet("Data")
 
 
 def get_habitat(name):
-    match = habitat.find(name, in_column=1)
+    criteria = re.compile('(?i)^' + name + "$")
+    match = habitat.find(criteria, in_column=1)
     if match is None:
         return "This is either not the species's basic form or it cannot be found anywhere at the moment."
     else:
@@ -118,8 +122,59 @@ def get_habitat(name):
         return ret_string
 
 
+def show_mechanics():
+    options = extras.col_values(1)
+    del options[:2]
+    return options
+
+
+def get_mechanic(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = extras.find(criteria, in_column=1)
+    row = match.row
+    ret_string = "Mechanic: " + extras.cell(row, 2).value + "\n\nEffect: " + extras.cell(row, 3).value
+    return ret_string
+
+
+def get_technique(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = extras.find(criteria, in_column=4)
+    if match is None:
+        return "There is no technique by that name"
+    else:
+        row = match.row
+        ret_string = extras.cell(row, 4).value
+        ret_string += "\nPrerequisities: " + extras.cell(row, 5).value
+        ret_string += "\nFrequency / Cost: " + extras.cell(row, 6).value
+        ret_string += "\n\n" + extras.cell(row, 7).value
+        return ret_string
+
+
+def get_order(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = features.find(criteria, in_column=6)
+    if match is None:
+        match = features.find(criteria, in_column=9)
+        if match is None:
+            return "There is no general order by that name"
+        else:
+            row = match.row
+            col = match.col
+            ret_string = features.cell(row, col).value
+            ret_string += "\n" + features.cell(row, col + 1).value
+            ret_string += "\n\n" + features.cell(row, col + 2).value
+            return ret_string
+    else:
+        row = match.row
+        col = match.col
+        ret_string = features.cell(row, col).value
+        ret_string += "\n" + features.cell(row, col + 1).value
+        ret_string += "\n\n" + features.cell(row, col + 2).value
+        return ret_string
+
+
 def get_keyword_moves(name):
-    criteria = re.compile(name)
+    criteria = re.compile('(?i)' + name)
     match = moves.findall(criteria, in_column=5)
     if len(match) != 0:
         ret_array = []
@@ -129,21 +184,24 @@ def get_keyword_moves(name):
         return ret_string
     else:
         return "That is not a valid attack Keyword. Please try again"
-      
+
 
 def poke_ability(name):
     temp_name = name.title() if name.lower() != "power of alchemy" else "Power of Alchemy"
-    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if temp_name in pokemon['abilities'] or temp_name in pokemon['advabilities'] or temp_name in pokemon['highabilities']]
+    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if
+                 temp_name in pokemon['abilities'] or temp_name in pokemon['advabilities'] or temp_name in pokemon[
+                     'highabilities']]
     ret_string = "**Here is a list of all the pokemon with the ability " + temp_name + ":** " + ", ".join(ret_array)
     return ret_string
-  
-  
-  
+
+
 def poke_moves(name):
-    first_name = name.title() if name.lower() != "Roar of Time" else "Roar of Time"
-    temp_name = first_name.title() if first_name.lower() != "Light of Ruin" else "Light of Ruin"
-    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if any(temp_name in full_name for full_name in pokemon["moves"])]
-    ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(ret_array)
+    first_name = name.title() if name.lower() != "roar of time" else "Roar of Time"
+    temp_name = first_name.title() if first_name.lower() != "light of ruin" else "Light of Ruin"
+    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if
+                 any(temp_name in full_name for full_name in pokemon["moves"])]
+    ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(
+        ret_array)
     return ret_string
 
 
@@ -166,17 +224,19 @@ def make_text(words):
 
 
 def poke_tutor(name):
-    temp_name = name.title() if name.lower() != "Light of Ruin" else "Light of Ruin"
+    temp_name = name.title() if name.lower() != "light of ruin" else "Light of Ruin"
     mon_names = []
     for entry in pokedex.pages(12, 963):
-        tutor_rect = fitz.Rect(497, 535, 801, 974)
-        name_rect = fitz.Rect(40, 0, 360, 55)
+        tutor_rect = fitz.Rect(360, 386, 576, 690)
+        name_rect = fitz.Rect(28, 0, 457, 60)
         word_page = entry.get_text("words")
-        tutor_moves = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(tutor_rect)])
-        if name in tutor_moves:
-            poke_name = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(name_rect)])
+        tutor_temp = [w for w in word_page if fitz.Rect(w[:4]) in tutor_rect]
+        tutor_moves = make_text(tutor_temp)
+        if temp_name in tutor_moves:
+            temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+            poke_name = make_text(temp)
             mon_names.append(poke_name)
-    ret_string = "**Here is a list of all the pokemon with the tutor move " + temp_name + ":** " + ", ".join(
+    ret_string = "**List of pokemon with the tutor move " + temp_name + ":** " + ", ".join(
         mon_names)
     return ret_string
 
@@ -185,15 +245,116 @@ def poke_capability(name):
     temp_name = name.title()
     mon_names = []
     for entry in pokedex.pages(12, 963):
-        cap_rect = fitz.Rect(50, 639, 430, 730)
-        name_rect = fitz.Rect(40, 0, 360, 55)
+        cap_rect = fitz.Rect(10, 450, 311, 532)
+        name_rect = fitz.Rect(28, 0, 457, 60)
         word_page = entry.get_text("words")
-        caps = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(cap_rect)])
-        if name in caps:
-            poke_name = make_text([w for w in word_page if fitz.Rect(w[:4]).intersect(name_rect)])
+        cap_temp = [w for w in word_page if fitz.Rect(w[:4]) in cap_rect]
+        caps = make_text(cap_temp)
+        if temp_name in caps:
+            temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+            poke_name = make_text(temp)
             mon_names.append(poke_name)
-    ret_string = "**Here is a list of all the pokemon with the capability " + temp_name + ":** " + ", ".join(
+    ret_string = "**List of all pokemon with capability " + temp_name + ":** " + ", ".join(
         mon_names)
     return ret_string
 
 
+def get_data(name):
+    final_string = ''
+    num_hits = 0
+    ret_string = ''.join(get_feature_data(name))
+    if ret_string != "There is no feature by that name":
+        num_hits += 1
+        final_string += "Class: Feature\n" + ret_string + "\n\n"
+    ret_string = ''.join(get_ability_data(name))
+    if ret_string != "There is no ability by that name":
+        num_hits += 1
+        final_string += "Class: Ability\n" + ret_string + "\n\n"
+    ret_string = ''.join(get_edge_data(name))
+    if ret_string != "There is no edge by that name":
+        num_hits += 1
+        final_string += "Class: Edge\n" + ret_string + "\n\n"
+    ret_string = ''.join(get_item_data(name))
+    if ret_string != "There is no item by that name":
+        num_hits += 1
+        final_string += "Class: Item\n" + ret_string + "\n\n"
+    ret_string = ''.join(get_move_data(name))
+    if ret_string != "There is no move by that name":
+        num_hits += 1
+        final_string += "Class: Move\n" + ret_string + "\n\n"
+    ret_string = get_technique(name)
+    if ret_string != "There is no technique by that name":
+        num_hits += 1
+        final_string += "Class: Technique\n" + ret_string + "\n\n"
+    ret_string = ''.join(get_cap_data(name))
+    if ret_string != "There is no capability by that name":
+        num_hits += 1
+        final_string += "Class: Capability\n" + ret_string + "\n\n"
+    ret_string = get_status_data(name)
+    if ret_string != "There is no status condition by that name":
+        num_hits += 1
+        final_string += "Class: Status Condition\n" + ret_string + "\n\n"
+    ret_string = get_order(name)
+    if ret_string != "There is no general order by that name":
+        num_hits += 1
+        final_string += "Class: Order\n" + ret_string + "\n\n"
+    if num_hits == 0:
+        return "There is no Move, Feature, Ability, Edge, Item, Class Technique, Capability, " \
+               "Status Condition, or Order by that name"
+    else:
+        return "Number of possible matches: " + str(num_hits) + "\n\n" + final_string
+
+
+def get_man_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = moves.find(criteria, in_column=10)
+    if match is None:
+        return ["There is no manuever by that name"]
+    else:
+        row = match.row
+        move_name = "Name: " + moves.cell(row, 10).value
+        move_type = "\nClass: " + moves.cell(row, 11).value
+        move_freq = "\nAction: " + moves.cell(row, 12).value
+        move_range = "\nRange " + moves.cell(row, 13).value
+        move_ac = "\nAC: " + str(moves.cell(row, 14).value)
+        move_db = "\nEffect: " + str(moves.cell(row, 15).value)
+        return [move_name, move_type, move_freq, move_range, move_ac, move_db]
+
+
+def get_cap_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = misc.find(criteria, in_column=7)
+    if match is None:
+        return ["There is no capability by that name"]
+    else:
+        row = match.row
+        cap_name = misc.cell(row, 7).value
+        cap_eff = "\n" + misc.cell(row, 8).value
+        return [cap_name, cap_eff]
+
+
+def get_status_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = misc.find(criteria, in_column=9)
+    if match is None:
+        return "There is no status condition by that name"
+    else:
+        row = match.row
+        ret_val = misc.cell(row, 9).value
+        ret_val += "\nRegular Effect: " + misc.cell(row, 10).value
+        ret_val += "\nBoss Effect: " + misc.cell(row, 11).value
+        return ret_val
+
+
+def get_treasure_spot(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = encounters.findall(criteria)
+    if len(match) == 0:
+        return "No Treasure of that name can be found. Please make sure you are spelling it correctly."
+    else:
+        areas = []
+        for item in match:
+            col = item.col
+            areas.append(encounters.cell(2, col).value)
+        ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(areas)
+        return ret_val

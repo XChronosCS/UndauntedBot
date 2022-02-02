@@ -2,7 +2,8 @@ import random
 from constants import *
 
 
-def chaos_roller(choice):
+def chaos_roller(choice_entered):
+    choice = choice_entered.title()
     ret_string = None
     array_choice = None
     if choice == "Basic":

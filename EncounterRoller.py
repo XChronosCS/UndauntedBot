@@ -14,6 +14,53 @@ ANDIEL_MOD = 4
 GARDENS_MOD = 73
 TREASURE_SLOTS = [1, 10, 20, 30, 40, 50]
 
+EXPLO_SKILLS = {
+    "Acrobatics": {'15': 'Each Trainer and Pokémon gains +1 CS in Speed.',
+                   '25': 'Each Pokémon in the Encounter will have “Advanced Mobility” Edge for free.'},
+    "Athletics": {'15': 'Each Trainer and Pokémon gains one Tick of Temporary HP.',
+                  '25': 'Each Trainer and Pokémon gains double their tick value in Temporary HP.'},
+    "Charm": {'15': 'All attempts to Social Capture gain +2 as a Modifier.',
+              '25': 'One Random Pokémon will be Infatuated with the Party Leader.'},
+    "Combat": {
+        '15': 'Each Encountered Pokémon gains +1 CS in either Attack and Defense, or Special Attack and Special '
+              'Defense. However all participating Trainers gain +1 Additional TXP Reward if the Party battled against '
+              'the Encountered Pokémon.',
+        '30': 'Each Encountered Pokémon gains +2 CS in either Attack and Defense, or Special Attack and Special '
+              'Defense. However all participating Trainers gain +2 Additional TXP Reward if the Party battled against '
+              'the Encountered Pokémon.'},
+    "Command": {'15': 'Each Party Pokémon can cure a Volatile Condition as a Shift Action once.',
+                '25': 'Each Party Pokémon can cure a Volatile Condition and a Persistent Condition as a single Shift '
+                      'Action once.'},
+    "General Edu": {'15': 'The Leader can reroll their 1d20 Luck Roll.',
+                    '25': 'The Leader can reroll their Luck Roll or add/subtract up to 2 from their Current Roll.'},
+    "Medical Edu": {'20': 'All Pokémon captured within the Encounter will have their Injuries cured. Injuries cured '
+                          'this way do not count towards the Maximum Limit of 5 Injuries per Week healed.'},
+    "Pokemon Edu": {'20': 'There will be an extra Pokémon in this encounter. GM will roll another d20 for it.'},
+    "Occult Edu": {'20': 'Roll a 1d10 and refer to the Occult Table on that Exploration Area. That Pokémon will also '
+                         'show up and be equal to the Average Lead Level.'},
+    "Tech Edu": {'15': 'have the Leader roll 4d4. Multiply it by 100 and they find that much Mechanical or Chemical '
+                       'Scrap.'},
+    "Focus": {'15': 'All Trainers and Pokémon gain the effects of Focused Training for the Encounter (It can stack '
+                    'with itself.)',
+              '25': 'Each Trainer or Pokémon in the Party may use Focus Energy as a Free Action.'},
+    "Guile": {'15': "All Encountered Pokémon will have a Debuff based on their Disposition. If they’re Gullible they "
+                    "will have 1 Less Evasion. If they’re Suspicious they will have 1 Less Accuracy."},
+    "Intimidate": {'20': 'all Pokémon encountered will have -1 Attack and Special Attack CS, then roll a Focus check '
+                         'for each Encountered Pokémon, if it doesn’t meet the Skill roll, they will start Fearful or '
+                         'Very Hostile (Roll 1d2).'},
+    "Intuition": {'15': 'All Encountered Pokémon can Increase or Decrease by 2 Levels.',
+                  '25': 'All Encountered Pokémon can Increase or Decrease by 5 Levels. This overwrites the 2 Levels of '
+                        '15+.'},
+    "Perception": {'15': 'have the Leader roll 3d4. Multiply it by 100 and they find that muchScrap of their choice ('
+                         'Mechanical, Chemical, Equipment, or Food).'},
+    "Stealth": {'20': 'The Party will become stealthed to the Pokémon and they will be unaware. They can initiate '
+                      'Combat with a surprise attack from one Pokémon. If below 20, each Pokémon rolls Opposed '
+                      'Perception instead.'},
+    "Survival": {'15': 'The Party will be able to choose one more option above their d20 on the Encounter Table.',
+                 '25': 'The Party will instead be able to choose two more options above their d20 on the Encounter '
+                       'Table.'}
+}
+
 credentials = {
     "type": "service_account",
     "project_id": "undaunteddiscordbot",
@@ -36,11 +83,25 @@ encounters = sh.worksheet("Encounter Tables")
 notesheet = ws.worksheet_by_title("Encounter Tables")
 events = sh.worksheet("Area Events")
 event_notes = ws.worksheet_by_title("Area Events")
+occult = sh.worksheet("Occult Tables")
+occult_notes = ws.worksheet_by_title("Occult Tables")
 disp_sheet = sh.worksheet("Disposition")
 area_names = encounters.row_values(2)
 e_area_names = events.row_values(2)
+o_area_names = occult.row_values(2)
 
 
+def get_skill(name):
+    buff_list = EXPLO_SKILLS.get(name.title())
+    if buff_list is None:
+        return "That skill does not exist. Make sure to end all education skills with Edu and not Ed"
+    else:
+        ret_string = name.title()
+        temp_list = buff_list.items()
+        for item in temp_list:
+            ret_string += "\nRoll a " + item[0] + "+: " + item[1]
+        return ret_string
+            
 
 def find_mon(area, roll, pl=None):
     ret_string = None
@@ -78,6 +139,32 @@ def find_mon(area, roll, pl=None):
     return ret_string, ret_array[4]
 
 
+def roll_occult(area, pl=None):
+    ret_string = None
+    selection = None
+    note = None
+    level_mod = None
+    roll = random.randint(1,10)
+    modifier = EXPLO_MOD
+    if area in o_area_names:
+        area_cell = occult.find(area)
+        select_cell = occult.cell(roll + modifier, area_cell.col)
+        note_check = occult_notes.cell((select_cell.row, select_cell.col))
+        if note_check.note is not None:
+            note = "\nNote:\n" + note_check.note
+        else:
+            note = ''
+        selection = select_cell.value
+        level_mod = encounters.cell(select_cell.row, LEVEL_COLUMN).value
+        if pl is not None:
+            level_mod = eval(pl + level_mod)
+    else:
+        return "This encounter area does not exist. Please try again."
+    ret_array = [selection, level_mod, note]
+    ret_string = "\n\nYour Occult Table Pokemon is a {0[0]} Level {0[1]}".format(ret_array)
+    return ret_string + "\n" +  ret_array[2]
+
+
 def find_disposition(area):
     dispo = ''
     ret_string = ''
@@ -85,69 +172,109 @@ def find_disposition(area):
     if area in area_names:
         area_cell = disp_sheet.find(area)
         roll = random.randint(1, 5)
-        dispo += disp_sheet.cell(roll+1, area_cell.col).value
+        dispo += disp_sheet.cell(roll + 1, area_cell.col).value
     else:
         return "This area does not exist. Please try again"
     return "\n\nThe starting disposition of this encounter is " + dispo
 
 
-def roll_exploration(area, sk, tl, pl, author_note):
-    luck_roll = random.randint(1, 20)
-    note_roll = random.randint(1, 5)
+def roll_exploration(area, sk, luck_roll, tl, pl, rep_array, bait_mons, extra_players, skill_used, skill_key, force_mon, force_event, author_note):
+    note_roll = random.randint(0, 4)
+    extra_mons = 0 + bait_mons + extra_players
     swarm_flag = True if int(tl) > 15 else False
-    if swarm_flag:
-        luck_roll = random.randint(2, 20)
     swarm_check = True if luck_roll == 1 else False
-    note_flag = True if luck_roll == 20 else False
+    rare_flag = True if luck_roll == 20 else False
     sc_array = [False, False, False]  # in order: 1 Below, 1 Above, 2 Above
-    note_array = ["", "", "", ""]
+    guardian_flag = True if area.lower() in ["blanda woods", "frostwood forest", "illandy forest"] else False
+    rare_array = ["", "", "", ""]
+    rare_note_array = find_mon(area, str(20), pl)[1].split("\n")
+    view_twenty = " ".join(rare_note_array).split()
     ret_string = 'Encounter Stating Results:\nYou Rolled a {0} for your luck roll.\n\nYour Options are '.format(
         str(luck_roll))
     skill = int(sk)
     if 11 > skill > 6:
         sc_array[0] = True
-        note_array[0] = str(note_roll - 1)
+        rare_array[0] = str(((note_roll - 1) if note_roll != 0 else 4) + 1)
     if 16 > skill > 10:
         sc_array[1] = True
-        note_array[1] = str(note_roll + 1)
+        rare_array[1] = str(((note_roll + 1) % 5) + 1)
     if 21 > skill > 15:
         sc_array[0] = True
         sc_array[1] = True
-        note_array[0] = str(note_roll - 1)
-        note_array[1] = str(note_roll + 1)
+        rare_array[0] = str((note_roll - 1) if note_roll > 0 else 4)
+        rare_array[1] = str(((note_roll + 1) % 5) + 1)
     if skill > 20:
         sc_array[0] = True
         sc_array[1] = True
         sc_array[2] = True
-        note_array[0] = str(note_roll - 1)
-        note_array[1] = str(note_roll + 1)
-        note_array[2] = str(note_roll + 2)
-    if sc_array[0] and luck_roll > 1:
-        t1 = luck_roll - 1
-        if t1 == 1:
-            swarm_check = True
-        mon_tuple = find_mon(area, str(t1), pl)
-        ret_string += mon_tuple[0] + ", "
-        if mon_tuple[1] != "":
-            author_note[0] += "{0[0]} Note: \n{0[1]}".format(mon_tuple)
+        rare_array[0] = str(((note_roll - 1) if note_roll > 0 else 4)+1)
+        rare_array[1] = str((((note_roll + 1) % 5) + 1))
+        rare_array[2] = str((((note_roll + 2) % 5) + 1))
+    if guardian_flag and rare_flag:
+        sc_array = [False, False, False]
     mon_tuple = find_mon(area, str(luck_roll), pl)
     ret_string += mon_tuple[0]
     if mon_tuple[1] != "":
         author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
-    if note_flag:
-        note_array[3] = str(note_roll)
-        note_string = ", ".join(note_array)
+    if rare_flag and not guardian_flag:
+        rare_array[3] = str(note_roll + 1)
+        enc_array = []
+        print(rare_array)
+        for i in rare_array:
+            if i != '':
+                temp = next(line for line in rare_note_array if i + "." in line)
+                i = temp
+                enc_array.append(i)
+        note_string = ", ".join(enc_array)
         ret_string += " Option {0}".format(note_string)
+    if sc_array[0] and luck_roll > 1:
+        t1 = luck_roll - 1
+        while t1 != 1 and t1 in rep_array:
+            t1 -= 1
+        if t1 == 1:
+            swarm_check = True
+        mon_tuple = find_mon(area, str(t1), pl)
+        ret_string += ", " + mon_tuple[0]
+        if mon_tuple[1] != "":
+            author_note[0] += "{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if sc_array[1] and luck_roll < 20:
-        t2 = str(luck_roll + 1)
+        t2 = luck_roll + 1
+        while t2 != 20 and t2 in rep_array:
+            t2 += 1
         mon_tuple = find_mon(area, str(t2), pl)
         ret_string += ", " + mon_tuple[0]
+        if t2 == 20:
+            ret_string += " (" + view_twenty[-1] + ")"
         if mon_tuple[1] != "":
             author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if sc_array[2] and luck_roll < 19:
-        t3 = str(luck_roll + 2)
+        t3 = luck_roll + 2
+        while t3 != 20 and t3 in rep_array:
+            t3 += 1
         mon_tuple = find_mon(area, str(t3), pl)
         ret_string += ", " + mon_tuple[0]
+        if t3 == 20:
+            ret_string += " (" + view_twenty[-1] + ")"
+        if mon_tuple[1] != "":
+            author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
+    if skill_used == "Survival" and int(skill_key) >= 15 and luck_roll < 18:
+        t3 = luck_roll + 3
+        while t3 != 20 and t3 in rep_array:
+            t3 += 1
+        mon_tuple = find_mon(area, str(t3), pl)
+        ret_string += ", " + mon_tuple[0]
+        if t3 == 20:
+            ret_string += " (" + view_twenty[-1] + ")"
+        if mon_tuple[1] != "":
+            author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
+    if skill_used == "Survival" and int(skill_key) >= 25 and luck_roll < 17:
+        t3 = luck_roll + 4
+        while t3 != 20 and t3 in rep_array:
+            t3 += 1
+        mon_tuple = find_mon(area, str(t3), pl)
+        ret_string += ", " + mon_tuple[0]
+        if t3 == 20:
+            ret_string += " (" + view_twenty[-1] + ")"
         if mon_tuple[1] != "":
             author_note[0] += "\n{0[0]} Note: \n{0[1]}".format(mon_tuple)
     if swarm_flag and swarm_check:
@@ -156,7 +283,30 @@ def roll_exploration(area, sk, tl, pl, author_note):
                       "more pokemon for the encounter."
         swarm = [find_mon(area, str(random.randint(2, 20)), pl)[0], find_mon(area, str(random.randint(2, 20)), pl)[0]]
         author_note[0] += "\nAdditional Swarm Pokemon are: {0[0]}, {0[1]}\n".format(swarm)
-    author_note[0] += "\n\nArea Event: " + choose_event(area, pl, swarm_check)
+    if force_mon is not None:
+        temp = find_mon(area, force_mon, pl)
+        ret_string = "You have a forced the following encounter: " + temp[0]
+        author_note[0] = "{0[0]} Note: \n{0[1]}".format(temp)
+    for i in range(extra_mons):
+        author_note[0] += "\n**Additional Mon " + str(i+1) + ":** {0[0]} Note: \n{0[1]}".format(
+            find_mon(area, random.randint(1, 20), pl))
+    if int(skill_key) >= 15:
+        skill_bonus = EXPLO_SKILLS[skill_used].get(str(15), "None")
+        if skill_bonus != "None":
+            ret_string += "\n\nSkill Bonus: " + skill_bonus
+    if int(skill_key) >= 20:
+        skill_bonus = EXPLO_SKILLS[skill_used].get(str(20), "None")
+        if skill_bonus != "None":
+            ret_string += "\n\nSkill Bonus: " + skill_bonus
+    if int(skill_key) >= 25:
+        skill_bonus = EXPLO_SKILLS[skill_used].get(str(25), "None")
+        if skill_bonus != "None":
+            ret_string += "\n\nSkill Bonus: " + skill_bonus
+    if int(skill_key) >= 30:
+        skill_bonus = EXPLO_SKILLS[skill_used].get(str(30), "None")
+        if skill_bonus != "None":
+            ret_string += "\n\nSkill Bonus: " + skill_bonus
+    author_note[0] += "\n\nArea Event: " + choose_event(area, pl, tl, force_event)
     author_note[0] += find_disposition(area)
     return ret_string
 
@@ -183,7 +333,7 @@ def choose_event(area, pl=None, tl=0, event_choice=None):
                     dice_roll = random.randint(1, 19) + EVENT_MOD
         else:
             dice_roll = int(event_choice) + EVENT_MOD
-            if dice_roll - EVENT_MOD == 10:
+            if dice_roll - EVENT_MOD == 10 and area != "Grand Performance Hall":
                 alpha_check = True
             if dice_roll - EVENT_MOD == 20 and int(tl) < 20:
                 dice_roll = random.randint(1, 19) + EVENT_MOD
@@ -312,5 +462,6 @@ def roll_adventure(area, tl, pl, th=None, target=None, force_mon=None, force_eve
         ret_string += "\n\nArea Event: " + choose_event(area, pl, tl)
     if th is not None:
         ret_string += "\n\nYou Treasure Hunted {0} times and got these results".format(num_treasure_hunts)
+        ret_string += "\nHere are the treasure hunt rolls: " + ", ".join([str(num) for num in treasure_array.tolist()])
     ret_string += find_disposition(area)
     return ret_string

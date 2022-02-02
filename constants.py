@@ -1,3 +1,6 @@
+ULTRA_DIM  = ["Obelisk Temple", "Megalo Ruins", "Cosmic Blight", "Wild Jungle", "Karten Forest", "Astral Sky", "Zaiden Colony", "Aegis Vortex", "Phantasmal Badlands"]
+
+
 FLUFF_CHAOS_MAGIC = [
     {
         "number": 1,
