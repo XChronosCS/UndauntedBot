@@ -3,6 +3,15 @@ import re
 import fitz
 from constants import *
 
+import os.path
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from oauth2client.service_account import ServiceAccountCredentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+
 credentials = {
     "type": "service_account",
     "project_id": "undaunteddiscordbot",
@@ -15,6 +24,9 @@ credentials = {
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/undaunted%40undaunteddiscordbot.iam.gserviceaccount.com"
 }
+
+creds = ServiceAccountCredentials.from_json_keyfile_name('UndauntedBot/service_account_credentials.json', scopes="https://www.googleapis.com/auth/documents.readonly")
+service = build('docs', 'v1', credentials=creds)
 
 gc = gspread.service_account_from_dict(credentials)
 
@@ -29,6 +41,68 @@ extras = sh.worksheet("Class Data")
 misc = sh.worksheet("Misc Data")
 des = gc.open("Data Encounter Sheet")
 encounters = des.worksheet("Encounter Tables")
+arcana = service.documents().get(documentId="154zQ3HyIuffxfnFV6QLTkUAPE0ta590mQXXstJtQILA").execute()
+
+def read_paragraph_element(element):
+    """Returns the text in the given ParagraphElement.
+
+        Args:
+            element: a ParagraphElement from a Google Doc.
+    """
+    text_run = element.get('textRun')
+    if not text_run:
+        return ''
+    return text_run.get('content')
+
+  
+def read_strucutural_elements(elements):
+    """Recurses through a list of Structural Elements to read a document's text where text may be
+        in nested elements.
+
+        Args:
+            elements: a list of Structural Elements.
+    """
+    text = []
+    for value in elements:
+        if 'paragraph' in value:
+            elements = value.get('paragraph').get('elements')
+            temp = ''
+            for elem in elements:
+                temp += read_paragraph_element(elem)
+            if "Prerequisite:" in temp and not temp.startswith("P"):
+                temp_t = temp.split("Prerequisite:")
+                text.append(temp_t[0][:-1])
+                temp = "\nPrerequisite:" + temp_t[1]
+            text.append(temp)
+    return text
+
+
+def get_arcana_edges(legend):
+    ret_array = []
+    prereq_list = ""
+    doc_content = arcana.get('body').get('content')
+    par_list = read_strucutural_elements(doc_content)
+    with open("Documents/LegendData.txt", "r+") as f:
+       for line in f:
+          if legend.title() in line:
+              prereq_list += f.readline().rstrip() + ", "
+              prereq_list += f.readline().rstrip()
+              break
+    if prereq_list == "":
+        return ["There is no legend by that name. Please try again."]
+    prereqs = prereq_list.split(", ")
+    for i in range(len(par_list)):
+        if i+1 != len(par_list):
+            if "Prerequisite:" in par_list[i] and ("Effect:" in par_list[i+1] or "Trigger:" in par_list[i+1] or "Target:" in par_list[i+1]) and any(aspect in par_list[i] for aspect in prereqs):
+                ret_string = "**" + par_list[i-2] + "**" + par_list[i-1] + par_list[i] + par_list[i+1]
+                if "Trigger:" in par_list[i+1] or "Target:" in par_list[i+1] or "Bonus:" in par_list[i+2]:
+                    ret_string += par_list[i+2]
+                if "Bonus:" in par_list[i+3]:
+                    ret_string += par_list[i+3]
+                ret_string += "\n"
+                ret_array.append(ret_string)
+    return ret_array
+        
 
 
 def get_ability_data(name):
@@ -332,7 +406,18 @@ def get_cap_data(name):
         cap_eff = "\n" + misc.cell(row, 8).value
         return [cap_name, cap_eff]
 
-
+def get_keyword_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    match = misc.find(criteria, in_column=17)
+    if match is None:
+        return "There is no keyword by that name"
+    else:
+        row = match.row
+        ret_string = misc.cell(row, 17).value
+        ret_string += "\n" + misc.cell(row, 18).value
+        return ret_string
+      
+      
 def get_status_data(name):
     criteria = re.compile('(?i)^' + name + "$")
     match = misc.find(criteria, in_column=9)
@@ -358,3 +443,6 @@ def get_treasure_spot(name):
             areas.append(encounters.cell(2, col).value)
         ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(areas)
         return ret_val
+      
+      
+      

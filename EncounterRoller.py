@@ -1,5 +1,6 @@
 import gspread
 import random
+import re
 import pygsheets
 import numpy
 import math
@@ -89,6 +90,49 @@ disp_sheet = sh.worksheet("Disposition")
 area_names = encounters.row_values(2)
 e_area_names = events.row_values(2)
 o_area_names = occult.row_values(2)
+sk = gc.open("Test Sunken City")
+wk = pg.open("Test Sunken City")
+sunken = sk.worksheet("Sunken City")
+sunken_notes = wk.worksheet_by_title("Sunken City")
+secret_areas = gc.open("New Encounter Areas")
+secret_areas_notes = pg.open("New Encounter Areas")
+secret_adventures = secret_areas.worksheet("Adventure Tables")
+secret_events = secret_areas.worksheet("Area Events")
+sa_notes = secret_areas_notes.worksheet_by_title("Adventure Tables")
+se_notes = secret_areas_notes.worksheet_by_title("Area Events")
+
+def get_hidden_slot_adventure(area, slot):
+    criteria = re.compile('(?i)^' + area + "$")
+    area_match = secret_adventures.find(criteria, in_row=1)
+    slot_match = secret_adventures.find(slot, in_column=1)
+    if area_match is None:
+        return "There is no adventure area with this name that has hidden slots."
+    if slot_match is None:
+        return "Please enter a valid encounter slot number."
+    match = secret_adventures.cell(slot_match.row, area_match.col)
+    note_check = sa_notes.cell((match.row, match.col))
+    ret_string = ""
+    ret_string += "Encounter in slot {0}".format(slot) + " of area {0} is: ".format(area) + match.value + "\n"
+    if note_check.note is not None:
+        ret_string += "Note: " + note_check.note + "\n"
+    return ret_string
+  
+  
+def get_hidden_event_adventure(area, slot):
+    criteria = re.compile('(?i)^' + area + "$")
+    area_match = secret_events.find(criteria, in_row=1)
+    slot_match = secret_events.find(slot, in_column=1)
+    if area_match is None:
+        return "There is no adventure area with this name that has hidden slots."
+    if slot_match is None:
+        return "Please enter a valid event slot number."
+    match = secret_events.cell(slot_match.row, area_match.col)
+    note_check = se_notes.cell((match.row, match.col))
+    ret_string = ""
+    ret_string += "Event in slot {0}".format(slot) + " of area {0} is: ".format(area) + match.value + "\n"
+    if note_check.note is not None:
+        ret_string += "Note: " + note_check.note + "\n"
+    return ret_string
 
 
 def get_skill(name):
@@ -464,4 +508,30 @@ def roll_adventure(area, tl, pl, th=None, target=None, force_mon=None, force_eve
         ret_string += "\n\nYou Treasure Hunted {0} times and got these results".format(num_treasure_hunts)
         ret_string += "\nHere are the treasure hunt rolls: " + ", ".join([str(num) for num in treasure_array.tolist()])
     ret_string += find_disposition(area)
+    return ret_string
+
+  
+def get_new_area_details(slot, event):
+    van_var = 942329291549589544
+    column = 0
+    if slot not in range(1, 51) or (event is not None and event not in range(1, 21)):
+        return "The encounter table slot or event slot are not valid choices. Please try again."
+    if slot < 26:
+        column = 10
+    else:
+        column = 12
+    match = sunken.find(str(slot), in_column=column)
+    if event is not None:
+        e_match = sunken.find(str(event), in_column=15)
+        event_cell = sunken.cell(e_match.row, 16)
+        event_note = sunken_notes.cell((event_cell.row, event_cell.col))
+    encounter = sunken.cell(match.row, column + 1)
+    note_check = sunken_notes.cell((encounter.row, encounter.col))
+    ret_string = ""
+    ret_string += "Encounter in slot {0}: ".format(slot) + encounter.value + "\n"
+    if note_check.note is not None:
+        ret_string += "Note: " + note_check.note + "\n"
+    if event is not None:
+        ret_string += "\nEvent in slot {0}: ".format(event) + event_cell.value + "\n\n" + event_note.note 
+    ret_string += "\n" + f"<@&" + "{0}>".format(van_var)
     return ret_string

@@ -1,6 +1,7 @@
-import random
-import re
 import gspread
+import re
+import random
+from utilities import *
 
 credentials = {
     "type": "service_account",
@@ -16,49 +17,45 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
+sh = gc.open("Guardian and Patronage Doc")
+patronage_tables = sh.worksheet("Patronage Tasks")
+guardians = sh.worksheet("Guardian Table")
 
-sh = gc.open("Test Town Tracker Sheet")
-worksheet = sh.worksheet("Town Data")
-town_list = sh.worksheet("Town List")
+def get_patronage_task(legend, category):
+    criteria = re.compile('(?i)^' + legend + "$")  # get all the cells with the name of the legend in them in column 1
+    matches = patronage_tables.findall(criteria, in_column=1)
+    if len(matches) == 0:  # checks for a non-existent legend. Exits the code if so.
+        return ["A legend with this name could not be found. Please make sure that the legend's name is spelled "
+                "correctly."]
+    # Continues with selection process.
+    options = []  # Possible options for random selection
+    for op in matches:
+        if patronage_tables.cell(op.row, 3).value == category.title():
+            options.append(op.row)  # Adds the row with the matching request category to the possible options
+    selected_task = random.choice(options)  # Selects random task row among the valid options
+    sub_tasks_l = patronage_tables.get_values("E{0}:V{0}".format(selected_task))
+    sub_tasks = [item for sublist in sub_tasks_l for item in sublist]
+    subtask = "**" + patronage_tables.cell(selected_task, 4).value + "**\n" + random.choice(sub_tasks)  # Selects the sub task
+    personality = "__**" + legend.title() + "**__\n" + "**Personality:** " + patronage_tables.cell(selected_task, 2).value
+    subtask_array = segment_text(subtask)
+    personality_array = [personality]
+    return personality_array + subtask_array
 
-
-def get_town_event():
-    town_event_effects = worksheet.col_values(8)
-    town_event_names = worksheet.col_values(7)
-    index = random.randrange(1, len(town_event_names))
-    name = "**" + town_event_names[index] + "**"
-    effect =  town_event_effects[index]
-    effect = effect.replace("Martial Modifier", "**Martial Modifier**")
-    effect = effect.replace("Cultural Modifier", "**Cultural Modifier**")
-    effect = effect.replace("Spiritual Modifier", "**Spiritual Modifier**")
-    effect = effect.replace("Communal Modifier", "**Communal Modifier**")
-    effect = effect.replace("Industrial  Modifier", "**Industrial Modifier**")
-    effect = effect.replace("Mercantile Modifier", "**Mercantile Modifier**")
-    effect = effect.replace("Academic Modifier", "**Academic Modifier**")
-    return name, effect
-
-
-def get_uprising_event():
-    up_event_effects = worksheet.col_values(10)
-    up_event_names = worksheet.col_values(9)
-    index = random.randrange(1, len(up_event_names))
-    name = "**" + up_event_names[index] + "**"
-    effect =  up_event_effects[index]
-    effect = effect.replace("Martial Modifier", "**Martial Modifier**")
-    effect = effect.replace("Cultural Modifier", "**Cultural Modifier**")
-    effect = effect.replace("Spiritual Modifier", "**Spiritual Modifier**")
-    effect = effect.replace("Communal Modifier", "**Communal Modifier**")
-    effect = effect.replace("Industrial  Modifier", "**Industrial Modifier**")
-    effect = effect.replace("Mercantile Modifier", "**Mercantile Modifier**")
-    effect = effect.replace("Academic Modifier", "**Academic Modifier**")
-    return name, effect
-  
-def roll_town(region):
-    criteria = re.compile('(?i)^' + region + "$")
-    match = town_list.find(criteria, in_row=1)
+def get_guardian_info(area):
+    criteria = re.compile('(?i)^' + area + "$")
+    match = guardians.find(criteria, in_column=1)
     if match is None:
-        return "There is no region under this name. Please try again."
+        return "There is no location by this name with a guardian present."
     else:
-        towns = town_list.col_values(match.col)
-        index = random.randrange(1, len(towns))
-        return "The town you have randomly selected is " + towns[index] + "!"
+        row = match.row
+        ret_val = guardians.cell(row, 2).value
+        ret_val += guardians.cell(row, 3).value
+        return ret_val
+
+
+"""
+test_string = patronage_tables.cell(1, 1).value
+test_array = test_string.split("\n")
+for i in test_array:
+    print(i)
+"""

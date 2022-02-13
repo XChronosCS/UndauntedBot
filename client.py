@@ -1,10 +1,13 @@
 # client.py
 import os
+import sys
 import string
 import dice
 import re
 import discord
 import random
+from datetime import datetime
+from pytz import timezone
 from discord.ext import commands
 from dotenv import load_dotenv
 from TownEvents import *
@@ -14,6 +17,9 @@ from TableRoller import *
 from RollingCommands import *
 from EncounterRoller import *
 from autostatter import *
+from Patronage import *
+from utilities import *
+
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -21,8 +27,26 @@ print(TOKEN)
 
 bot = commands.Bot(command_prefix='!')
 
+@bot.command(name="cookie")
+async def cookie(ctx, person: discord.Member = None):
+    if person is None:
+        person = ctx.author
+    msg = str(ctx.author.name) + " has given " + person.mention + " a cookie!" 
+    embed = discord.Embed(title="Cookie Given!", description=msg, color=0xF50581)
+    await ctx.send(embed=embed)
+    
 
-@bot.command(name='townevent', aliases=['town'])
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        return
+    if isinstance(error, commands.CommandInvokeError):
+        message = "Command Error: Something went wrong. Please check command details and try again.\n" + str(error)
+        print(error)
+        await ctx.send(message, delete_after=10)
+
+
+@bot.command(name='townevent', aliases=['tevent'])
 async def townevent(ctx):
     result = get_town_event()
     ret_string = "Event Invoked By: " + ctx.author.mention + "\n" + result[0] + "\n" + result[1]
@@ -32,7 +56,13 @@ async def townevent(ctx):
 @bot.command(name="portal")
 async def portal(ctx):
     await ctx.send(roll_dim())
-
+    
+@bot.command(name="town")
+async def town(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = roll_town(arg_full)
+    await ctx.send(result)
+  
 
 @bot.command(name='uprising')
 async def uprising(ctx):
@@ -121,6 +151,12 @@ async def skill(ctx, *arg):
     result = get_skill(arg_full)
     await ctx.send(result)
 
+@bot.command(name='keyword')
+async def keyword(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_keyword_data(arg_full)
+    await ctx.send(result)
+    
 @bot.command(name='order')
 async def tech(ctx, *args):
     arg_full = ' '.join(args)
@@ -146,7 +182,12 @@ async def mech(ctx):
 async def keymoves(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_keyword_moves(arg_full)
-    await ctx.send(result)
+    if len(result) > 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            await ctx.send(msg)
+    else:
+        await ctx.send(result)
     
 @bot.command(name='cond')
 async def cond(ctx, *arg):
@@ -166,7 +207,12 @@ async def amons(ctx, *arg):
 async def lum(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_moves(arg_full)
-    await ctx.send(result)
+    if len(result) > 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            await ctx.send(msg)
+    else:
+        await ctx.send(result)
 
 
 @bot.command(name='tm')
@@ -180,7 +226,12 @@ async def tm(ctx, *arg):
 async def cmons(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_capability(arg_full)
-    await ctx.send(result)
+    if len(result) > 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            await ctx.send(msg)
+    else:
+        await ctx.send(result)
 
 
 @bot.command(name='pokerandom', aliases=['prand'])
@@ -583,6 +634,88 @@ async def lookup(ctx, *args):
   arg_full = ' '.join(args)
   ret_string = get_data(arg_full)
   await ctx.send(ret_string)
+  
+@bot.command(name='arcana')
+async def arcana(ctx, *args):
+    arg_full = ' '.join(args)
+    ret_array = get_arcana_edges(arg_full)
+    await ctx.author.send("**Here are the following arcana edges you qualify for through that patron:**")
+    for i in ret_array:
+        await ctx.author.send(i)
+
+pat_cats = ["Pact", "Major", "Minor", "Task"]
+        
+@bot.command(name='patronage')
+async def patronage(ctx, *args):
+    category = args[0]
+    legend_tuple = args[1:]
+    legend = " ".join(legend_tuple)
+    if category.title() not in pat_cats:
+        await ctx.send(category + " is not a valid option. Please input Minor, Major, Pact, or Task")
+    else:
+        ret_array = get_patronage_task(legend, category)
+        for msg in ret_array:
+            await ctx.author.send(msg)
+        eastern = timezone('US/Eastern')
+        str_log = str(ctx.author.name) + " used the patronage command with parameters [{0[0]}, {0[1]}] on ".format([category, legend]) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
+        with open("Documents/log.txt", 'a') as logfile:
+            logfile.write(str_log)
+            
+            
+@bot.command(name='guardian')
+async def guardian(ctx, *args):
+    area = " ".join(args)
+    g_details = get_guardian_info(area)
+    if len(g_details) > 2000:
+        g_array = segment_text(g_details)
+        for msg in g_array:
+            await ctx.author.send(msg)
+    else:
+        await ctx.author.send(g_details)
+    str_log = str(ctx.author.name) + " used the guardian command with the parameter {0} on ".format(area) + datetime.now().strftime("%m/%d/%Y %H:%M:%S") + "\n"
+    with open("Documents/log.txt", 'a') as logfile:
+        logfile.write(str_log)   
+
+@bot.command(name='scinfo')
+@commands.guild_only()
+async def scinfo(ctx, slot, event=None):
+    s_int = int(slot)
+    if event is not None:
+        e_int = int(event)
+    else:
+        e_int = None
+    ret_string = get_new_area_details(s_int, e_int)
+    await ctx.send(ret_string)
+    
+    
+@bot.command(name='adinfo')
+@commands.guild_only()
+async def adinfo(ctx, *arg):
+    id_var = 942329291549589544
+    event_slot = arg[-1]
+    poke_slot = arg[-2]
+    list_arg = list(arg)
+    del list_arg[-2:]
+    area = ' '.join(list_arg)
+    ret_string = get_hidden_slot_adventure(area, poke_slot)
+    ret_string += get_hidden_event_adventure(area, event_slot)
+    ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
+    await ctx.send(ret_string)
+    
+    
+    
+@bot.command(name='admon')
+@commands.guild_only()
+async def admon(ctx, *arg):
+    id_var = 942329291549589544
+    poke_slot = arg[-1]
+    list_arg = list(arg)
+    del list_arg[-1:]
+    area = ' '.join(list_arg)
+    ret_string = get_hidden_slot_adventure(area, poke_slot)
+    ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
+    await ctx.send(ret_string)
+    
 
 
 bot.run(TOKEN)
