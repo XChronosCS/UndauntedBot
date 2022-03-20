@@ -19,6 +19,7 @@ from EncounterRoller import *
 from autostatter import *
 from Patronage import *
 from utilities import *
+from help_command import *
 
 
 load_dotenv()
@@ -27,6 +28,8 @@ print(TOKEN)
 
 bot = commands.Bot(command_prefix='!')
 
+bot.remove_command('help')
+
 @bot.command(name="cookie")
 async def cookie(ctx, person: discord.Member = None):
     if person is None:
@@ -34,7 +37,7 @@ async def cookie(ctx, person: discord.Member = None):
     msg = str(ctx.author.name) + " has given " + person.mention + " a cookie!" 
     embed = discord.Embed(title="Cookie Given!", description=msg, color=0xF50581)
     await ctx.send(embed=embed)
-    
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -43,9 +46,42 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
         message = "Command Error: Something went wrong. Please check command details and try again.\n" + str(error)
         print(error)
+        print("\nCommand User: " + str(ctx.author))
         await ctx.send(message, delete_after=10)
+       
 
-
+@bot.command(name='help', aliases=['phelp'])
+async def help(ctx):
+    menu_one = list(get_cat_first())
+    
+    def menu_one_check(m):
+        return user == m.author and m.channel == channel and int(m.content) in range(0, len(menu_one))
+    
+    user = ctx.author
+    channel = ctx.channel
+    msg = "Welcome to the Porybot Help Menu. Please select the category of command you are attempting to use by typing the number next to the category."
+    for i in range(len(menu_one)):
+        msg += "\n" + str(i) + ". " + menu_one[i]
+    embed = discord.Embed(title="Porybot Help Menu - Categories", description=msg, color=0x4103fc)
+    sent = await ctx.send(embed=embed)
+    choice = await bot.wait_for("message", check=menu_one_check)
+    await sent.delete()
+    menu_two = list(get_cat_second(menu_one[int(choice.content)]))
+    
+    def menu_two_check(m):
+        return user == m.author and m.channel == channel and int(m.content) in range(0, len(menu_two))
+      
+    msg = "Please choose one of the following commands by typing the number next to it. The description of that command will then be displayed."
+    for i in range(len(menu_two)):
+        msg += "\n" + str(i) + ". " + menu_two[i]
+    embed = discord.Embed(title="Porybot Help Menu - Commands", description=msg, color=0x4103fc)  
+    sent = await ctx.send(embed=embed)
+    choice_two = await bot.wait_for("message", check=menu_two_check)
+    await sent.delete()
+    descrip = command_help(menu_one[int(choice.content)], menu_two[int(choice_two.content)])
+    embed = discord.Embed(title="!" + menu_two[int(choice_two.content)], description=descrip, color=0x4103fc)
+    await ctx.send(embed=embed)
+    
 @bot.command(name='townevent', aliases=['tevent'])
 async def townevent(ctx):
     result = get_town_event()
@@ -62,6 +98,10 @@ async def town(ctx, *arg):
     arg_full = ' '.join(arg)
     result = roll_town(arg_full)
     await ctx.send(result)
+    
+@bot.command(name="potofgreed")
+async def potofgreed(ctx):
+    await ctx.send("You draw two cards.")
   
 
 @bot.command(name='uprising')
@@ -133,8 +173,8 @@ async def habitat(ctx, *arg):
     result = get_habitat(arg_full)
     await ctx.send(result)
     
-@bot.command(name='tfind', aliases=['treasure'])
-async def tfind(ctx, *args):
+@bot.command(name='treasure', aliases=['tfind'])
+async def treasure(ctx, *args):
     arg_full = ' '.join(args)
     result = get_treasure_spot(arg_full)
     await ctx.send(result)
@@ -143,12 +183,6 @@ async def tfind(ctx, *args):
 async def tech(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_technique(arg_full)
-    await ctx.send(result)
-
-@bot.command(name='skill')
-async def skill(ctx, *arg):
-    arg_full = ' '.join(arg)
-    result = get_skill(arg_full)
     await ctx.send(result)
 
 @bot.command(name='keyword')
@@ -221,10 +255,26 @@ async def tm(ctx, *arg):
     result = poke_tutor(arg_full)
     await ctx.send(result)
 
+harvestables = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap", "Iron Scrap", "Chem Scrap", "Honey", "Money"]
 
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
+  
+    def harvest_check(m):
+        return user == m.author and m.channel == channel and int(m.content) in range(0, len(harvestables))
+    
+    user = ctx.author
+    channel = ctx.channel
     arg_full = ' '.join(arg)
+    if "harvest" in arg_full.lower():
+        await ctx.send("Here is a list of harvestable items. Please enter the number next to the item you are searching for now.")
+        har_list = ""
+        for i in range(len(harvestables)):
+            har_list += str(i) + ". " + harvestables[i] + "\n"
+        await ctx.send(har_list)
+        msg = await bot.wait_for("message", check=harvest_check)
+        material = harvestables[int(msg.content)]
+        arg_full = "Harvest (" + material
     result = poke_capability(arg_full)
     if len(result) > 2000:
         m_array = segment_list(result)
@@ -304,7 +354,7 @@ async def turbo(ctx):
 
 @bot.command(name="muffin")
 async def muffin(ctx):
-    muf_var = random.randint(1, 5)
+    muf_var = random.randint(1, 4)
     await ctx.send(file=discord.File("Images/muffin_{0}.png".format(muf_var)))
 
 
@@ -313,7 +363,7 @@ async def whenfreya(ctx):
     a_file = open("Documents/days.txt", "r")
     list_of_lines = a_file.readlines()
     num_days = int(list_of_lines[0])
-    list_of_lines[0] = str(num_days + random.randint(20, 40))
+    list_of_lines[0] = str(num_days + random.randint(20, 50))
     a_file = open("Documents/days.txt", "w")
     a_file.writelines(list_of_lines)
     a_file.close()
@@ -374,7 +424,7 @@ async def finance(ctx, arg):
 async def offerings(ctx):
     await ctx.send(roll_deity())
 
-
+'''
 @bot.command(name='encounter')
 async def encounter(ctx, *arg):
     roll = arg[-1]
@@ -383,10 +433,13 @@ async def encounter(ctx, *arg):
     area = ' '.join(list_arg)
     ret_string = find_mon(area, roll)[0]
     await ctx.send(ret_string)
-
+'''
 
 @bot.command(name='exploration', aliases=['explo'])
 async def exploration(ctx, *arg):
+    await ctx.send("This command is no longer up to date. As such, it has been disabled")
+
+'''
     pl = arg[-1]
     tl = arg[-2]
     list_arg = list(arg)
@@ -513,14 +566,15 @@ async def exploration(ctx, *arg):
         note_message[0] += roll_occult(area, pl)
     if note_message[0] != "":
         await post_channel.send(ctx.author.mention + "\n**" + area + "**\n" + note_message[0])
+'''
 
-        
+'''        
 @bot.command(name='areaevent', aliases=['event'])
 async def areaevent(ctx, *arg):
     area = ' '.join(arg)
     ret_string = choose_event(area)
     await ctx.send(ret_string)
-
+'''
 
 @bot.command(name='adventure', aliases=['adven'])
 async def adventure(ctx, *arg):
@@ -646,6 +700,7 @@ async def arcana(ctx, *args):
 pat_cats = ["Pact", "Major", "Minor", "Task"]
         
 @bot.command(name='patronage')
+@commands.guild_only()
 async def patronage(ctx, *args):
     category = args[0]
     legend_tuple = args[1:]
@@ -653,6 +708,8 @@ async def patronage(ctx, *args):
     if category.title() not in pat_cats:
         await ctx.send(category + " is not a valid option. Please input Minor, Major, Pact, or Task")
     else:
+        notice = str(ctx.author.name) + " used the patronage command to search up info on " + legend
+        await ctx.send(notice)
         ret_array = get_patronage_task(legend, category)
         for msg in ret_array:
             await ctx.author.send(msg)
@@ -660,6 +717,21 @@ async def patronage(ctx, *args):
         str_log = str(ctx.author.name) + " used the patronage command with parameters [{0[0]}, {0[1]}] on ".format([category, legend]) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
         with open("Documents/log.txt", 'a') as logfile:
             logfile.write(str_log)
+     
+    
+@bot.command(name='mythos')
+@commands.guild_only()
+async def mythos(ctx, *args):
+    legend_tuple = args
+    legend = " ".join(legend_tuple)
+    notice = str(ctx.author.name) + " used the mythos command to search up info on " + legend
+    await ctx.send(notice)
+    msg = get_legend_personality(legend)
+    await ctx.author.send(msg)
+    eastern = timezone('US/Eastern')
+    str_log = str(ctx.author.name) + " used the mythos command with parameter {0} on ".format(legend) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
+    with open("Documents/log.txt", 'a') as logfile:
+        logfile.write(str_log)
             
             
 @bot.command(name='guardian')
@@ -715,7 +787,18 @@ async def admon(ctx, *arg):
     ret_string = get_hidden_slot_adventure(area, poke_slot)
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     await ctx.send(ret_string)
-    
+
+@bot.command(name='wander')
+async def wander(ctx):
+    g_details = get_wander_event()
+    g_array = segment_text(g_details)
+    for msg in g_array:
+        await ctx.send(msg)
+        
+
+@bot.command(name='randombuild')
+async def randombuild(ctx):
+    await ctx.send(random_build())
 
 
 bot.run(TOKEN)

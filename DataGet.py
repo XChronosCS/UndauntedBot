@@ -41,7 +41,7 @@ extras = sh.worksheet("Class Data")
 misc = sh.worksheet("Misc Data")
 des = gc.open("Data Encounter Sheet")
 encounters = des.worksheet("Encounter Tables")
-arcana = service.documents().get(documentId="154zQ3HyIuffxfnFV6QLTkUAPE0ta590mQXXstJtQILA").execute()
+arcana = service.documents().get(documentId="1gc6eTktgcQo9zViLghnWfxWmNrFzKKH6Y4QWMlwMzlo").execute()
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
@@ -92,13 +92,15 @@ def get_arcana_edges(legend):
         return ["There is no legend by that name. Please try again."]
     prereqs = prereq_list.split(", ")
     for i in range(len(par_list)):
+        if "\\n" in par_list[i]:
+            par_list[i].replace("\\n", "\n")
         if i+1 != len(par_list):
-            if "Prerequisite:" in par_list[i] and ("Effect:" in par_list[i+1] or "Trigger:" in par_list[i+1] or "Target:" in par_list[i+1]) and any(aspect in par_list[i] for aspect in prereqs):
-                ret_string = "**" + par_list[i-2] + "**" + par_list[i-1] + par_list[i] + par_list[i+1]
-                if "Trigger:" in par_list[i+1] or "Target:" in par_list[i+1] or "Bonus:" in par_list[i+2]:
-                    ret_string += par_list[i+2]
-                if "Bonus:" in par_list[i+3]:
+            if any(aspect in par_list[i] for aspect in prereqs) and "Prerequisites:" in par_list[i]:
+                ret_string = "**" + par_list[i-1] + "**" + par_list[i] + par_list[i+1] + par_list[i+2]
+                if "Trigger:" in par_list[i+2] or "Target:" in par_list[i+2] or "Bonus:" in par_list[i+3]:
                     ret_string += par_list[i+3]
+                if "Bonus:" in par_list[i+4]:
+                    ret_string += par_list[i+4]
                 ret_string += "\n"
                 ret_array.append(ret_string)
     return ret_array
@@ -188,7 +190,7 @@ def get_habitat(name):
     else:
         row = match.row
         ret_array = []
-        areas = habitat.range(row, 3, row, 12)
+        areas = habitat.range(row, 3, row, 32)
         for x in areas:
             if x.value is not None and x.value != '':
                 ret_array.append(x.value)

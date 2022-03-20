@@ -110,11 +110,15 @@ def get_hidden_slot_adventure(area, slot):
     if slot_match is None:
         return "Please enter a valid encounter slot number."
     match = secret_adventures.cell(slot_match.row, area_match.col)
+    if match.value is None:
+        return "This area does not have that many slots. Please try again."
     note_check = sa_notes.cell((match.row, match.col))
     ret_string = ""
     ret_string += "Encounter in slot {0}".format(slot) + " of area {0} is: ".format(area) + match.value + "\n"
     if note_check.note is not None:
         ret_string += "Note: " + note_check.note + "\n"
+        if "treasure" in note_check.note.lower():
+            ret_string += get_treasure_guardian_hidden(area_match.col)
     return ret_string
   
   
@@ -134,7 +138,17 @@ def get_hidden_event_adventure(area, slot):
         ret_string += "Note: " + note_check.note + "\n"
     return ret_string
 
-
+def get_treasure_guardian_hidden(area_col):
+    slot_num = str(random.randint(1, 100))
+    slot_match = secret_adventures.find(slot_num, in_column=1)
+    match = secret_adventures.cell(slot_match.row, area_col)
+    while (sa_notes.cell((match.row, match.col)).note != None and "treasure" in sa_notes.cell((match.row, match.col)).note.lower()) or match.value is None:
+        slot_num = random.randint(1, 100)
+        slot_match = secret_adventures.find(slot_num, in_column=1)
+        match = secret_adventures.cell(slot_match.row, area_col)
+    return "\nPokemon accompanying Treasure is {0}".format(match.value)
+    
+    
 def get_skill(name):
     buff_list = EXPLO_SKILLS.get(name.title())
     if buff_list is None:

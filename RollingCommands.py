@@ -117,3 +117,68 @@ def roll_deity():
   
 def roll_dim():
     return "You have opened a portal to the " + ULTRA_DIM[random.randrange(0, len(ULTRA_DIM))] + " Dimension!"
+
+
+ALL_CLASSES = ["Ace Trainer", "Capture Specialist", "Cheerleader", "Commander", "Coordinator", "Hobbyist", "Duelist",
+               "Enduring Soul", "Juggler", "Medic", "Rider", "Taskmaster", "Trickster", "Stat Ace", "Style Ace",
+               "Type Ace", "Alchemist", "Artificer", "Backpacker", "Chef", "Chronicler", "Fashionista", "Gadgeteer",
+               "Hobbyist", "Saboteur", "(Bug) Swarmlord", "(Dark) Shade Caller", "(Dragon) Herald of Pride",
+               "(Electric) Spark Master", "(Fairy) Glamour Weaver", "(Fighting) Disciple", "(Fire) Fire Bringer",
+               "(Flying) Wind Runner", "(Ghost) Apparition", "(Grass) Druid", "(Ground) Earth Shaker",
+               "(Ice) Frost-Touched", "(Normal) Prism", "(Poison) Miasmic", "(Psychic) Psionic", "(Rock) Stone Warrior",
+               "(Steel) Steelheart", "(Water) Maelstrom", "Athlete", "Berserker", "Dancer", "Fortress", "Hunter",
+               "Marksman", "Martial Artist", "Musician", "Ninja", "Provocateur", "Rogue", "Roughneck", "Samurai",
+               "Skirmisher", "Tumbler", "Weapon Master", "Arcanist", "Astral Mage", "Aura Guardian", "Channeler",
+               "Chaos Mage", "Chronomancer", "Crimson Mage", "Geomancer", "Hex Mage", "Illusionist", "Oracle",
+               "Paladin", "Paragon", "Rune Master", "Sage", "Tempest Mage", "Warper"]
+ELEMENTALISTS = ["(Bug) Swarmlord", "(Dark) Shade Caller", "(Dragon) Herald of Pride",
+               "(Electric) Spark Master", "(Fairy) Glamour Weaver", "(Fighting) Disciple", "(Fire) Fire Bringer",
+               "(Flying) Wind Runner", "(Ghost) Apparition", "(Grass) Druid", "(Ground) Earth Shaker",
+               "(Ice) Frost-Touched", "(Normal) Prism", "(Poison) Miasmic", "(Psychic) Psionic", "(Rock) Stone Warrior",
+               "(Steel) Steelheart", "(Water) Maelstrom"]
+TYPE_ACE = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "Ghost", "Grass", "Ground", "Ice", "Normal", "Poison", "Psychic", "Rock", "Steel", "Water"]
+STYLE_ACE = ["Cool","Tough","Beauty","Smart","Cute"]
+STAT_ACE = ["Attack","Defense","Special Attack","Special Defense", "Speed"]
+
+
+def random_build():
+    classes_temp = ALL_CLASSES.copy()
+    elementalists_temp = ELEMENTALISTS.copy()
+    style_temp = STYLE_ACE.copy()
+    stat_temp = STAT_ACE.copy()
+    type_temp = TYPE_ACE.copy()
+
+    def ace_checker(pos_ace):
+        if pos_ace == "Type Ace":
+            mod = random.choice(type_temp)
+            type_temp.remove(mod)
+            return pos_ace + " - " + mod
+        if pos_ace == "Stat Ace":
+            mod = random.choice(stat_temp)
+            stat_temp.remove(mod)
+            return pos_ace + " - " + mod
+        if pos_ace == "Style Ace":
+            mod = random.choice(style_temp)
+            style_temp.remove(mod)
+            return pos_ace + " - " + mod
+
+    class_array = []
+    for i in range(4):
+        rand_class = random.choice(classes_temp)
+        if rand_class == "Type Ace" or rand_class == "Stat Ace" or rand_class == "Style Ace":
+            class_ace = ace_checker(rand_class)
+            rand_class = class_ace
+        elif rand_class in elementalists_temp:
+            temp_set = set(classes_temp) ^ set(elementalists_temp)
+            classes_temp = list(temp_set)
+        else:
+            classes_temp.remove(rand_class)
+        class_array.append(rand_class)
+        
+    return "Your 4 Randomly Chosen Classes are: {0[0]}, {0[1]}, {0[2]} and {0[3]}".format(class_array)
+
+
+
+
+
+

@@ -1,4 +1,5 @@
-replace_words = ["Scenario:", "Effect:", "Trigger:", "Condition:", "Details:", "Lore:"]
+replace_words = ["Scenario:", "Effect:", "Trigger:", "Condition:", "Details:", "Lore - ", 
+"Bonus:", "Description:", "Example:", "On Success:", "On Failure:"]
 
 def segment_list(text):
     paragraphs = text.split(", ")  # Splits the text by paragraphs
@@ -13,15 +14,17 @@ def segment_list(text):
     return messages
  
 
-def segment_text(text):
+def segment_text(text, flag=None):
     paragraphs = text.split("\n")  # Splits the text by paragraphs
-    if "Request" not in paragraphs[0]:
+    if "Request" not in paragraphs[0] and flag == "Legend":
         first_temp = paragraphs[1]
         paragraphs[1] = "__**" + first_temp + "**__"
     for i in range(len(paragraphs)):
-        if "Boss Ability:" in paragraphs[i]:
+        if "Boss Ability" in paragraphs[i] or "Trainer Ability" in paragraphs[i]:
             temp = paragraphs[i]
-            paragraphs[i] = "**" + paragraphs[i] + "**"
+            second_temp = paragraphs[i+1]
+            paragraphs[i] = "**" + temp + "**"
+            paragraphs[i+1] = "*" + second_temp + "*"
         for word in replace_words:
             scen_temp = paragraphs[i].replace(word, "**" + word + "**")
             paragraphs[i] = scen_temp
