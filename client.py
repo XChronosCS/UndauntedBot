@@ -1,26 +1,22 @@
 # client.py
-import os
-import sys
 import string
-import dice
-import re
-import discord
-import random
 from datetime import datetime
-from pytz import timezone
+
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from TownEvents import *
-from DataGet import *
-from PokeRoller import *
-from TableRoller import *
-from RollingCommands import *
-from EncounterRoller import *
-from autostatter import *
-from Patronage import *
-from utilities import *
-from help_command import *
+from pytz import timezone
 
+from DataGet import *
+from EncounterRoller import *
+from Patronage import *
+from PokeRoller import *
+from RollingCommands import *
+from TableRoller import *
+from TownEvents import *
+from autostatter import *
+from help_command import *
+from utilities import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -30,11 +26,12 @@ bot = commands.Bot(command_prefix='!')
 
 bot.remove_command('help')
 
+
 @bot.command(name="cookie")
 async def cookie(ctx, person: discord.Member = None):
     if person is None:
         person = ctx.author
-    msg = str(ctx.author.name) + " has given " + person.mention + " a cookie!" 
+    msg = str(ctx.author.name) + " has given " + person.mention + " a cookie!"
     embed = discord.Embed(title="Cookie Given!", description=msg, color=0xF50581)
     await ctx.send(embed=embed)
 
@@ -48,15 +45,15 @@ async def on_command_error(ctx, error):
         print(error)
         print("\nCommand User: " + str(ctx.author))
         await ctx.send(message, delete_after=10)
-       
+
 
 @bot.command(name='help', aliases=['phelp'])
 async def help(ctx):
     menu_one = list(get_cat_first())
-    
+
     def menu_one_check(m):
         return user == m.author and m.channel == channel and int(m.content) in range(0, len(menu_one))
-    
+
     user = ctx.author
     channel = ctx.channel
     msg = "Welcome to the Porybot Help Menu. Please select the category of command you are attempting to use by typing the number next to the category."
@@ -67,21 +64,22 @@ async def help(ctx):
     choice = await bot.wait_for("message", check=menu_one_check)
     await sent.delete()
     menu_two = list(get_cat_second(menu_one[int(choice.content)]))
-    
+
     def menu_two_check(m):
         return user == m.author and m.channel == channel and int(m.content) in range(0, len(menu_two))
-      
+
     msg = "Please choose one of the following commands by typing the number next to it. The description of that command will then be displayed."
     for i in range(len(menu_two)):
         msg += "\n" + str(i) + ". " + menu_two[i]
-    embed = discord.Embed(title="Porybot Help Menu - Commands", description=msg, color=0x4103fc)  
+    embed = discord.Embed(title="Porybot Help Menu - Commands", description=msg, color=0x4103fc)
     sent = await ctx.send(embed=embed)
     choice_two = await bot.wait_for("message", check=menu_two_check)
     await sent.delete()
     descrip = command_help(menu_one[int(choice.content)], menu_two[int(choice_two.content)])
     embed = discord.Embed(title="!" + menu_two[int(choice_two.content)], description=descrip, color=0x4103fc)
     await ctx.send(embed=embed)
-    
+
+
 @bot.command(name='townevent', aliases=['tevent'])
 async def townevent(ctx):
     result = get_town_event()
@@ -89,20 +87,23 @@ async def townevent(ctx):
     await ctx.send(ret_string)
     await ctx.message.delete()
 
+
 @bot.command(name="portal")
 async def portal(ctx):
     await ctx.send(roll_dim())
-    
+
+
 @bot.command(name="town")
 async def town(ctx, *arg):
     arg_full = ' '.join(arg)
     result = roll_town(arg_full)
     await ctx.send(result)
-    
+
+
 @bot.command(name="potofgreed")
 async def potofgreed(ctx):
     await ctx.send("You draw two cards.")
-  
+
 
 @bot.command(name='uprising')
 async def uprising(ctx):
@@ -135,14 +136,13 @@ async def items(ctx, *arg):
     ret_string = ''.join(result)
     await ctx.send(ret_string)
 
-    
+
 @bot.command(name='capa')
 async def capa(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_cap_data(arg_full)
     ret_string = ''.join(result)
     await ctx.send(ret_string)
-
 
 
 @bot.command(name='edge')
@@ -159,7 +159,8 @@ async def move(ctx, *arg):
     result = get_move_data(arg_full)
     ret_string = ''.join(result)
     await ctx.send(ret_string)
-    
+
+
 @bot.command(name='manu')
 async def manu(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -167,35 +168,41 @@ async def manu(ctx, *arg):
     ret_string = ''.join(result)
     await ctx.send(ret_string)
 
+
 @bot.command(name='habitat', aliases=['habit'])
 async def habitat(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_habitat(arg_full)
     await ctx.send(result)
-    
+
+
 @bot.command(name='treasure', aliases=['tfind'])
 async def treasure(ctx, *args):
     arg_full = ' '.join(args)
     result = get_treasure_spot(arg_full)
     await ctx.send(result)
-    
+
+
 @bot.command(name='tech')
 async def tech(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_technique(arg_full)
     await ctx.send(result)
 
+
 @bot.command(name='keyword')
 async def keyword(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_keyword_data(arg_full)
     await ctx.send(result)
-    
+
+
 @bot.command(name='order')
 async def tech(ctx, *args):
     arg_full = ' '.join(args)
     result = get_order(arg_full)
     await ctx.send(result)
+
 
 @bot.command(name='mech')
 async def mech(ctx):
@@ -204,10 +211,11 @@ async def mech(ctx):
     ops = "Please type out one of the following options: "
     ops += ", ".join(show_mechanics())
     await ctx.send(ops)
-    
+
     def check(m):
-        return m.author == user and m.channel == channel and m.content.lower() in (string.lower() for string in show_mechanics())
-    
+        return m.author == user and m.channel == channel and m.content.lower() in (string.lower() for string in
+                                                                                   show_mechanics())
+
     msg = await bot.wait_for("message", check=check)
     await ctx.send(get_mechanic(msg.content.lower()))
 
@@ -222,7 +230,8 @@ async def keymoves(ctx, *arg):
             await ctx.send(msg)
     else:
         await ctx.send(result)
-    
+
+
 @bot.command(name='cond')
 async def cond(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -255,19 +264,22 @@ async def tm(ctx, *arg):
     result = poke_tutor(arg_full)
     await ctx.send(result)
 
-harvestables = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap", "Iron Scrap", "Chem Scrap", "Honey", "Money"]
+
+harvestables = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
+                "Iron Scrap", "Chem Scrap", "Honey", "Money"]
+
 
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
-  
     def harvest_check(m):
         return user == m.author and m.channel == channel and int(m.content) in range(0, len(harvestables))
-    
+
     user = ctx.author
     channel = ctx.channel
     arg_full = ' '.join(arg)
     if "harvest" in arg_full.lower():
-        await ctx.send("Here is a list of harvestable items. Please enter the number next to the item you are searching for now.")
+        await ctx.send(
+            "Here is a list of harvestable items. Please enter the number next to the item you are searching for now.")
         har_list = ""
         for i in range(len(harvestables)):
             har_list += str(i) + ". " + harvestables[i] + "\n"
@@ -313,14 +325,17 @@ async def chaos(ctx, *arg):
     await ctx.send(entry_string)
     await ctx.send(result)
 
+
 @bot.command(name='shards')
 async def shards(ctx, *args):
     shard_array = ''.join(args).split(',')
     shards = [0, 0, 0, 0, 0, 0]
     for shard in shard_array:
         shards[int(shard) - 1] += 1
-    ret_string = "You found:\n{0[0]} Red Shards\n{0[1]} Orange Shards\n{0[2]} Yellow Shards\n{0[3]} Green Shards\n{0[4]} Blue Shards\n{0[5]} Violet Shards".format(shards)
+    ret_string = "You found:\n{0[0]} Red Shards\n{0[1]} Orange Shards\n{0[2]} Yellow Shards\n{0[3]} Green Shards\n{0[4]} Blue Shards\n{0[5]} Violet Shards".format(
+        shards)
     await ctx.send(ret_string)
+
 
 @bot.command(name='fossil')
 async def fossil(ctx):
@@ -424,6 +439,7 @@ async def finance(ctx, arg):
 async def offerings(ctx):
     await ctx.send(roll_deity())
 
+
 '''
 @bot.command(name='encounter')
 async def encounter(ctx, *arg):
@@ -435,36 +451,23 @@ async def encounter(ctx, *arg):
     await ctx.send(ret_string)
 '''
 
+
 @bot.command(name='exploration', aliases=['explo'])
 async def exploration(ctx, *arg):
-    await ctx.send("This command is no longer up to date. As such, it has been disabled")
-
-'''
     pl = arg[-1]
-    tl = arg[-2]
+    tl = int(arg[-2])
     list_arg = list(arg)
-    post_channel = bot.get_channel(565626984709881886)
     channel = ctx.channel
     user = ctx.author
     extra_players = 0
     bait_mons = 0
     repel_array = []
-    skill_used = None
-    skill_key = 0
-    skill_roll = 0
-    force_mon = None
-    force_event = None
-    luck_roll = 0
+    luck_roll = None
+    event = None
     del list_arg[-2:]
 
     def extra_bait_check(m):
         return user == m.author and m.channel == channel and m.content in ['1', '2', '3']
-
-    def skill_check(m):
-        return user == m.author and m.channel == channel and m.content.title() in EXPLO_SKILLS.keys()
-
-    def roll_check(m):
-        return user == m.author and m.channel == channel and m.content.isdigit()
 
     def repel_check(m):
         pattern = re.compile("(\d*, )*")
@@ -473,37 +476,30 @@ async def exploration(ctx, *arg):
     def f_event_check(m):
         return user == m.author and m.channel == channel and int(m.content) in range(1, 11)
 
+    def skill_level_check(m):
+        return user == m.author and m.channel == channel and int(m.content) in range(1, 9)
+
     def f_mon_check(m):
         return user == m.author and m.channel == channel and int(m.content) in range(1, 21)
 
     def check(m):
         return m.author == user and m.channel == channel and m.content.lower() in ["y", "n"]
 
-    def gen_ed_check(m):
-        return m.author == user and m.channel == channel and int(m.content) in range(1, 7)
+    def intent_check(m):
+        return m.author == user and m.channel == channel and m.content.lower() in ['h', 's', 'w', 't', 'n']
 
     area = ' '.join(list_arg)
-    note_message = ['']
-    # Checking the Skill for later input
-    await ctx.send("Which skill did they use for their skill roll? Please enter a valid skill now. Note: For the "
-                   "education skills, end the skill name with 'Edu'")
-    msg = await bot.wait_for("message", check=skill_check)
-    skill_used = msg.content.title()
-    # Checking for the Skill roll Value
-    await ctx.send("What was the value of the skill roll?")
-    msg = await bot.wait_for("message", check=roll_check)
-    skill_roll = int(msg.content)
     # Checking for the Luck Roll Value and seeing if Mon was forced
+    await ctx.send("What is the intent of the exploration? Please type 'H' if Hunting, 'S' if Scavenging, "
+                   "'W' if Wandering, 'T' if Training, or 'N' if No Intent")
+    msg = await bot.wait_for("message", check=intent_check)
+    intent = msg.content.lower()
     await ctx.send("Are they forcing a pokemon slot? Respond with y for yes or n for no")
     msg = await bot.wait_for("message", check=check)
     if msg.content.lower() == "y":
-        await ctx.send("What slot are they forcing? Please type a number between 1 and 20.")
+        await ctx.send("What slot are they forcing? Please type the number of the slot.")
         msg = await bot.wait_for("message", check=f_mon_check)
-        force_mon = msg.content
-    else:
-        await ctx.send("What was the value of the luck roll?")
-        msg = await bot.wait_for("message", check=roll_check)
-        luck_roll = int(msg.content)
+        luck_roll = msg.content
     await ctx.send("Are they using a repel? Respond with y for yes or n for no")
     msg = await bot.wait_for("message", check=check)
     if msg.content.lower() == "y":
@@ -516,7 +512,7 @@ async def exploration(ctx, *arg):
     if msg.content.lower() == "y":
         await ctx.send("What slot are they forcing? Please type a number between 1 and 10.")
         msg = await bot.wait_for("message", check=f_event_check)
-        force_event = msg.content
+        event = msg.content
     await ctx.send("Is there more than one player in this party? Respond with y for yes or n for no")
     msg = await bot.wait_for("message", check=check)
     if msg.content.lower() == "y":
@@ -530,43 +526,72 @@ async def exploration(ctx, *arg):
                        "not rolled for bait yet, have them roll it now.")
         msg = await bot.wait_for("message", check=extra_bait_check)
         bait_mons = int(msg.content)
+    if intent == 't':
+        extra_players += (1 if extra_players <= 3 else 2)
+    ret_string = roll_exploration(area, tl, pl, luck_roll, event, repel_array, bait_mons, extra_players)
+    if intent == 'h':
+        await ctx.send("Please type the name of the hunted pokemon now. Make sure it is spelled correctly.")
+        target = await bot.wait_for("message").content
+        await ctx.send("Please enter the trainer's Pokemon Edu Rank.")
+        msg = await bot.wait_for("message", check=skill_level_check)
+        chances = int(msg.content) - 2
+        if target.lower() not in ret_string.split("Event in slot")[0].lower():
+            await ctx.send("Hunting Target was not found in roll. Would the player like to reroll?")
+            msg = await bot.wait_for("message", check=check)
+            if msg.content.lower() == "y":
+                ret_string = roll_exploration(area, tl, pl, None, None, repel_array, bait_mons, extra_players)
+                if target.lower() not in ret_string.split("Event in slot")[0].lower():
+                    while chances > 0:
+                        chances -= 1
+                        await ctx.send(
+                            "Hunting Target was not found in roll. Would the player like to reroll? Type y or n now to respond.")
+                        msg = await bot.wait_for("message", check=check)
+                        if msg.content.lower() == "y":
+                            ret_string = roll_exploration(area, tl, pl, None, None, repel_array, bait_mons,
+                                                          extra_players)
+                        else:
+                            break
+                        if target.lower() in ret_string.split("Event in slot")[0].lower():
+                            break
     await ctx.send("Now generating exploration...")
-    skill_key = 5 * round(skill_roll / 5)
-    if skill_used == "Pokemon Edu" and skill_key >= 20:
-        bait_mons += 1
-    # print([area, str(skill_roll), luck_roll, tl, pl, repel_array, bait_mons, extra_players, skill_used, skill_key, force_mon, force_event, note_message])
-    ret_string = roll_exploration(area, str(skill_roll), luck_roll, tl, pl, repel_array, bait_mons, extra_players, skill_used, skill_key, force_mon, force_event, note_message)
     await ctx.send(ret_string)
-    if skill_used == "General Edu" and 25 > skill_key >= 15:
-        await ctx.send("You have the option to reroll your luck roll. Would you like to do so? Please enter y for yes "
-                       "or n for no")
+    if intent == 'w':
+        await ctx.send("\nNow Creating Wander Event...\n")
+        g_details = get_wander_event()
+        g_array = segment_text(g_details)
+        for par in g_array:
+            await ctx.send(par)
+        await ctx.send("Would you like to reroll this wandering event? Type y or n now to respond.")
         msg = await bot.wait_for("message", check=check)
         if msg.content.lower() == "y":
-            note_message[0] = ""
-            ret_string = roll_exploration(area, str(skill_roll), random.randint(1,20), tl, pl, repel_array, bait_mons, extra_players, skill_used, skill_key, force_mon, force_event, note_message)
-            await ctx.send(ret_string)
-    if skill_used == "General Edu" and skill_key >= 25:
-        await ctx.send("You have several options available to you. Please choose one of the following:"
-                       "\nType 1 to reroll this luck roll"
-                       "\nType 2 to increase the value of this luck roll by 1"
-                       "\nType 3 to increase the value of this luck roll by 2"
-                       "\nType 4 to decrease the value of this luck roll by 1"
-                       "\nType 5 to decrease the value of this luck roll by 2"
-                       "\nType 6 to keep as it.")
-        msg = await bot.wait_for("message", check=gen_ed_check)
-        op_array = [random.randint(1, 20), luck_roll + 1, luck_roll + 2, luck_roll - 1, luck_roll - 2]
-        if int(msg.content) != 6:
-            note_message[0] = ""
-            ret_string = roll_exploration(area, str(skill_roll), op_array[int(msg.content) - 1], tl, pl, repel_array, bait_mons,
-                                          extra_players,
-                                          skill_used, skill_key, force_mon, force_event, note_message)
-            await ctx.send(ret_string)
-    if skill_used == "Occult Edu" and skill_key >= 20:
-        print("This command is triggered")
-        note_message[0] += roll_occult(area, pl)
-    if note_message[0] != "":
-        await post_channel.send(ctx.author.mention + "\n**" + area + "**\n" + note_message[0])
-'''
+            g_details = get_wander_event()
+            g_array = segment_text(g_details)
+            for par in g_array:
+                await ctx.send(par)
+            await ctx.send("Would you like to reroll this wandering event? You will have no more rerolls after this. "
+                           "Type y or n now to respond.")
+            msg = await bot.wait_for("message", check=check)
+            if msg.content.lower() == "y":
+                g_details = get_wander_event()
+                g_array = segment_text(g_details)
+                for par in g_array:
+                    await ctx.send(par)
+
+    if intent == 't':
+        training_changes = "**Please make the following additions to the encounter:**\n\n» Choose one of the " \
+                           "Encountered Pokemon to be the Leader of all the other Pokemon. The Leader will have its " \
+                           "level increase by 1/2 of the highest Trainer Level in the Party and will start with +1 CS " \
+                           "in all Stats.\n» You may choose to have the Encounter affected by an Attack with the " \
+                           "Field Keyword that is known by one of the Encountered Pokemon. This effect persists until " \
+                           "the end of the Scene unless overwritten.\n» You may choose to have one of the Encountered " \
+                           "Pokemon gain a Raid Boss or Swarm Boss Template. "
+        await ctx.send(training_changes)
+    if intent == 's':
+        scav_string = ""
+        for i in range(0, (1 + extra_players)):
+            scav_string += "You have scavenged the following:\n" + roll_harvest_table(area)
+        await ctx.send(scav_string)
+
 
 '''        
 @bot.command(name='areaevent', aliases=['event'])
@@ -575,6 +600,7 @@ async def areaevent(ctx, *arg):
     ret_string = choose_event(area)
     await ctx.send(ret_string)
 '''
+
 
 @bot.command(name='adventure', aliases=['adven'])
 async def adventure(ctx, *arg):
@@ -681,14 +707,15 @@ async def babystat(ctx, *args):
     await ctx.send("Now statting automatically... Please wait...")
     ret_string = ctx.author.mention + "\n" + autostatter(name, level, email, link, baby)
     await ctx.send(ret_string)
-    
+
 
 @bot.command(name='lookup', aliases=['search'])
 async def lookup(ctx, *args):
-  arg_full = ' '.join(args)
-  ret_string = get_data(arg_full)
-  await ctx.send(ret_string)
-  
+    arg_full = ' '.join(args)
+    ret_string = get_data(arg_full)
+    await ctx.send(ret_string)
+
+
 @bot.command(name='arcana')
 async def arcana(ctx, *args):
     arg_full = ' '.join(args)
@@ -697,8 +724,10 @@ async def arcana(ctx, *args):
     for i in ret_array:
         await ctx.author.send(i)
 
+
 pat_cats = ["Pact", "Major", "Minor", "Task"]
-        
+
+
 @bot.command(name='patronage')
 @commands.guild_only()
 async def patronage(ctx, *args):
@@ -714,11 +743,12 @@ async def patronage(ctx, *args):
         for msg in ret_array:
             await ctx.author.send(msg)
         eastern = timezone('US/Eastern')
-        str_log = str(ctx.author.name) + " used the patronage command with parameters [{0[0]}, {0[1]}] on ".format([category, legend]) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
+        str_log = str(ctx.author.name) + " used the patronage command with parameters [{0[0]}, {0[1]}] on ".format(
+            [category, legend]) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
         with open("Documents/log.txt", 'a') as logfile:
             logfile.write(str_log)
-     
-    
+
+
 @bot.command(name='mythos')
 @commands.guild_only()
 async def mythos(ctx, *args):
@@ -729,11 +759,12 @@ async def mythos(ctx, *args):
     msg = get_legend_personality(legend)
     await ctx.author.send(msg)
     eastern = timezone('US/Eastern')
-    str_log = str(ctx.author.name) + " used the mythos command with parameter {0} on ".format(legend) + datetime.now(eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
+    str_log = str(ctx.author.name) + " used the mythos command with parameter {0} on ".format(legend) + datetime.now(
+        eastern).strftime("%m/%d/%Y %I:%M %p") + "\n"
     with open("Documents/log.txt", 'a') as logfile:
         logfile.write(str_log)
-            
-            
+
+
 @bot.command(name='guardian')
 async def guardian(ctx, *args):
     area = " ".join(args)
@@ -744,9 +775,11 @@ async def guardian(ctx, *args):
             await ctx.author.send(msg)
     else:
         await ctx.author.send(g_details)
-    str_log = str(ctx.author.name) + " used the guardian command with the parameter {0} on ".format(area) + datetime.now().strftime("%m/%d/%Y %H:%M:%S") + "\n"
+    str_log = str(ctx.author.name) + " used the guardian command with the parameter {0} on ".format(
+        area) + datetime.now().strftime("%m/%d/%Y %H:%M:%S") + "\n"
     with open("Documents/log.txt", 'a') as logfile:
-        logfile.write(str_log)   
+        logfile.write(str_log)
+
 
 @bot.command(name='scinfo')
 @commands.guild_only()
@@ -758,8 +791,8 @@ async def scinfo(ctx, slot, event=None):
         e_int = None
     ret_string = get_new_area_details(s_int, e_int)
     await ctx.send(ret_string)
-    
-    
+
+
 @bot.command(name='adinfo')
 @commands.guild_only()
 async def adinfo(ctx, *arg):
@@ -773,9 +806,8 @@ async def adinfo(ctx, *arg):
     ret_string += get_hidden_event_adventure(area, event_slot)
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     await ctx.send(ret_string)
-    
-    
-    
+
+
 @bot.command(name='admon')
 @commands.guild_only()
 async def admon(ctx, *arg):
@@ -788,13 +820,14 @@ async def admon(ctx, *arg):
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     await ctx.send(ret_string)
 
+
 @bot.command(name='wander')
 async def wander(ctx):
     g_details = get_wander_event()
     g_array = segment_text(g_details)
     for msg in g_array:
         await ctx.send(msg)
-        
+
 
 @bot.command(name='randombuild')
 async def randombuild(ctx):
