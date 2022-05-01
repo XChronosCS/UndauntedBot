@@ -1,6 +1,7 @@
 import gspread
 import re
 import fitz
+import random
 from constants import *
 
 import os.path
@@ -31,17 +32,26 @@ service = build('docs', 'v1', credentials=creds)
 gc = gspread.service_account_from_dict(credentials)
 
 sh = gc.open("Data Get Test Sheet")
+
 abilities = sh.worksheet("Abilities Data")
 features = sh.worksheet("Features Data")
 items = sh.worksheet("Inventory Data")
 edges = sh.worksheet("Edges Data")
 moves = sh.worksheet("Moves Data")
 pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
+lore_doc = fitz.Document("Documents/Phemenon Lore Book.pdf")
+compendium = fitz.Document("Documents/Mythology Compendium.pdf")
 extras = sh.worksheet("Class Data")
 misc = sh.worksheet("Misc Data")
 des = gc.open("Data Encounter Sheet")
 encounters = des.worksheet("Encounter Tables")
 arcana = service.documents().get(documentId="1gc6eTktgcQo9zViLghnWfxWmNrFzKKH6Y4QWMlwMzlo").execute()
+red = gc.open("them beans")
+pos = red.worksheet("Positive")
+neg = red.worksheet("Negative")
+intro = red.worksheet("Intro")
+max_page = 1100
+
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
@@ -302,7 +312,7 @@ def make_text(words):
 def poke_tutor(name):
     temp_name = name.title() if name.lower() != "light of ruin" else "Light of Ruin"
     mon_names = []
-    for entry in pokedex.pages(12, 963):
+    for entry in pokedex.pages(11, max_page):
         tutor_rect = fitz.Rect(360, 386, 576, 690)
         name_rect = fitz.Rect(28, 0, 457, 60)
         word_page = entry.get_text("words")
@@ -320,7 +330,7 @@ def poke_tutor(name):
 def poke_capability(name):
     temp_name = name.title()
     mon_names = []
-    for entry in pokedex.pages(12, 963):
+    for entry in pokedex.pages(12, max_page):
         cap_rect = fitz.Rect(10, 450, 311, 532)
         name_rect = fitz.Rect(28, 0, 457, 60)
         word_page = entry.get_text("words")
@@ -445,6 +455,65 @@ def get_treasure_spot(name):
             areas.append(encounters.cell(2, col).value)
         ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(areas)
         return ret_val
+
+
+def get_dex_entry(name):
+    for entry in pokedex.pages(11, max_page):
+        name_rect = fitz.Rect(28, 0, 457, 60)
+        word_page = entry.get_text("words")
+        temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+        poke_name = make_text(temp)
+        if poke_name.lower() == name.lower():
+            pix = entry.get_pixmap()  # render page to an image
+            pix.save("{0}.png".format(name.lower()))
+            break
+
       
-      
-      
+def get_lore_entry(name):
+    matching = False
+    matching_pages = []
+    for entry in lore_doc.pages(3, 214):
+        name_rect = fitz.Rect(0, 144, 600, 220)
+        word_page = entry.get_text("words")
+        temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+        lore_name = make_text(temp)
+        if lore_name.lower() == name.lower():
+            matching = True
+        if matching is True:
+            if lore_name.lower() != name.lower():
+                break
+            pix = entry.get_pixmap()  # render page to an image
+            file_name = "{0}_{1}.png".format(name.lower(), len(matching_pages))
+            pix.save(file_name)
+            matching_pages.append(file_name)
+    return matching_pages
+  
+  
+def get_legend_entry(name):
+    matching = False
+    matching_pages = []
+    for entry in compendium.pages(3, 125):
+        name_rect = fitz.Rect(0, 144, 600, 220)
+        word_page = entry.get_text("words")
+        temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+        lore_name = make_text(temp)
+        if name.lower() in lore_name.lower():
+            matching = True
+        if matching is True:
+            if name.lower() not in lore_name.lower():
+                break
+            pix = entry.get_pixmap()  # render page to an image
+            file_name = "{0}_{1}.png".format(name.lower(), len(matching_pages))
+            pix.save(file_name)
+            matching_pages.append(file_name)
+    return matching_pages
+
+  
+
+def get_beans():
+    bean_list = neg if random.randint(1, 4) == 4 else pos
+    intro_choice = intro.col_values(1)
+    bean_options = bean_list.col_values(1)
+    bean_taste = random.choice(bean_options)
+    intro_text = random.choice(intro_choice)
+    return intro_text + " " + bean_taste
