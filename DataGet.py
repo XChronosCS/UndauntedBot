@@ -131,7 +131,7 @@ def get_ability_data(name):
 
 
 def get_feature_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + name.replace("(", "\(").replace(")","\)") + "$")
     match = features.find(criteria, in_column=1)
     if match is None:
         return ["There is no feature by that name"]

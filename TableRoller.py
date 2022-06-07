@@ -27,6 +27,6 @@ def chaos_roller(choice_entered):
 
 def fossil_roller():
     array_length = len(FOSSIL)
-    index = random.randint(0, array_length)
+    index = random.randrange(0, array_length)
     ret_string = FOSSIL[index]['fossil'] + ", which revives into a(n) " + FOSSIL[index]['poke']
     return ret_string

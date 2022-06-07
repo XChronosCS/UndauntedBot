@@ -901,7 +901,7 @@ async def adinfo(ctx, *arg):
     ret_string += get_hidden_event_adventure(area, event_slot)
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     if len(ret_string) > 2000:
-        g_array = segment_text(g_details)
+        g_array = segment_text(ret_string)
         for msg in g_array:
             await ctx.send(msg)
     else:
@@ -919,7 +919,7 @@ async def admon(ctx, *arg):
     ret_string = get_hidden_slot_adventure(area, poke_slot)
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     if len(ret_string) > 2000:
-        g_array = segment_text(g_details)
+        g_array = segment_text(ret_string)
         for msg in g_array:
             await ctx.send(msg)
     else:
@@ -1044,7 +1044,7 @@ async def adfull(ctx, *arg):
                                                                                target)
     ret_string += "\n" + f"<@&" + "{0}>".format(id_var)
     if len(ret_string) > 2000:
-        g_array = segment_text(g_details)
+        g_array = segment_text(ret_string)
         for msg in g_array:
             await ctx.send(msg)
     else:
