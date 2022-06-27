@@ -60,7 +60,6 @@ se_notes = secret_areas_notes.worksheet_by_title("Area Events")
 explo_names = secret_explorations.row_values(1)
 time.sleep(60)
 adven_names = secret_adventures.row_values(1)
-print(adven_names)
 
 
 def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):

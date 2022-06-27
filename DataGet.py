@@ -271,6 +271,19 @@ def get_keyword_moves(name):
     else:
         return "That is not a valid attack Keyword. Please try again"
 
+def get_flair_moves(name, typing):
+    criteria = re.compile('(?i)' + name)
+    match = moves.findall(criteria, in_column=9)
+    if len(match) != 0:
+        ret_array = []
+        move_typings = moves.col_values(2)
+        for x in match:
+            if move_typings[x.row - 1] == typing.title():
+                ret_array.append(moves.cell(x.row, 1).value)
+        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(ret_array)
+        return ret_string
+    else:
+        return "That is not a valid style tag. Please try again"
 
 def poke_ability(name):
     temp_name = name.title() if name.lower() != "power of alchemy" else "Power of Alchemy"

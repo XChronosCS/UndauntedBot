@@ -16,8 +16,14 @@ def gender():
     index = random.randrange(0, 2)
     return GENDER[index]
   
-  
-  
+def roll_berries(tier, amount):
+    berries_list = []
+    for i in range(int(amount)):
+        berries_list.append(random.choice(BERRIES[tier]))
+    ret_string = "Here are the rolled berries of tier " + tier + ": " + ", ".join(berries_list)
+    return ret_string
+
+
 def roll_calc(dice_string, modifier_string, exclude_string, text_string):
     ret_string = ''
     multiplier = 1
@@ -178,7 +184,30 @@ def random_build():
     return "Your 4 Randomly Chosen Classes are: {0[0]}, {0[1]}, {0[2]} and {0[3]}".format(class_array)
 
 
+def quaglatin_gen(sentence):
+    words = sentence.lower().split()
 
+    for i, word in enumerate(words):
+        if word[0] in 'aeiou':
+            words[i] = words[i] + "uag"
+        else:
+            '''
+            else get vowel position and postfix all the consonants 
+            present before that vowel to the end of the word along with "ay"
+            '''
+            has_vowel = False
+
+            for j, letter in enumerate(word):
+                if letter in 'aeiou':
+                    words[i] = word[j:] + word[:j] + "uag"
+                    has_vowel = True
+                    break
+
+            if not has_vowel:
+                words[i] = words[i] + "uag"
+
+    quag_latin = ' '.join(words)
+    return quag_latin
 
 
 

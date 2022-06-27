@@ -48,7 +48,7 @@ async def on_command_error(ctx, error):
         await ctx.send(message, delete_after=10)
 
 
-@bot.command(name='help', aliases=['phelp'])
+@bot.command(name='poryhelp', aliases=['phelp'])
 async def help(ctx):
     menu_one = list(get_cat_first())
 
@@ -86,7 +86,6 @@ async def townevent(ctx):
     result = get_town_event()
     ret_string = "Event Invoked By: " + ctx.author.mention + "\n" + result[0] + "\n" + result[1]
     await ctx.send(ret_string)
-    await ctx.message.delete()
 
 
 @bot.command(name="portal")
@@ -104,6 +103,13 @@ async def town(ctx, *arg):
 @bot.command(name="potofgreed")
 async def potofgreed(ctx):
     await ctx.send("You draw two cards.")
+    
+    
+@bot.command(name="quaglatin")
+async def quaglatin(ctx, *args):
+    sentence = " ".join(args)
+    ret_string = quaglatin_gen(sentence)
+    await ctx.send(ret_string)
 
 
 @bot.command(name='uprising')
@@ -111,7 +117,6 @@ async def uprising(ctx):
     result = get_uprising_event()
     ret_string = "Event Invoked By: " + ctx.author.mention + "\n" + result[0] + "\n" + result[1]
     await ctx.send(ret_string)
-    await ctx.message.delete()
 
 
 @bot.command(name='ability', aliases=['abil'])
@@ -232,6 +237,19 @@ async def keymoves(ctx, *arg):
     else:
         await ctx.send(result)
 
+@bot.command(name='style', aliases=['smoves'])
+async def style(ctx, *arg):
+    style = arg[0]
+    typing = arg[1]
+    result = get_flair_moves(style, typing)
+    if len(result) > 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            await ctx.send(msg)
+    else:
+        await ctx.send(result)
+
+
 
 @bot.command(name='cond')
 async def cond(ctx, *arg):
@@ -342,6 +360,14 @@ async def shards(ctx, *args):
 async def fossil(ctx):
     result = fossil_roller()
     ret_string = "You have unearthed a " + result + "!"
+    await ctx.send(ret_string)
+    
+
+@bot.command(name='berries')
+async def berries(ctx, *args):
+    tier = args[0]
+    amt = args[1]
+    ret_string = roll_berries(tier, amt)
     await ctx.send(ret_string)
 
 
