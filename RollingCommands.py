@@ -16,11 +16,11 @@ def gender():
     index = random.randrange(0, 2)
     return GENDER[index]
   
-def roll_berries(tier, amount):
+def roll_flora(tier, amount):
     berries_list = []
     for i in range(int(amount)):
         berries_list.append(random.choice(BERRIES[tier]))
-    ret_string = "Here are the rolled berries of tier " + tier + ": " + ", ".join(berries_list)
+    ret_string = "Here are the rolled plants of tier " + tier + ": " + ", ".join(berries_list)
     return ret_string
 
 
@@ -103,6 +103,8 @@ def roll_result(match):
 def roll_interest(bank):
     interest_rate = (random.randint(1, 4) + random.randint(1, 4)) / 100
     interest = bank * interest_rate
+    if interest > 2500.0:
+        interest = 2500.0
     return "Through the power of savings, you have earned $" + str(interest) + ", meaning you" \
                                                                                " now have $" + str(bank + interest)
 

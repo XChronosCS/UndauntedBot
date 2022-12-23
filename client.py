@@ -363,11 +363,11 @@ async def fossil(ctx):
     await ctx.send(ret_string)
     
 
-@bot.command(name='berries')
+@bot.command(name='flora')
 async def berries(ctx, *args):
     tier = args[0]
     amt = args[1]
-    ret_string = roll_berries(tier, amt)
+    ret_string = roll_flora(tier, amt)
     await ctx.send(ret_string)
 
 
