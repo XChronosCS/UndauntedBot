@@ -1,11 +1,11 @@
-from constants import *
-import gspread
-import random
-import RollingCommands
-import pygsheets
 import math
+import random
 
+import gspread
+import pygsheets
 
+import RollingCommands
+from constants import *
 
 credentials = {
     "type": "service_account",
@@ -179,18 +179,17 @@ def generate_mon(mon_name, level, index, b_check):
     lvl_points = statter.acell('G17').value
     for i in range(int(lvl_points)):
         bonus_stats = set_stats(bonus_stats, base_stats)
-    statter.update('G11',bonus_stats['hp'])
-    statter.update('G12',bonus_stats['atk'])
-    statter.update('G13',bonus_stats['def'])
-    statter.update('G14',bonus_stats['satk'])
-    statter.update('G15',bonus_stats['sdef'])
-    statter.update('G16',bonus_stats['spd'])
+    statter.update('G11', bonus_stats['hp'])
+    statter.update('G12', bonus_stats['atk'])
+    statter.update('G13', bonus_stats['def'])
+    statter.update('G14', bonus_stats['satk'])
+    statter.update('G15', bonus_stats['sdef'])
+    statter.update('G16', bonus_stats['spd'])
 
     xp = XP_VALS[int(level) - 1]
     statter.update('I3', xp)
     statter.update('D3', mon['name'].title())
     statter.update_title(mon['name'].title() + " " + str(index))
-
 
 
 def autostatter(mon_name, level, email=None, link=None, base_check=False):
@@ -214,7 +213,3 @@ def autostatter(mon_name, level, email=None, link=None, base_check=False):
         return link
     else:
         return "Error!"
-
-
-
-

@@ -1,32 +1,17 @@
-import gspread
-import re
-import fitz
 import random
-from constants import *
+import re
 
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from oauth2client.service_account import ServiceAccountCredentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+import fitz
+import gspread
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+from oauth2client.service_account import ServiceAccountCredentials
 
-credentials = {
-    "type": "service_account",
-    "project_id": "undaunteddiscordbot",
-    "private_key_id": "b815b93c7e0bba1070d4a2c875e4994f02d43f39",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC4eHKbjM5qeK4k\n7Wu18aGFM/QQ7HjSKNk3/qpGgA0cdPVM6iSTD/Eew+/WkttRrWn211NjLDkq86GX\nemTOeTuajoUcuitWRwOR19N79qL66RZUBZoGnlA1z/3pQfX8mrxhn7KFVBOA66fy\nArf+UoKoKZQ2Qe8G8LIQxfM+ZT9zF5k1KfmKR6bvqB38L3MRMSPStSxbFzylkwJH\n9Czq+LNnIyYmyfB0qPBYwMlEDT2aPi7hzWXku9iX2qQwua0+lYOSeVyPeFfm3JJX\nwP+/iON4DU3Qq+5BBe67shoz2CbGtDphF3fHX0i6gxWv7fvaYta0xyGYXMVdYD1W\n8sftBDKPAgMBAAECggEAF0siUbEEiZ5GgyQ1wypJVowaaB6sHQGKeE8gijl2Ll84\ncGdqieVr8ZIVUXeG2Tf4FvLWtUGq0FkmUP3kB8x4McqIVXnOqhzafwqNSmx45Q0U\nxDRW4DoSb9EdQ1yQZr7VRdCIFtzof5GCSgV83VDm7bweWoGV4L75BTQxxHG9gtdD\nJJ5BAwkGLblR5j9gqU1jYLhMN/WjK8BIyBrfAvIHANjv4rLK+jjj4Ut5h4CxsxpW\n/Aqwti7T0NwiCLERhbIENkNxbFd7hr4q+yjoCW23LCUbjnx1XdiIlJuKbty8iQsu\nBYNKXvolEHv8FEzKdSSz9Nvi4esl6Hm9Dg7pBiJuRQKBgQD4Gd1L21w3q49kdh16\no0j4GKtzy2dxxVbNi3OMcUYbvX3TwUees0iG+WBcX2I9TRTzsDUbRW4oZftGJ88s\nriTwO1aV2CzDTMBgnalkqVjP9c6/RlRgpHsjB8K2ujqIkTxeH+vbQzzO4Fj98ff3\nl+PGttktlxEkdKy/Roek8T/uqwKBgQC+V/czrvMRom6Ugh4RltEGrdgicVgemqYk\nDO2LVlKWlXZ2zW26FQcxXA5AuB13/nZFd7vfvzIoC6OK/QS6a10DITJIwbE0ex9/\nUQK0DlqAAEN8EcoAJzm32pmHMTE90rvGhFnQ4VsZw9vnQjIBqcw52DmYsSCSpO8m\nJ29bUGu7rQKBgBADa1soD22wbxLm5MQzodQRk49nw4d+WzntFEouTX4g3uw5/2to\n2veLRQLxTR/zx7Rq3SKjepa07mD61M5ndw7iZZZKW6lHXOtfgb1ziL3zeaKy4WNT\nencqWxD8OCb0aNcSbGC8mEIqDNRnN8ANV7BNwPrGU17tAPFflgW5ZIz9AoGAbsIT\nB1D7Abzp6aKZSpTexqssBEa+BvjoSjv3kcfGQPdxuompGsmXqOIvLPu1shgwzBVz\nDixcTC8RmBPIx40nz2VmtC15JteqKVSDZTCg+rCslCppx5MLo+8gvSkjxRy1xTtI\nZCJt910fvb6oCI28V8B5K1+OW6Z7vlDeHF18gvUCgYBJZ0B6zhIdGyCBQ+I4gDxh\n1FfviL35Wz0qJxHnyEAnjm4X33p6jDzNyVrwr6lJyL3ixFm77y7Qes6asF9s61UF\n51GJrjLRCcC+9X1WSmB1rGM+W76SUXKBxrwj0mNe922rm+lgJPRAx7jkjVvAeRMe\nkFtJXHo5iVWUSEVV5MW6lw==\n-----END PRIVATE KEY-----\n",
-    "client_email": "undaunted@undaunteddiscordbot.iam.gserviceaccount.com",
-    "client_id": "112647756200358490521",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/undaunted%40undaunteddiscordbot.iam.gserviceaccount.com"
-}
+from constants import *
+from gspread_credentials import *
+from utilities import *
 
-creds = ServiceAccountCredentials.from_json_keyfile_name('UndauntedBot/service_account_credentials.json', scopes="https://www.googleapis.com/auth/documents.readonly")
+creds = ServiceAccountCredentials.from_json_keyfile_name('UndauntedBot/service_account_credentials.json',
+                                                         scopes="https://www.googleapis.com/auth/documents.readonly")
 service = build('docs', 'v1', credentials=creds)
 
 gc = gspread.service_account_from_dict(credentials)
@@ -50,41 +35,9 @@ red = gc.open("them beans")
 pos = red.worksheet("Positive")
 neg = red.worksheet("Negative")
 intro = red.worksheet("Intro")
+habitat = gc.open("Data Habitat Areas").worksheet("Data")
+
 max_page = 1100
-
-
-def read_paragraph_element(element):
-    """Returns the text in the given ParagraphElement.
-
-        Args:
-            element: a ParagraphElement from a Google Doc.
-    """
-    text_run = element.get('textRun')
-    if not text_run:
-        return ''
-    return text_run.get('content')
-
-  
-def read_strucutural_elements(elements):
-    """Recurses through a list of Structural Elements to read a document's text where text may be
-        in nested elements.
-
-        Args:
-            elements: a list of Structural Elements.
-    """
-    text = []
-    for value in elements:
-        if 'paragraph' in value:
-            elements = value.get('paragraph').get('elements')
-            temp = ''
-            for elem in elements:
-                temp += read_paragraph_element(elem)
-            if "Prerequisite:" in temp and not temp.startswith("P"):
-                temp_t = temp.split("Prerequisite:")
-                text.append(temp_t[0][:-1])
-                temp = "\nPrerequisite:" + temp_t[1]
-            text.append(temp)
-    return text
 
 
 def get_arcana_edges(legend):
@@ -93,31 +46,35 @@ def get_arcana_edges(legend):
     doc_content = arcana.get('body').get('content')
     par_list = read_strucutural_elements(doc_content)
     with open("Documents/LegendData.txt", "r+") as f:
-       for line in f:
-          if legend.title() in line:
-              prereq_list += f.readline().rstrip() + ", "
-              prereq_list += f.readline().rstrip()
-              break
+        for line in f:
+            if legend.title() in line:
+                prereq_list += f.readline().rstrip() + ", "
+                prereq_list += f.readline().rstrip()
+                break
     if prereq_list == "":
         return ["There is no legend by that name. Please try again."]
     prereqs = prereq_list.split(", ")
     for i in range(len(par_list)):
         if "\\n" in par_list[i]:
             par_list[i].replace("\\n", "\n")
-        if i+1 != len(par_list):
+        if i + 1 != len(par_list):
             if any(aspect in par_list[i] for aspect in prereqs) and "Prerequisites:" in par_list[i]:
-                ret_string = "**" + par_list[i-1] + "**" + par_list[i] + par_list[i+1] + par_list[i+2]
-                if "Trigger:" in par_list[i+2] or "Target:" in par_list[i+2] or "Bonus:" in par_list[i+3]:
-                    ret_string += par_list[i+3]
-                if "Bonus:" in par_list[i+4]:
-                    ret_string += par_list[i+4]
+                ret_string = "**" + par_list[i - 1] + "**" + par_list[i] + par_list[i + 1] + par_list[i + 2]
+                if "Trigger:" in par_list[i + 2] or "Target:" in par_list[i + 2] or "Bonus:" in par_list[i + 3]:
+                    ret_string += par_list[i + 3]
+                if "Bonus:" in par_list[i + 4]:
+                    ret_string += par_list[i + 4]
                 ret_string += "\n"
                 ret_array.append(ret_string)
     return ret_array
-        
 
 
 def get_ability_data(name):
+    """
+    Recurses through ability column on Data sheet to find matching ability name, then returns matching description.
+    :param name: String name of the ability in question
+    :return: Description of the ability.
+    """
     criteria = re.compile('(?i)^' + name + "$")
     match = abilities.find(criteria, in_column=1)
     if match is None:
@@ -131,7 +88,7 @@ def get_ability_data(name):
 
 
 def get_feature_data(name):
-    criteria = re.compile('(?i)^' + name.replace("(", "\(").replace(")","\)") + "$")
+    criteria = re.compile('(?i)^' + name.replace("(", "\(").replace(")", "\)") + "$")
     match = features.find(criteria, in_column=1)
     if match is None:
         return ["There is no feature by that name"]
@@ -187,9 +144,6 @@ def get_move_data(name):
         move_eff = "\nEffect: " + moves.cell(row, 8).value
         move_tag = "\nStyle Tag: " + moves.cell(row, 9).value
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
-
-
-habitat = gc.open("Data Habitat Areas").worksheet("Data")
 
 
 def get_habitat(name):
@@ -271,6 +225,7 @@ def get_keyword_moves(name):
     else:
         return "That is not a valid attack Keyword. Please try again"
 
+
 def get_flair_moves(name, typing):
     criteria = re.compile('(?i)' + name)
     match = moves.findall(criteria, in_column=9)
@@ -280,10 +235,12 @@ def get_flair_moves(name, typing):
         for x in match:
             if move_typings[x.row - 1] == typing.title():
                 ret_array.append(moves.cell(x.row, 1).value)
-        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(ret_array)
+        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(
+            ret_array)
         return ret_string
     else:
         return "That is not a valid style tag. Please try again"
+
 
 def poke_ability(name):
     temp_name = name.title() if name.lower() != "power of alchemy" else "Power of Alchemy"
@@ -431,6 +388,7 @@ def get_cap_data(name):
         cap_eff = "\n" + misc.cell(row, 8).value
         return [cap_name, cap_eff]
 
+
 def get_keyword_data(name):
     criteria = re.compile('(?i)^' + name + "$")
     match = misc.find(criteria, in_column=17)
@@ -441,8 +399,8 @@ def get_keyword_data(name):
         ret_string = misc.cell(row, 17).value
         ret_string += "\n" + misc.cell(row, 18).value
         return ret_string
-      
-      
+
+
 def get_status_data(name):
     criteria = re.compile('(?i)^' + name + "$")
     match = misc.find(criteria, in_column=9)
@@ -481,7 +439,7 @@ def get_dex_entry(name):
             pix.save("{0}.png".format(name.lower()))
             break
 
-      
+
 def get_lore_entry(name):
     matching = False
     matching_pages = []
@@ -500,8 +458,8 @@ def get_lore_entry(name):
             pix.save(file_name)
             matching_pages.append(file_name)
     return matching_pages
-  
-  
+
+
 def get_legend_entry(name):
     matching = False
     matching_pages = []
@@ -521,7 +479,6 @@ def get_legend_entry(name):
             matching_pages.append(file_name)
     return matching_pages
 
-  
 
 def get_beans():
     bean_list = neg if random.randint(1, 4) == 4 else pos

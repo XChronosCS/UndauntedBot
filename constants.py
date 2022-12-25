@@ -10,7 +10,7 @@ ULTRA_DIM = [
     "Phantasmal Badlands",
 ]
 
-BERRIES = {
+FLORA = {
     "3": [
         "Aqua Lotus",
         "Frost Moss",
@@ -110,6 +110,12 @@ BERRIES = {
         "Pinap Berry"
     ]
 }
+
+PATRONAGE_CATEGORIES = ["Pact", "Major", "Minor", "Task"]
+
+HARVESTABLES = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
+                "Iron Scrap", "Chem Scrap", "Honey", "Money"]
+
 
 FLUFF_CHAOS_MAGIC = [
     {
@@ -1082,7 +1088,8 @@ TYPES = [
     "Water",
 ]
 
-ALLPOKEMON = [{
+ALLPOKEMON = [
+    {
     "name": "BULBASAUR",
     "abilities": [
         "Chlorophyll",

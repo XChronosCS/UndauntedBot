@@ -1,6 +1,6 @@
 import random
-import dice
 import re
+
 from constants import *
 
 GENDER = ["Male", "Female"]
@@ -15,44 +15,45 @@ def nature():
 def gender():
     index = random.randrange(0, 2)
     return GENDER[index]
-  
+
+
 def roll_flora(tier, amount):
-    berries_list = []
+    flora_list = []
     for i in range(int(amount)):
-        berries_list.append(random.choice(BERRIES[tier]))
-    ret_string = "Here are the rolled plants of tier " + tier + ": " + ", ".join(berries_list)
+        flora_list.append(random.choice(FLORA[tier]))
+    ret_string = "Here are the rolled plants of tier " + tier + ": " + ", ".join(flora_list)
     return ret_string
 
 
 def roll_calc(dice_string, modifier_string, exclude_string, text_string):
     ret_string = ''
     multiplier = 1
-    reroll = 0
+    calc_reroll = 0
 
     def roll_reroll(match):
         a, b = match.group(1).split('d')
         ret_array = []
         for i in range(int(a)):
             roll = random.randint(1, 1 * int(b))
-            if roll == reroll:
-                ret_array.append("~~" + str(reroll) + "~~")
-                roll = random.choice([i for i in range(1, int(b)) if i not in [reroll]])
+            if roll == calc_reroll:
+                ret_array.append("~~" + str(calc_reroll) + "~~")
+                roll = random.choice([i for i in range(1, int(b)) if i not in [calc_reroll]])
             ret_array.append(str(roll))
-        ret_string = '[' + ', '.join(ret_array) + ']'
-        return ret_string
+        sub_string = '[' + ', '.join(ret_array) + ']'
+        return sub_string
 
     if modifier_string is not None:
         multiplier = int(modifier_string)
         ret_string += "\nPerforming " + str(multiplier) + " iterations..."
     if exclude_string is not None:
-        reroll = int(exclude_string)
+        calc_reroll = int(exclude_string)
         ret_string += "\nRerolling all " + exclude_string + "'s..."
     for i in range(multiplier):
         roll_string = re.sub("[^\d+\-*\/d]", '', dice_string)
         # turns the XdY rolls into the values being rolled
         rolls = re.sub('(\d+d\d+)', roll_vals, roll_string)
         # Takes the arrays of numbers in string and turns them into the sums       
-        if reroll != 0:
+        if calc_reroll != 0:
             temp_rolls = re.sub('(\d+d\d+)', roll_reroll, roll_string)
             rolls = temp_rolls
         result_string = re.sub('\[.*\]', roll_result, rolls)
@@ -122,7 +123,8 @@ def roll_deity():
     format_string = "You rolled a {dice}, which means...\n You gain ${money}\nYou gain {stam} Stamina\nYou gain {pp} " \
                     "Patron Points"
     return format_string.format(dice=dice_roll, money=cash, stam=stamina, pp=patron_points)
-  
+
+
 def roll_dim():
     return "You have opened a portal to the " + ULTRA_DIM[random.randrange(0, len(ULTRA_DIM))] + " Dimension!"
 
@@ -140,13 +142,15 @@ ALL_CLASSES = ["Ace Trainer", "Capture Specialist", "Cheerleader", "Commander", 
                "Chaos Mage", "Chronomancer", "Crimson Mage", "Geomancer", "Hex Mage", "Illusionist", "Oracle",
                "Paladin", "Paragon", "Rune Master", "Sage", "Tempest Mage", "Warper"]
 ELEMENTALISTS = ["(Bug) Swarmlord", "(Dark) Shade Caller", "(Dragon) Herald of Pride",
-               "(Electric) Spark Master", "(Fairy) Glamour Weaver", "(Fighting) Disciple", "(Fire) Fire Bringer",
-               "(Flying) Wind Runner", "(Ghost) Apparition", "(Grass) Druid", "(Ground) Earth Shaker",
-               "(Ice) Frost-Touched", "(Normal) Prism", "(Poison) Miasmic", "(Psychic) Psionic", "(Rock) Stone Warrior",
-               "(Steel) Steelheart", "(Water) Maelstrom"]
-TYPE_ACE = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "Ghost", "Grass", "Ground", "Ice", "Normal", "Poison", "Psychic", "Rock", "Steel", "Water"]
-STYLE_ACE = ["Cool","Tough","Beauty","Smart","Cute"]
-STAT_ACE = ["Attack","Defense","Special Attack","Special Defense", "Speed"]
+                 "(Electric) Spark Master", "(Fairy) Glamour Weaver", "(Fighting) Disciple", "(Fire) Fire Bringer",
+                 "(Flying) Wind Runner", "(Ghost) Apparition", "(Grass) Druid", "(Ground) Earth Shaker",
+                 "(Ice) Frost-Touched", "(Normal) Prism", "(Poison) Miasmic", "(Psychic) Psionic",
+                 "(Rock) Stone Warrior",
+                 "(Steel) Steelheart", "(Water) Maelstrom"]
+TYPE_ACE = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "Ghost", "Grass", "Ground",
+            "Ice", "Normal", "Poison", "Psychic", "Rock", "Steel", "Water"]
+STYLE_ACE = ["Cool", "Tough", "Beauty", "Smart", "Cute"]
+STAT_ACE = ["Attack", "Defense", "Special Attack", "Special Defense", "Speed"]
 
 
 def random_build():
@@ -182,7 +186,7 @@ def random_build():
         else:
             classes_temp.remove(rand_class)
         class_array.append(rand_class)
-        
+
     return "Your 4 Randomly Chosen Classes are: {0[0]}, {0[1]}, {0[2]} and {0[3]}".format(class_array)
 
 
@@ -210,6 +214,3 @@ def quaglatin_gen(sentence):
 
     quag_latin = ' '.join(words)
     return quag_latin
-
-
-

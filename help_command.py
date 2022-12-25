@@ -110,7 +110,8 @@ HELP_CATEGORIES = {
     "Breeding": {'eggmove': eggmove_desc, 'eggrandom': eggrandom_desc, 'eggroll': eggroll_desc, 'erm': erm_desc,
                  'details': details_desc, 'pokerandom': pokerandom_desc},
     "Memes": {'cookie': cookie_desc, 'muffin': muffin_desc, 'whenfreya': whenfreya_desc,
-              'whenkostrya': whenkostrya_desc, 'turbo': turbo_desc, 'potofgreed' : 'Nobody Knows What This Command Does.'}}
+              'whenkostrya': whenkostrya_desc, 'turbo': turbo_desc,
+              'potofgreed': 'Nobody Knows What This Command Does.'}}
 
 
 def get_cat_first():

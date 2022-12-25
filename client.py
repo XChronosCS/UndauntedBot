@@ -27,10 +27,6 @@ bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
 bot.remove_command('help')
 
-pat_cats = ["Pact", "Major", "Minor", "Task"]
-
-harvestables = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
-                "Iron Scrap", "Chem Scrap", "Honey", "Money"]
 
 
 @bot.command(name='ability', aliases=['abil'])
@@ -407,7 +403,7 @@ async def chaos(ctx, *arg):
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
     def harvest_check(m):
-        return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(0, len(harvestables))))
+        return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(0, len(HARVESTABLES))))
 
     user = ctx.author
     channel = ctx.channel
@@ -416,11 +412,11 @@ async def cmons(ctx, *arg):
         (await ctx.send(
             'Here is a list of harvestable items. Please enter the number next to the item you are searching for now.'))
         har_list = ''
-        for i in range(len(harvestables)):
-            har_list += (((str(i) + '. ') + harvestables[i]) + '\n')
+        for i in range(len(HARVESTABLES)):
+            har_list += (((str(i) + '. ') + HARVESTABLES[i]) + '\n')
         (await ctx.send(har_list))
         msg = (await bot.wait_for('message', check=harvest_check))
-        material = harvestables[int(msg.content)]
+        material = HARVESTABLES[int(msg.content)]
         arg_full = ('Harvest (' + material)
     result = poke_capability(arg_full)
     if (len(result) > 2000):
@@ -906,7 +902,7 @@ async def patronage(ctx, *args):
     category = args[0]
     legend_tuple = args[1:]
     legend = ' '.join(legend_tuple)
-    if (category.title() not in pat_cats):
+    if (category.title() not in PATRONAGE_CATEGORIES):
         (await ctx.send((category + ' is not a valid option. Please input Minor, Major, Pact, or Task')))
     else:
         notice = ((str(ctx.author.name) + ' used the patronage command to search up info on ') + legend)
