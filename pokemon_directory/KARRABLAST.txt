@@ -1,0 +1,1 @@
+{"name": "KARRABLAST", "abilities": ["Shed Skin", "Swarm"], "advabilities": ["Moxie", "Unburden"], "highabilities": ["No Guard"], "evolutions": {"20": "ESCAVALIER"}, "male": 0.5, "moves": ["1 Fury Cutter", "1 Peck", "1 Bite", "1 Leer", "4 Pursuit", "8 Headbutt", "12 Fury Attack", "16 Bug Bite", "20 False Swipe"]}

@@ -1,0 +1,1 @@
+{"name": "ENTEI", "abilities": ["Pressure", "Inner Focus"], "advabilities": ["Sprint", "Run Away"], "highabilities": ["Speed Boost"], "evolutions": {}, "male": -1, "moves": ["1 Bite", "1 Leer", "4 Ember", "8 Roar", "11 Fire Spin", "15 Stomp", "18 Flamethrower", "22 Swagger", "25 Fire Fang", "29 Lava Plume", "32 Extrasensory", "36 Fire Blast", "39 Calm Mind", "43 Eruption"]}

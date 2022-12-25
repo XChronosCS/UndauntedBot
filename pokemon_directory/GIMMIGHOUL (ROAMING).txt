@@ -1,0 +1,1 @@
+{"name": "GIMMIGHOUL (ROAMING)", "abilities": ["Run Away", "Frisk"], "advabilities": ["Rattled", "Pickpocket"], "highabilities": ["Fade Away"], "evolutions": {"5": "GIMMIGHOUL (ROAMING)"}, "male": -1, "moves": ["1 Haunting Breeze", "1 Shadow Sneak", "1 Thief", "1 Smokescreen", "4 Covet", "8 Trick", "12 Confuse Ray", "16 Ally Switch", "20 Switcheroo"]}

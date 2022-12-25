@@ -1,0 +1,1 @@
+{"name": "MANAPHY", "abilities": ["Hydration", "Rain Dish"], "advabilities": ["Swift Swim", "Damp"], "highabilities": ["Absorb Force"], "evolutions": {}, "male": -1, "moves": ["1 Bubble", "1 Tail Glow", "1 Water Sport", "5 Charm", "8 Supersonic", "12 Bubblebeam", "16 Acid Armor", "20 Whirlpool", "23 Water Pulse", "27 Aqua Ring", "31 Dive", "35 Rain Dance", "38 Heart Swap"]}

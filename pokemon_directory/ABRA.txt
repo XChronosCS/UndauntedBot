@@ -1,0 +1,1 @@
+{"name": "ABRA", "abilities": ["Synchronize", "Transporter"], "advabilities": ["Oblivious", "Life Force"], "highabilities": ["Magic Guard"], "evolutions": {"20": "KADABRA", "40": "ALAKAZAM"}, "male": 0.5, "moves": ["1 Teleport", "1 Psy Bolt", "1 Confusion", "1 Leer", "4 Yawn", "8 Disable", "12 Starbeam", "16 Psybeam", "20 Miracle Eye"]}

@@ -1,0 +1,1 @@
+{"name": "SHELMET", "abilities": ["Shell Armor", "Overcoat"], "advabilities": ["Hydration", "Sturdy"], "highabilities": ["Unaware"], "evolutions": {"20": "ACCELGOR"}, "male": 0.5, "moves": ["1 Absorb", "1 Acid", "1 Bide", "1 Withdraw", "4 Pheromone Spray", "8 Bulk Up", "12 Acid Spray", "16 Struggle Bug", "20 Mega Drain"]}

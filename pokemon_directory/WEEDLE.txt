@@ -1,0 +1,1 @@
+{"name": "WEEDLE", "abilities": ["Shield Dust", "Rattled"], "advabilities": ["Silk Threads", "Swarm"], "highabilities": ["Poison Touch"], "evolutions": {"5": "KAKUNA", "10": "BEEDRILL"}, "male": 0.5, "moves": ["1 Tackle", "1 Swift Sting", "1 Poison Sting", "1 String Shot", "4 Bind", "8 Headbutt", "12 Bug Bite", "16 Infestation", "20 Poison Tail"]}

@@ -1,0 +1,1 @@
+{"name": "COMBEE", "abilities": ["Pickup", "Hustle"], "advabilities": ["Pack Hunt", "Teamwork"], "highabilities": ["Dodge"], "evolutions": {"20": ["(Male)VESPIDRONE", "(Female)VESPIQUEN"]}, "male": 0.5, "moves": ["1 Gust", "1 Struggle Bug", "1 Tackle", "1 Sweet Scent", "4 Pheromone Spray", "8 Pheromone Haze", "12 Bug Bite", "16 Aromatic Mist", "20 Air Cutter"]}

@@ -1,0 +1,1 @@
+{"name": "MILCERY", "abilities": ["Sweet Veil", "Aroma Veil"], "advabilities": ["Spinning Dance", "Flavorful Aroma"], "highabilities": ["Absorb Force"], "evolutions": {"20": "ALCREMIE"}, "male": 0, "moves": ["1 Fairy Wind", "1 Acid Spray", "1 Tackle", "1 Aromatic Mist", "4 Sweet Scent", "8 Helping Hand", "12 Sludge", "16 Draining Kiss", "20 Aromatherapy"]}

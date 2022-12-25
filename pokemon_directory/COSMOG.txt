@@ -1,0 +1,1 @@
+{"name": "COSMOG", "abilities": ["Beast Boost"], "advabilities": ["Unaware", "Transporter", "Cute Charm"], "highabilities": ["Snuggle"], "evolutions": {"10": "COSMOEM", "50": "COSMOVA"}, "male": -1, "moves": ["1 Confusion", "1 Swift", "1 Cosmic Power", "1 Teleport", "4 Cosmic Curse", "8 Hidden Power", "12 Star Strike", "16 Psybeam", "20 Ally Switch"]}

@@ -1,0 +1,1 @@
+{"name": "FEEBAS", "abilities": ["Ugly"], "advabilities": ["Swift Swim", "Torrent", "Klutz"], "highabilities": ["Simple"], "evolutions": {"20": "MILOTIC"}, "male": 0.5, "moves": ["1 Bubble", "1 Tackle", "1 Splash", "1 Water Sport", "4 Hypnosis", "8 Icy Wind", "12 Flail", "16 Bubblebeam", "20 Bounce"]}

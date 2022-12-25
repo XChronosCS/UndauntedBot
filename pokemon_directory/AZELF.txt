@@ -1,0 +1,1 @@
+{"name": "AZELF", "abilities": ["Levitate"], "advabilities": ["Inner Focus", "Own Tempo", "Sorcery"], "highabilities": ["Download"], "evolutions": {}, "male": -1, "moves": ["1 Rest", "1 Confusion", "3 Imprison", "8 Detect", "11 Swift", "16 Uproar", "18 Future Sight", "23 Nasty Plot", "25 Extrasensory", "31 Last Resort", "33 Natural Gift", "38 Explosion"]}

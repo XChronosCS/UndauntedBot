@@ -1,0 +1,1 @@
+{"name": "TYNAMO", "abilities": ["Levitate", "Lightning Rod"], "advabilities": ["Weird Power", "Storm Drain"], "highabilities": ["Bodyguard"], "evolutions": {"30": "EELEKTRIK", "40": "EELEKTROSS"}, "male": 0.5, "moves": ["1 Tackle", "1 Static Jolt", "1 Thunder Shock", "1 Toxin Splash", "4 Thunder Wave", "8 Acid", "12 Charge Beam", "16 Acid Spray", "20 Spark"]}

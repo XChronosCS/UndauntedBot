@@ -1,0 +1,1 @@
+{"name": "ESPURR", "abilities": ["Keen Eye", "Sorcery"], "advabilities": ["Oblivious", "Own Tempo"], "highabilities": ["Unaware"], "evolutions": {"25": ["(Male)MEOWSTIC MALE", "(Female)MEOWSTIC FEMALE"]}, "male": 0.5, "moves": ["1 Confusion", "1 Scratch", "1 Leer", "1 Light Screen", "4 Covet", "8 Disarming Voice", "12 Glare", "16 Psybeam", "20 Imposing Stare"]}

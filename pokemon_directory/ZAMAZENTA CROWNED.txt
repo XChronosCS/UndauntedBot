@@ -1,0 +1,1 @@
+{"name": "ZAMAZENTA CROWNED", "abilities": ["Dauntless Shield"], "advabilities": ["Stamina", "Friend Guard", "Sprint"], "highabilities": ["Bulletproof"], "evolutions": {}, "male": -1, "moves": ["1 Metal Claw", "1 Howl", "1 Quick Attack", "1 Bite", "11 Slash", "22 Iron Defense", "33 Iron Head", "44 Laser Focus", "55 Crunch", "66 Moonblast", "77 Close Combat", "88 Giga Impact"]}

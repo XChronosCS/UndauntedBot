@@ -1,0 +1,1 @@
+{"name": "MELTAN", "abilities": ["Magnet Pull", "Frisk"], "advabilities": ["Keen Eye", "Light Metal"], "highabilities": ["Absorb Force"], "evolutions": {"30": "MELMETAL"}, "male": -1, "moves": ["1 Static Jolt", "1 Slice", "1 Tackle", "1 Harden", "4 Alloy Beam", "8 Thunder Wave", "12 Metal Claw", "16 Acid Armor", "20 Metallurgy"]}

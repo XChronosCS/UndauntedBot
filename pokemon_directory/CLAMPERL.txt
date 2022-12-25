@@ -1,0 +1,1 @@
+{"name": "CLAMPERL", "abilities": ["Shell Armor", "Rain Dish"], "advabilities": ["Water Veil", "Battle Armor"], "highabilities": ["Sturdy"], "evolutions": {"20": ["HUNTAIL", "GOREBYSS"]}, "male": 0.5, "moves": ["1 Bubble", "1 Clamp", "1 Harden", "1 Water Sport", "4 Confuse Ray", "8 Aqua Ring", "12 Bubblebeam", "16 Iron Defense", "20 Whirlpool"]}

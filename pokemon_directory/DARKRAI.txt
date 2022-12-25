@@ -1,0 +1,1 @@
+{"name": "DARKRAI", "abilities": ["Bad Dreams"], "advabilities": ["Insomnia", "Soulstealer", "Dark Art"], "highabilities": ["Fade Away"], "evolutions": {}, "male": -1, "moves": ["1 Disable", "1 Ominous Wind", "6 Quick Attack", "10 Hypnosis", "15 Feint Attack", "19 Nightmare", "24 Double Team", "29 Haze", "33 Dark Void", "38 Nasty Plot", "42 Dream Eater", "47 Dark Pulse"]}

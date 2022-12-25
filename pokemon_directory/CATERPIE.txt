@@ -1,0 +1,1 @@
+{"name": "CATERPIE", "abilities": ["Shield Dust", "Rattled"], "advabilities": ["Silk Threads", "Stench"], "highabilities": ["Suction Cups"], "evolutions": {"5": "METAPOD", "10": "BUTTERFREE"}, "male": 0.5, "moves": ["1 Tackle", "1 String Shot", "1 Swift Sting", "1 Growth", "4 Bind", "8 Headbutt", "12 Bug Bite", "16 Infestation", "20 Sticky Web"]}

@@ -1,0 +1,1 @@
+{"name": "CHINGLING", "abilities": ["Levitate", "Serene Grace"], "advabilities": ["Magic Guard", "Probablity Control"], "highabilities": ["Cute Charm"], "evolutions": {"20": "CHIMECHO"}, "male": 0.5, "moves": ["1 Confusion", "1 Round", "1 Hypnosis", "1 Wrap", "4 Yawn", "8 Lucky Chant", "12 Safeguard", "16 Enchanting Aria", "20 Heal Bell"]}

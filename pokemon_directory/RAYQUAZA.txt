@@ -1,0 +1,1 @@
+{"name": "RAYQUAZA", "abilities": ["Air Lock"], "advabilities": ["Marvel Scale", "Rocket", "Run Away"], "highabilities": ["Pressure"], "evolutions": {}, "male": -1, "moves": ["1 Twister", "3 Scary Face", "8 Ancient Power", "10 Crunch", "15 Air Slash", "18 Rest", "23 Extreme Speed", "25 Dragon Pulse", "30 Dragon Dance", "33 Fly", "38 Hyper Voice", "40 Outrage", "45 Hyper Beam"]}

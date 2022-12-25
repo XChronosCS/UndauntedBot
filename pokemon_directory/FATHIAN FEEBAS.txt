@@ -1,0 +1,1 @@
+{"name": "FATHIAN FEEBAS", "abilities": ["Ugly", "Swift Swim"], "advabilities": ["Blaze", "Klutz"], "highabilities": ["Simple"], "evolutions": {"20": "FATHIAN MILOTIC"}, "male": 0.5, "moves": ["1 Ember", "1 Tackle", "1 Splash", "1 Water Sport", "4 Hypnosis", "8 Flame Burst", "12 Flail", "16 Bubblebeam", "20 Bounce"]}

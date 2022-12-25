@@ -1,0 +1,1 @@
+{"name": "KRICKETOT", "abilities": ["Shed Skin", "Tinted Lens"], "advabilities": ["Run Away", "Technician"], "highabilities": ["Drown Out"], "evolutions": {"15": "KRICKETUNE"}, "male": 0.5, "moves": ["1 Struggle Bug", "1 Round", "1 Tackle", "1 Bide", "4 Focus Energy", "8 Bug Bite", "12 Sing", "16 Screech", "20 Uproar"]}

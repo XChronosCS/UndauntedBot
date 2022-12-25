@@ -1,0 +1,1 @@
+{"name": "FLAREON", "abilities": ["Flash Fire", "Flame Body"], "advabilities": ["Type Aura (Fire)", "Guts"], "highabilities": ["Fiery Crash"], "evolutions": {"20": "FLAREON"}, "male": 0.5, "moves": ["1 Tackle", "1 Snuggle", "1 Growl", "1 Helping Hand", "4 Quick Attack", "8 Sand Attack", "12 Swift", "16 Bite", "20 Covet"]}

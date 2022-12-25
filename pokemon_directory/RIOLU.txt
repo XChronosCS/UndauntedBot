@@ -1,0 +1,1 @@
+{"name": "RIOLU", "abilities": ["Steadfast", "Inner Focus"], "advabilities": ["Celebrate", "Sprint"], "highabilities": ["Prankster"], "evolutions": {"20": "LUCARIO"}, "male": 0.5, "moves": ["1 Mach Punch", "1 Force Bullet", "1 Quick Attack", "1 Feint", "4 Foresight", "8 Bullet Punch", "12 Force Palm", "16 Counter", "20 Detect"]}

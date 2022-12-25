@@ -1,0 +1,1 @@
+{"name": "SNOM", "abilities": ["Shield Dust", "Ice Shield"], "advabilities": ["Ice Scales", "Magic Guard"], "highabilities": ["Frostbite"], "evolutions": {"20": "FROSMOTH"}, "male": 0.5, "moves": ["1 Powder Snow", "1 Dull Drone", "1 Tackle", "1 String Shot", "4 Fairy Wind", "8 Headbutt", "12 Bug Bite", "16 Icy Wind", "20 Infestation"]}

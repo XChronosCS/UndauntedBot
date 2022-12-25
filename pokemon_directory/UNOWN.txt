@@ -1,0 +1,1 @@
+{"name": "UNOWN", "abilities": ["Levitate", "Forewarn"], "advabilities": ["Perception", "Keen Eye"], "highabilities": ["Unlocked Potential"], "evolutions": {}, "male": -1, "moves": ["1 Hidden Power"]}

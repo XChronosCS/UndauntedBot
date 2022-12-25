@@ -1,0 +1,1 @@
+{"name": "POIPOLE", "abilities": ["Beast Boost"], "advabilities": ["Poison Point", "Poison Touch", "Hustle"], "highabilities": ["Deadly Poison"], "evolutions": {"20": "NAGANADEL"}, "male": -1, "moves": ["1 Acid", "1 Dragon Breath", "1 Peck", "1 Harden", "4 Fury Attack", "8 Venom Drench", "12 Venoshock", "16 Fell Stinger", "20 Toxic"]}

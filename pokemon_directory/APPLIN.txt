@@ -1,0 +1,1 @@
+{"name": "APPLIN", "abilities": ["Gluttony", "Immunity"], "advabilities": ["Ripen", "Decoy"], "highabilities": ["Bulletproof"], "evolutions": {"20": ["FLAPPLE", "APPLETUN"]}, "male": 0.5, "moves": ["1 Leafage", "1 Dragon Breath", "1 Toxin Splash", "1 Leech Seed", "4 Defense Curl", "8 Rollout", "12 Protect", "16 Headbutt", "20 Razor Leaf"]}

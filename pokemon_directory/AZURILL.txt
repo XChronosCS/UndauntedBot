@@ -1,0 +1,1 @@
+{"name": "AZURILL", "abilities": ["Huge Power", "Cute Tears"], "advabilities": ["Type Aura (Water)", "Run Away"], "highabilities": ["Wash Away"], "evolutions": {"10": "MARILL", "20": "AZUMARILL"}, "male": 0.5, "moves": ["1 Snuggle", "1 Bubble", "1 Tackle", "1 Splash", "4 Tail Whip", "8 Aqua Jet", "12 Helping Hand", "16 Bubblebeam", "20 Slam"]}

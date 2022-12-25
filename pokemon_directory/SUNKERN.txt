@@ -1,0 +1,1 @@
+{"name": "SUNKERN", "abilities": ["Chloropyll", "Sol Veil"], "advabilities": ["Sun Blanket", "Solar Power"], "highabilities": ["Drought"], "evolutions": {"20": "SUNFLORA"}, "male": 0.5, "moves": ["1 Absorb", "1 Tackle", "1 Synthesis", "1 Growth", "4 Grass Whistle", "8 Encore", "12 Mega Drain", "16 Leech Seed", "20 Nature Power"]}

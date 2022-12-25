@@ -1,0 +1,1 @@
+{"name": "WYNAUT", "abilities": ["Weeble"], "advabilities": ["Telepathy", "Oblivious", "Shadow Tag"], "highabilities": ["Wobble"], "evolutions": {"15": "WOBBUFFET"}, "male": 0.5, "moves": ["1 Psy Bolt", "1 Confusion", "1 Charm", "1 Splash", "4 Encore", "8 Safeguard", "12 Counter", "16 Mirror Coat", "20 Payback"]}

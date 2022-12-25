@@ -1,0 +1,1 @@
+{"name": "UXIE", "abilities": ["Levitate"], "advabilities": ["Forewarn", "Telepathy", "Frisk"], "highabilities": ["Anticipation"], "evolutions": {}, "male": -1, "moves": ["1 Rest", "1 Confusion", "3 Imprison", "8 Endure", "11 Swift", "16 Yawn", "18 Future Sight", "23 Amnesia", "25 Extrasensory", "31 Flail", "33 Natural Gift", "38 Memento"]}

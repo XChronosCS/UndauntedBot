@@ -1,0 +1,1 @@
+{"name": "TOXEL", "abilities": ["Static", "Poison Point"], "advabilities": ["Rattled", "Klutz"], "highabilities": ["Moody"], "evolutions": {"20": "TOXTRICITY"}, "male": 0.5, "moves": ["1 Nuzzle", "1 Growl", "1 Tackle", "1 Acid", "4 Thunder Shock", "8 Metal Sound", "12 Charge", "16 Spark", "20 Shock Wave"]}

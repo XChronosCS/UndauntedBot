@@ -1,0 +1,1 @@
+{"name": "REGIGIGAS", "abilities": ["Slow Start"], "advabilities": ["Clear Body", "Battle Armor", "Last Chance"], "highabilities": ["Unaware"], "evolutions": {}, "male": -1, "moves": ["1 Confuse Ray", "1 Dizzy Punch", "1 Foresight", "1 Knock Off", "13 Revenge", "20 Wide Guard", "25 Zen Headbutt", "33 Payback", "38 Crush Grip", "45 Heavy Slam", "50 Giga Impact"]}

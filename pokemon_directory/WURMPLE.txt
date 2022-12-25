@@ -1,0 +1,1 @@
+{"name": "WURMPLE", "abilities": ["Shield Dust", "Poison Point"], "advabilities": ["Rattled", "Silk Threads"], "highabilities": ["Suction Cups"], "evolutions": {"5": ["SILCOON", "CASCOON"]}, "male": 0.5, "moves": ["1 Tackle", "1 Swift Sting", "1 Poison Sting", "1 String Shot", "4 Bind", "8 Headbutt", "12 Bug Bite", "16 Fell Stinger", "20 Sticky Web"]}

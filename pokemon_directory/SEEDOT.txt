@@ -1,0 +1,1 @@
+{"name": "SEEDOT", "abilities": ["Sturdy", "Early Bird"], "advabilities": ["Pickpocket", "Overcoat"], "highabilities": ["Bulletproof"], "evolutions": {"15": "NUZLEAF", "25": "SHIFTRY"}, "male": 0.5, "moves": ["1 Tackle", "1 Branch Poke", "1 Bide", "1 Harden", "4 Growth", "8 Headbutt", "12 Bullet Seed", "16 Synthesis", "20 Nature Power"]}

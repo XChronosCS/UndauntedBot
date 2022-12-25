@@ -1,0 +1,1 @@
+{"name": "BLIPBUG", "abilities": ["Swarm", "Perception"], "advabilities": ["Hypnotic", "Compound Eyes"], "highabilities": ["Shield Dust"], "evolutions": {"10": "DOTTLER", "30": "ORBEETLE"}, "male": 0.5, "moves": ["1 Tackle", "1 Dull Drone", "1 Confusion", "1 String Shot", "4 Pheromone Spray", "8 Hypnosis", "12 Starbeam", "16 Psybeam", "20 Recover"]}

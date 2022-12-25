@@ -1,0 +1,1 @@
+{"name": "DITTO", "abilities": ["Imposter", "Limber"], "advabilities": ["Trace", "Discipline"], "highabilities": ["Sturdy"], "evolutions": {}, "male": -1, "moves": ["1 Transform"]}

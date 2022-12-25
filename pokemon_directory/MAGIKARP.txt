@@ -1,0 +1,1 @@
+{"name": "MAGIKARP", "abilities": ["Rattled", "Swift Swim"], "advabilities": ["Decoy", "Simple"], "highabilities": ["Bulletproof"], "evolutions": {"20": "GYARADOS"}, "male": 0.5, "moves": ["1 Bubble", "1 Tackle", "1 Splash", "1 Water Sport", "4 Leer", "8 Icy Wind", "12 Flail", "16 Bubblebeam", "20 Bounce"]}
