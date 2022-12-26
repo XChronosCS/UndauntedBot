@@ -5,7 +5,7 @@ import gspread
 import pygsheets
 
 import RollingCommands
-from constants import *
+from Constants import *
 
 credentials = {
     "type": "service_account",
@@ -21,7 +21,7 @@ credentials = {
 }
 
 gc = gspread.service_account_from_dict(credentials)
-pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
+pg = pygsheets.authorize(service_file='service_account_credentials.json')
 edges_sheet = gc.open("Data Get Test Sheet")
 edges = edges_sheet.worksheet("Tutoring/Breeding").get_values('PokeEdges')
 sh = gc.open("Bot Auto Statter")

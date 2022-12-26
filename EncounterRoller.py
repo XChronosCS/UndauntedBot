@@ -21,7 +21,7 @@ TREASURE_SLOTS = [1, 10, 20, 30, 40, 50]
 
 
 gc = gspread.service_account_from_dict(credentials)
-pg = pygsheets.authorize(service_file='UndauntedBot/service_account_credentials.json')
+pg = pygsheets.authorize(service_file='service_account_credentials.json')
 
 sh = gc.open("Encounter Tables Data Doc")
 ws = pg.open("Encounter Tables Data Doc")

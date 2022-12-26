@@ -1,5 +1,6 @@
 import random
-from constants import *
+
+from Constants import *
 
 
 def chaos_roller(choice_entered):

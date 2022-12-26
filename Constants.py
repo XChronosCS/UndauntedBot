@@ -116,7 +116,6 @@ PATRONAGE_CATEGORIES = ["Pact", "Major", "Minor", "Task"]
 HARVESTABLES = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
                 "Iron Scrap", "Chem Scrap", "Honey", "Money"]
 
-
 FLUFF_CHAOS_MAGIC = [
     {
         "number": 1,

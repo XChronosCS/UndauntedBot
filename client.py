@@ -1,5 +1,4 @@
 # client.py
-import os
 import string
 from datetime import datetime
 
@@ -375,14 +374,6 @@ async def beans(ctx):
     (await ctx.send(get_beans()))
 
 
-@bot.command(name='flora')
-async def berries(ctx, *args):
-    tier = args[0]
-    amt = args[1]
-    ret_string = roll_flora(tier, amt)
-    (await ctx.send(ret_string))
-
-
 @bot.command(name='capa')
 async def capa(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -705,6 +696,14 @@ async def finance(ctx, arg):
         (await ctx.send('This is not a valid amount of money. Please try again.'))
 
 
+@bot.command(name='flora')
+async def flora(ctx, *args):
+    tier = args[0]
+    amt = args[1]
+    ret_string = roll_flora(tier, amt)
+    (await ctx.send(ret_string))
+
+
 @bot.command(name='fossil')
 async def fossil(ctx):
     result = fossil_roller()
@@ -731,7 +730,7 @@ async def guardian(ctx, *args):
 @bot.command(name='habitat', aliases=['habit'])
 async def habitat(ctx, *arg):
     arg_full = ' '.join(arg)
-    result = get_habitat(arg_full)
+    result = list_habitats(arg_full)
     (await ctx.send(result))
 
 

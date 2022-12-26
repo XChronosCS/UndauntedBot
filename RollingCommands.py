@@ -1,7 +1,7 @@
 import random
 import re
 
-from constants import *
+from Constants import *
 
 GENDER = ["Male", "Female"]
 reroll = 0
