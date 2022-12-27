@@ -19,13 +19,12 @@ from help_command import *
 from utilities import *
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('TEST_TOKEN')
 print(TOKEN)
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
 bot.remove_command('help')
-
 
 
 @bot.command(name='ability', aliases=['abil'])
@@ -369,9 +368,11 @@ async def babystat(ctx, *args):
     (await ctx.send(ret_string))
 
 
+'''
 @bot.command(name='beans')
 async def beans(ctx):
     (await ctx.send(get_beans()))
+'''
 
 
 @bot.command(name='capa')
@@ -391,6 +392,7 @@ async def chaos(ctx, *arg):
     (await ctx.send(result))
 
 
+'''
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
     def harvest_check(m):
@@ -436,6 +438,7 @@ async def cond(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_status_data(arg_full)
     (await ctx.send(result))
+'''
 
 
 @bot.command(name='cookie')
@@ -779,7 +782,8 @@ async def items(ctx, *arg):
 async def keymoves(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_keyword_moves(arg_full)
-    if (len(result) > 2000):
+    print(len(result))
+    if len(result) >= 2000:
         m_array = segment_list(result)
         for msg in m_array:
             (await ctx.send(msg))
@@ -787,6 +791,7 @@ async def keymoves(ctx, *arg):
         (await ctx.send(result))
 
 
+'''
 @bot.command(name='keyword')
 async def keyword(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -811,6 +816,7 @@ async def lorebook(ctx, *arg):
             os.remove(page)
     else:
         (await ctx.send('There is no area with this name / topic with this name in the lore book. Please try again.'))
+'''
 
 
 @bot.command(name='lum')
@@ -884,6 +890,7 @@ async def offerings(ctx):
     (await ctx.send(roll_deity()))
 
 
+'''
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
@@ -893,7 +900,7 @@ async def on_command_error(ctx, error):
         print(error)
         print(('\nCommand User: ' + str(ctx.author)))
         (await ctx.send(message, delete_after=10))
-
+'''
 
 @bot.command(name='patronage')
 @commands.guild_only()
@@ -916,12 +923,14 @@ async def patronage(ctx, *args):
             logfile.write(str_log)
 
 
+'''
 @bot.command(name='pokedex', aliases=['pokédex'])
 async def pokedex(ctx, *arg):
     name = ' '.join(arg).lower()
     get_dex_entry(name)
     (await ctx.author.send(file=discord.File('{0}.png'.format(name))))
     os.remove('{0}.png'.format(name))
+'''
 
 
 @bot.command(name='pokerandom', aliases=['prand'])
@@ -990,11 +999,13 @@ async def tech(ctx, *args):
     (await ctx.send(result))
 
 
+'''
 @bot.command(name='tm')
 async def tm(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_tutor(arg_full)
     (await ctx.send(result))
+'''
 
 
 @bot.command(name='town')
@@ -1011,11 +1022,13 @@ async def townevent(ctx):
     (await ctx.send(ret_string))
 
 
+'''
 @bot.command(name='treasure', aliases=['tfind'])
 async def treasure(ctx, *args):
     arg_full = ' '.join(args)
     result = get_treasure_spot(arg_full)
     (await ctx.send(result))
+'''
 
 
 @bot.command(name='turbo')

@@ -3,6 +3,7 @@ from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 from CollectData import infodex
+from Constants import *
 from gspread_credentials import *
 from utilities import *
 
@@ -42,11 +43,12 @@ pos = red.worksheet("Positive")
 neg = red.worksheet("Negative")
 intro = red.worksheet("Intro")
 
+'''
 # PDFs for PDF commands
-# pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
-# lore_doc = fitz.Document("Documents/Phemenon Lore Book.pdf")
-# compendium = fitz.Document("Documents/Mythology Compendium.pdf")
-
+pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
+lore_doc = fitz.Document("Documents/Phemenon Lore Book.pdf")
+compendium = fitz.Document("Documents/Mythology Compendium.pdf")
+'''
 
 max_page = 1100
 
@@ -135,7 +137,7 @@ def get_item_data(name):
     else:
         similar_word = find_most_similar_string(items.keys(), name.lower())
         print(similar_word)
-        return ["There is no item by that name. Did you mean  . Did you mean " + similar_word + "?"]
+        return ["There is no item by that name. Did you mean " + similar_word + "?"]
 
 
 def get_edge_data(name):
@@ -177,8 +179,7 @@ def list_habitats(name):
     match = habitat.find(criteria, in_column=1)
     if match is None:
         similar_word = find_most_similar_string(habitat.col_values(1), name.lower())
-        print(similar_word)
-        return "This is either not the species's basic form or it cannot be found anywhere at the moment."
+        return "This is either not the species's basic form, it cannot be found anywhere at the moment, or it is misspelled. Did you mean " + similar_word + "?"
     else:
         row = match.row
         ret_array = []
@@ -188,7 +189,6 @@ def list_habitats(name):
                 ret_array.append(x.value)
         ret_string = "This pokemon is found in the following locations: " + ", ".join(ret_array)
         return ret_string
-
 
 
 def show_mechanics():
@@ -215,46 +215,32 @@ def get_technique(name):
         ret_string += "\n\n" + data_block["Effect"]
         return ret_string
     else:
-        similar_word = find_most_similar_string(extras.col_values(4), name.lower())
+        similar_word = find_most_similar_string(techniques.keys(), name.lower())
         print(similar_word)
         return "There is no technique by that name. Did you mean " + similar_word + "?"
 
 
-'''
-
-
 def get_order(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = features.find(criteria, in_column=6)
-    if match is None:
-        match = features.find(criteria, in_column=9)
-        if match is None:
-            similar_word = find_most_similar_string(features.col_values(6), name.lower())
-            print(similar_word)
-            return "There is no general order by that name"
-        else:
-            row = match.row
-            col = match.col
-            ret_string = features.cell(row, col).value
-            ret_string += "\n" + features.cell(row, col + 1).value
-            ret_string += "\n\n" + features.cell(row, col + 2).value
-            return ret_string
-    else:
-        row = match.row
-        col = match.col
-        ret_string = features.cell(row, col).value
-        ret_string += "\n" + features.cell(row, col + 1).value
-        ret_string += "\n\n" + features.cell(row, col + 2).value
+    if any((match := criteria.search(item)) for item in orders.keys()):
+        data_block = orders[match.group(0)]
+        ret_string = data_block["Name"]
+        ret_string += "\n" + data_block["Frequency - Action"]
+        ret_string += "\n\n" + data_block["Effects"]
         return ret_string
+    else:
+        similar_word = find_most_similar_string(features.col_values(6), name.lower())
+        print(similar_word)
+        return "There is no general order by that name. Did you mean " + similar_word + "?"
 
 
 def get_keyword_moves(name):
     criteria = re.compile('(?i)' + name)
-    match = moves.findall(criteria, in_column=5)
-    if len(match) != 0:
-        ret_array = []
-        for x in match:
-            ret_array.append(moves.cell(x.row, 1).value)
+    ret_array = []
+    for item in moves.values():
+        if re.search(criteria, item.get("Range", "")) is not None:
+            ret_array.append(item["Attack Name"])
+    if len(ret_array) != 0:
         ret_string = "Here is a list of all moves with that keyword: " + ", ".join(ret_array)
         return ret_string
     else:
@@ -263,15 +249,12 @@ def get_keyword_moves(name):
 
 def get_flair_moves(name, typing):
     criteria = re.compile('(?i)' + name)
-    match = moves.findall(criteria, in_column=9)
-    if len(match) != 0:
-        ret_array = []
-        move_typings = moves.col_values(2)
-        for x in match:
-            if move_typings[x.row - 1] == typing.title():
-                ret_array.append(moves.cell(x.row, 1).value)
-        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(
-            ret_array)
+    ret_array = []
+    for item in moves.values():
+        if (re.search(criteria, item["Flair Battle Type / Effect"]) is not None) and (item["Type"] == typing.title()):
+            ret_array.append(item["Attack Name"])
+    if len(ret_array) != 0:
+        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(ret_array)
         return ret_string
     else:
         return "That is not a valid style tag. Please try again"
@@ -294,24 +277,6 @@ def poke_moves(name):
     ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(
         ret_array)
     return ret_string
-
-
-def make_text(words):
-    """Return textstring output of get_text("words").
-    Word items are sorted for reading sequence left to right,
-    top to bottom.
-    """
-    line_dict = {}  # key: vertical coordinate, value: list of words
-    words.sort(key=lambda w: w[0])  # sort by horizontal coordinate
-    for w in words:  # fill the line dictionary
-        y1 = round(w[3], 1)  # bottom of a word: don't be too picky!
-        word = w[4]  # the text of the word
-        line = line_dict.get(y1, [])  # read current line content
-        line.append(word)  # append new word
-        line_dict[y1] = line  # write back to dict
-    lines = list(line_dict.items())
-    lines.sort()  # sort vertically
-    return " ".join([" ".join(line[1]) for line in lines])
 
 
 """
@@ -350,9 +315,9 @@ def poke_capability(name):
         mon_names)
     return ret_string
     
-    """
-'''
+"""
 
+'''
 def get_data(name):
     final_string = ''
     num_hits = 0
@@ -397,7 +362,7 @@ def get_data(name):
                "Status Condition, or Order by that name"
     else:
         return "Number of possible matches: " + str(num_hits) + "\n\n" + final_string
-
+'''
 
 def get_man_data(name):
     criteria = re.compile('(?i)^' + name + "$")
@@ -419,18 +384,18 @@ def get_man_data(name):
 
 def get_cap_data(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = misc.find(criteria, in_column=7)
-    if match is None:
-        similar_word = find_most_similar_string(misc.col_values(7), name.lower())
+    if any((match := criteria.search(item)) for item in capabilities.keys()):
+        data_block = capabilities[match.group(0)]
+        item_name = data_block["Name"]
+        item_eff = "\n" + data_block["Effect"]
+        return [item_name, item_eff]
+    else:
+        similar_word = find_most_similar_string(capabilities.keys(), name.lower())
         print(similar_word)
         return ["There is no capability by that name. Did you mean " + similar_word + "?"]
-    else:
-        row = match.row
-        cap_name = misc.cell(row, 7).value
-        cap_eff = "\n" + misc.cell(row, 8).value
-        return [cap_name, cap_eff]
 
 
+'''
 def get_keyword_data(name):
     criteria = re.compile('(?i)^' + name + "$")
     match = misc.find(criteria, in_column=17)
@@ -460,9 +425,6 @@ def get_status_data(name):
         return ret_val
 
 
-'''
-
-
 def get_treasure_spot(name):
     criteria = re.compile('(?i)^' + name + "$")
     match = encounters.findall(criteria)
@@ -475,9 +437,6 @@ def get_treasure_spot(name):
             areas.append(encounters.cell(2, col).value)
         ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(areas)
         return ret_val
-
-
-"""
 
 
 def get_dex_entry(name):
@@ -530,6 +489,8 @@ def get_legend_entry(name):
             pix.save(file_name)
             matching_pages.append(file_name)
     return matching_pages
+
+'''
 """
 
 
@@ -540,3 +501,4 @@ def get_beans():
     bean_taste = random.choice(bean_options)
     intro_text = random.choice(intro_choice)
     return intro_text + " " + bean_taste
+"""
