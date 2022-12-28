@@ -120,7 +120,7 @@ def segment_list(text):
     messages = []  # Array of individual messages that the bot will send to make up the task
     txt_block = ""
     for block in paragraphs:
-        if len(txt_block + block) > 2000:
+        if len(txt_block + block) >= 1999:
             messages.append(txt_block)
             txt_block = ""
         txt_block += block + ", "

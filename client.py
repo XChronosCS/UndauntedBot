@@ -320,7 +320,12 @@ async def adventure(ctx, *arg):
 async def amons(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_ability(arg_full)
-    (await ctx.send(result))
+    if len(result) >= 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(result))
 
 
 @bot.command(name='arcana')
@@ -786,7 +791,6 @@ async def items(ctx, *arg):
 async def keymoves(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_keyword_moves(arg_full)
-    print(len(result))
     if len(result) >= 2000:
         m_array = segment_list(result)
         for msg in m_array:
@@ -1002,7 +1006,12 @@ async def tech(ctx, *args):
 async def tm(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_tutor(arg_full)
-    (await ctx.send(result))
+    if len(result) >= 2000:
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(result))
 
 
 @bot.command(name='town')
