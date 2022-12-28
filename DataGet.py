@@ -1,3 +1,4 @@
+import fitz
 import gspread
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
@@ -43,14 +44,13 @@ pos = red.worksheet("Positive")
 neg = red.worksheet("Negative")
 intro = red.worksheet("Intro")
 
-'''
+
 # PDFs for PDF commands
 pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
 lore_doc = fitz.Document("Documents/Phemenon Lore Book.pdf")
 compendium = fitz.Document("Documents/Mythology Compendium.pdf")
-'''
 
-max_page = 1100
+max_page = 1211
 
 
 def get_arcana_edges(legend):
@@ -279,7 +279,7 @@ def poke_moves(name):
     return ret_string
 
 
-"""
+
 def poke_tutor(name):
     temp_name = name.title() if name.lower() != "light of ruin" else "Light of Ruin"
     mon_names = []
@@ -315,9 +315,9 @@ def poke_capability(name):
         mon_names)
     return ret_string
     
-"""
 
-'''
+
+
 def get_data(name):
     final_string = ''
     num_hits = 0
@@ -362,32 +362,31 @@ def get_data(name):
                "Status Condition, or Order by that name"
     else:
         return "Number of possible matches: " + str(num_hits) + "\n\n" + final_string
-'''
+
 
 def get_man_data(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = moves.find(criteria, in_column=10)
-    if match is None:
-        similar_word = find_most_similar_string(moves.col_values(10), name.lower())
-        print(similar_word)
-        return ["There is no manuever by that name. Did you mean " + similar_word + "?"]
+    if any((match := criteria.search(item)) for item in maneuvers.keys()):
+        data_block = maneuvers[match.group(0)]
+        manu_name = "Name: " + data_block["Name"]
+        manu_class = "\n" + data_block["Class"]
+        manu_freq = "\n" + data_block["Action"]
+        manu_range = "\n" + data_block["Range"]
+        manu_ac = "\nAC: " + data_block["AC"]
+        manu_eff = "\nEffect: " + data_block["Effect"]
+        return [manu_name, manu_class, manu_freq, manu_range, manu_ac, manu_eff]
     else:
-        row = match.row
-        move_name = "Name: " + moves.cell(row, 10).value
-        move_type = "\nClass: " + moves.cell(row, 11).value
-        move_freq = "\nAction: " + moves.cell(row, 12).value
-        move_range = "\nRange " + moves.cell(row, 13).value
-        move_ac = "\nAC: " + str(moves.cell(row, 14).value)
-        move_db = "\nEffect: " + str(moves.cell(row, 15).value)
-        return [move_name, move_type, move_freq, move_range, move_ac, move_db]
+        similar_word = find_most_similar_string(moves.keys(), name.lower())
+        print(similar_word)
+        return ["There is no move by that name. Did you mean " + similar_word + "?"]
 
 
 def get_cap_data(name):
     criteria = re.compile('(?i)^' + name + "$")
     if any((match := criteria.search(item)) for item in capabilities.keys()):
         data_block = capabilities[match.group(0)]
-        item_name = data_block["Name"]
-        item_eff = "\n" + data_block["Effect"]
+        item_name = data_block["Capability"]
+        item_eff = "\n" + data_block["Description"]
         return [item_name, item_eff]
     else:
         similar_word = find_most_similar_string(capabilities.keys(), name.lower())
@@ -395,34 +394,30 @@ def get_cap_data(name):
         return ["There is no capability by that name. Did you mean " + similar_word + "?"]
 
 
-'''
 def get_keyword_data(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = misc.find(criteria, in_column=17)
-    if match is None:
-        similar_word = find_most_similar_string(misc.col_values(17), name.lower())
-        print(similar_word)
-        return "There is no keyword by that name. Did you mean " + similar_word + "?"
+    if any((match := criteria.search(item)) for item in keywords.keys()):
+        data_block = keywords[match.group(0)]
+        item_name = data_block["Attack Keyword"]
+        item_eff = "\n" + data_block["Effect"]
+        return [item_name, item_eff]
     else:
-        row = match.row
-        ret_string = misc.cell(row, 17).value
-        ret_string += "\n" + misc.cell(row, 18).value
-        return ret_string
+        similar_word = find_most_similar_string(capabilities.keys(), name.lower())
+        print(similar_word)
+        return ["There is no keyword by that name. Did you mean " + similar_word + "?"]
 
 
 def get_status_data(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = misc.find(criteria, in_column=9)
-    if match is None:
-        similar_word = find_most_similar_string(misc.col_values(9), name.lower())
-        print(similar_word)
-        return "There is no status condition by that name"
+    if any((match := criteria.search(item)) for item in statuses.keys()):
+        data_block = statuses[match.group(0)]
+        item_name = data_block["Status"]
+        item_eff = "\n" + data_block["Effect"]
+        return [item_name, item_eff]
     else:
-        row = match.row
-        ret_val = misc.cell(row, 9).value
-        ret_val += "\nRegular Effect: " + misc.cell(row, 10).value
-        ret_val += "\nBoss Effect: " + misc.cell(row, 11).value
-        return ret_val
+        similar_word = find_most_similar_string(statuses.keys(), name.lower())
+        print(similar_word)
+        return ["There is no status by that name. Did you mean " + similar_word + "?"]
 
 
 def get_treasure_spot(name):
@@ -490,7 +485,7 @@ def get_legend_entry(name):
             matching_pages.append(file_name)
     return matching_pages
 
-'''
+
 """
 
 

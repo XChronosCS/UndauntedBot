@@ -15,7 +15,6 @@ from RollingCommands import *
 from TableRoller import *
 from TownEvents import *
 from autostatter import *
-from help_command import *
 from utilities import *
 
 load_dotenv()
@@ -73,7 +72,7 @@ async def adfull(ctx, *arg):
         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 101)))
 
     def check(m):
-        return ((m.author == user) and (m.channel == channel) and (m.content.lower() in ['y', 'n']))
+        return (m.author == user) and (m.channel == channel) and (m.content.lower() in ['y', 'n'])
 
     sent = (await ctx.send('Are they treasure hunting anything? Respond with y for yes or n for no'))
     msg = (await bot.wait_for('message', check=check))
@@ -394,7 +393,6 @@ async def chaos(ctx, *arg):
     (await ctx.send(result))
 
 
-'''
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
     def harvest_check(m):
@@ -440,7 +438,6 @@ async def cond(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_status_data(arg_full)
     (await ctx.send(result))
-'''
 
 
 @bot.command(name='cookie')
@@ -523,6 +520,7 @@ async def eggroll(ctx, *arg):
     (await ctx.send(ret_string))
 
 
+"""
 @bot.command(name='exploration', aliases=['explo'])
 async def exploration(ctx, *arg):
     pl = arg[(- 1)]
@@ -683,6 +681,8 @@ async def exploration(ctx, *arg):
             scav_string += ('You have scavenged the following: ' + roll_harvest_table(area))
         (await ctx.send(scav_string))
 
+"""
+
 
 @bot.command(name='feature', aliases=['feats'])
 async def feature(ctx, *arg):
@@ -739,6 +739,7 @@ async def habitat(ctx, *arg):
     (await ctx.send(result))
 
 
+"""
 @bot.command(name='poryhelp', aliases=['phelp'])
 async def help(ctx):
     menu_one = list(get_cat_first())
@@ -770,6 +771,7 @@ async def help(ctx):
     descrip = command_help(menu_one[int(choice.content)], menu_two[int(choice_two.content)])
     embed = discord.Embed(title=('!' + menu_two[int(choice_two.content)]), description=descrip, color=4260860)
     (await ctx.send(embed=embed))
+"""
 
 
 @bot.command(name='items')
@@ -793,7 +795,6 @@ async def keymoves(ctx, *arg):
         (await ctx.send(result))
 
 
-'''
 @bot.command(name='keyword')
 async def keyword(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -818,7 +819,6 @@ async def lorebook(ctx, *arg):
             os.remove(page)
     else:
         (await ctx.send('There is no area with this name / topic with this name in the lore book. Please try again.'))
-'''
 
 
 @bot.command(name='lum')
@@ -892,7 +892,6 @@ async def offerings(ctx):
     (await ctx.send(roll_deity()))
 
 
-'''
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
@@ -902,7 +901,7 @@ async def on_command_error(ctx, error):
         print(error)
         print(('\nCommand User: ' + str(ctx.author)))
         (await ctx.send(message, delete_after=10))
-'''
+
 
 @bot.command(name='patronage')
 @commands.guild_only()
@@ -925,14 +924,12 @@ async def patronage(ctx, *args):
             logfile.write(str_log)
 
 
-'''
 @bot.command(name='pokedex', aliases=['pokédex'])
 async def pokedex(ctx, *arg):
     name = ' '.join(arg).lower()
     get_dex_entry(name)
     (await ctx.author.send(file=discord.File('{0}.png'.format(name))))
     os.remove('{0}.png'.format(name))
-'''
 
 
 @bot.command(name='pokerandom', aliases=['prand'])
@@ -1001,13 +998,11 @@ async def tech(ctx, *args):
     (await ctx.send(result))
 
 
-'''
 @bot.command(name='tm')
 async def tm(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_tutor(arg_full)
     (await ctx.send(result))
-'''
 
 
 @bot.command(name='town')
@@ -1024,13 +1019,11 @@ async def townevent(ctx):
     (await ctx.send(ret_string))
 
 
-'''
 @bot.command(name='treasure', aliases=['tfind'])
 async def treasure(ctx, *args):
     arg_full = ' '.join(args)
     result = get_treasure_spot(arg_full)
     (await ctx.send(result))
-'''
 
 
 @bot.command(name='turbo')
