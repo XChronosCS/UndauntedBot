@@ -21,8 +21,10 @@ from utilities import *
 load_dotenv()
 TOKEN = os.getenv('TEST_TOKEN')
 print(TOKEN)
+intents = discord.Intents.default()
+intents.messages = True
 
-bot = commands.Bot(command_prefix='!', case_insensitive=True)
+bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
 
 bot.remove_command('help')
 
