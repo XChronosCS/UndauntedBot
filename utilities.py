@@ -204,3 +204,43 @@ def make_text(words):
     lines = list(line_dict.items())
     lines.sort()  # sort vertically
     return " ".join([" ".join(line[1]) for line in lines])
+
+
+def search_cell_value(data, name):
+    # Compile the regex pattern
+    regex = re.compile('(?i)^' + name + "$")
+
+    # Get the sheet data
+    sheet_data = data["Encounter Slots"]
+
+    # Create a list to store the matching keys
+    matching_keys = []
+
+    # Iterate over the columns in the sheet
+    for key, nested_dict in sheet_data.items():
+        # Iterate over the cells in the column
+        for row_num, (val, comment) in nested_dict.items():
+            # If the cell value matches the regex pattern, add the key to the list
+            if regex.match(val):
+                matching_keys.append(key)
+
+    # If there are no matching keys, find the most similar value
+    if not matching_keys:
+        # Get a list of all the values in the sheet
+        all_values = [val for nested_dict in sheet_data.values() for row_num, (val, comment) in nested_dict.items()]
+
+        # Find the most similar value
+        most_similar_value = find_most_similar_string(all_values, name)
+
+        return ["NO MATCH FOUND", most_similar_value]
+    return matching_keys
+
+
+def create_item_list(items_string):
+    items = []
+    lines = items_string.split('\n')
+    for line in lines:
+        # Use a regular expression to remove the number from the beginning of the line
+        item = re.sub(r'^\d+\s+', '', line)
+        items.append(item)
+    return items

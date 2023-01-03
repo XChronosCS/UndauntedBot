@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from pytz import timezone
 
 from DataGet import *
-from EncounterRoller import *
 from Patronage import *
 from PokeRoller import *
 from RollingCommands import *
@@ -828,7 +827,7 @@ async def lorebook(ctx, *arg):
 @bot.command(name='lum')
 async def lum(ctx, *arg):
     arg_full = ' '.join(arg)
-    result = poke_moves(arg_full)
+    result = learn_move(arg_full)
     if (len(result) > 2000):
         m_array = segment_list(result)
         for msg in m_array:
@@ -1025,6 +1024,13 @@ async def town(ctx, *arg):
 async def townevent(ctx):
     result = get_town_event()
     ret_string = ((((('Event Invoked By: ' + ctx.author.mention) + '\n') + result[0]) + '\n') + result[1])
+    (await ctx.send(ret_string))
+
+@bot.command(name='edge')
+async def trait(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_trait_data(arg_full)
+    ret_string = ''.join(result)
     (await ctx.send(ret_string))
 
 

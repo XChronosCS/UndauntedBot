@@ -3,7 +3,7 @@ import gspread
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-from CollectData import infodex
+from CollectData import infodex, worlddex
 from Constants import *
 from gspread_credentials import *
 from utilities import *
@@ -29,6 +29,11 @@ capabilities = infodex["capabilities"]
 keywords = infodex["keywords"]
 statuses = infodex["statuses"]
 maneuvers = infodex["maneuvers"]
+books = infodex["books"]
+weathers = infodex["weathers"]
+affiliations = infodex["affiliations"]
+heritages = infodex["heritages"]
+influences = infodex["influences"]
 habitat = gc.open("Data Habitat Areas").worksheet("Data")
 
 # Finding Treasure Sheets Loading
@@ -43,7 +48,6 @@ red = gc.open("them beans")
 pos = red.worksheet("Positive")
 neg = red.worksheet("Negative")
 intro = red.worksheet("Intro")
-
 
 # PDFs for PDF commands
 pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
@@ -89,7 +93,8 @@ def get_ability_data(name):
     :param name: String name of the ability in question
     :return: Description of the ability.
     """
-    criteria = re.compile('(?i)^' + name + "$")  # Searches for the entered name regardless of capitalization and formatting.
+    criteria = re.compile(
+        '(?i)^' + name + "$")  # Searches for the entered name regardless of capitalization and formatting.
     if any((match := criteria.search(item)) for item in abilities.keys()):  # This code checks if any of the keys in
         # the abilities dictionary match the search criteria and assigns the match object to the variable "match" if
         # a match is found.
@@ -152,6 +157,20 @@ def get_edge_data(name):
         similar_word = find_most_similar_string(edges.keys(), name.lower())
         print(similar_word)
         return ["There is no edge by that name. Did you mean " + similar_word + "?"]
+
+
+def get_trait_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in edges.keys()):
+        data_block = edges[match.group(0)]
+        edge_name = data_block["Name"]
+        edge_prereq = "\n" + data_block["Prerequisites"]
+        edge_eff = "\n" + data_block["Effect"]
+        return [edge_name, edge_prereq, edge_eff]
+    else:
+        similar_word = find_most_similar_string(edges.keys(), name.lower())
+        print(similar_word)
+        return ["There is no trait by that name. Did you mean " + similar_word + "?"]
 
 
 def get_move_data(name):
@@ -254,48 +273,42 @@ def get_flair_moves(name, typing):
         if (re.search(criteria, item["Flair Battle Type / Effect"]) is not None) and (item["Type"] == typing.title()):
             ret_array.append(item["Attack Name"])
     if len(ret_array) != 0:
-        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(ret_array)
+        ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(
+            ret_array)
         return ret_string
     else:
         return "That is not a valid style tag. Please try again"
 
 
 def poke_ability(name):
-    temp_name = name.title() if name.lower() != "power of alchemy" else "Power of Alchemy"
-    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if
-                 temp_name in pokemon['abilities'] or temp_name in pokemon['advabilities'] or temp_name in pokemon[
-                     'highabilities']]
-    ret_string = "**Here is a list of all the pokemon with the ability " + temp_name + ":** " + ", ".join(ret_array)
+    basic_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() if
+                   name.lower() in (item.lower() for item in pokemon['abilities'])]
+    adv_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() if
+                 name.lower() in (item.lower() for item in pokemon['advabilities'])]
+    high_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() if
+                  name.lower() in (item.lower() for item in pokemon['highabilities'])]
+    ret_string = "**__Here is a list of all the pokemon with the ability " + name.title() + ":__**\n**Obtained as a Basic Ability:** " + ", ".join(
+        basic_array) + "\n\n**Obtained as an Advanced Ability:** " + ", ".join(
+        adv_array) + "\n\n**Obtained as a High Ability:** " + ", ".join(high_array)
     return ret_string
 
 
-def poke_moves(name):
-    first_name = name.title() if name.lower() != "roar of time" else "Roar of Time"
-    temp_name = first_name.title() if first_name.lower() != "light of ruin" else "Light of Ruin"
-    ret_array = [pokemon['name'].title() for pokemon in ALLPOKEMON if
-                 any(temp_name in full_name for full_name in pokemon["moves"])]
-    ret_string = "**Here is a list of all the pokemon with the level up move " + temp_name + ":** " + ", ".join(
-        ret_array)
-    return ret_string
-
-
-
-def poke_tutor(name):
-    temp_name = name.title() if name.lower() != "light of ruin" else "Light of Ruin"
-    mon_names = []
-    for entry in pokedex.pages(11, max_page):
-        tutor_rect = fitz.Rect(360, 386, 576, 690)
-        name_rect = fitz.Rect(28, 0, 457, 60)
-        word_page = entry.get_text("words")
-        tutor_temp = [w for w in word_page if fitz.Rect(w[:4]) in tutor_rect]
-        tutor_moves = make_text(tutor_temp)
-        if temp_name in tutor_moves:
-            temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
-            poke_name = make_text(temp)
-            mon_names.append(poke_name)
-    ret_string = "**List of pokemon with the tutor move " + temp_name + ":** " + ", ".join(
-        mon_names)
-    return ret_string
+def learn_move(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in moves.keys()):
+        tm_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() for full_name in pokemon["moves"] if
+                    name.lower() in full_name.lower() if "Tutor" in full_name]
+        lvl_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() for full_name in pokemon["moves"] if
+                     name.lower() in full_name.lower() if "Tutor" not in full_name]
+        tm_array.sort()
+        lvl_array.sort()
+        ret_string = "**__Here is a list of all the pokemon who can learn the move " + name.title() + ":__** \n**Can Learn by Level Up:** " + ", ".join(
+            lvl_array) + "\n\n**Can learn through Move Tutor:** " + ", ".join(tm_array)
+        return ret_string
+    else:
+        similar_word = find_most_similar_string(moves.keys(), name.lower())
+        print(similar_word)
+        return ["There is no move by that name. Did you mean " + similar_word + "?"]
 
 
 def poke_capability(name):
@@ -314,8 +327,27 @@ def poke_capability(name):
     ret_string = "**List of all pokemon with capability " + temp_name + ":** " + ", ".join(
         mon_names)
     return ret_string
-    
 
+
+def poke_flair(name, flair):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in ALLPOKEMON.keys()):
+        data_block = ALLPOKEMON[match.group(0)]
+        level_list = [full_name.split(" ", maxsplit=1)[1] for full_name in data_block["moves"] if
+                      "Tutor" not in full_name]
+        tutor_list = [full_name.split(" ", maxsplit=1)[1] for full_name in data_block["moves"] if "Tutor" in full_name]
+        level_flair_moves = [move_name for move_name in level_list if
+                             moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
+        tm_flair_moves = [move_name for move_name in tutor_list if
+                          moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
+        ret_string = "**__Here is a list of all moves learned by " + name.title() + " with the style tag " + flair.title() + ":__** \n**Can Learn by Level Up:** " + ", ".join(
+            level_flair_moves) + "\n\n**Can learn through Move Tutor:** " + ", ".join(tm_flair_moves)
+        return ret_string
+
+    else:
+        similar_word = find_most_similar_string(ALLPOKEMON.keys(), name.upper())
+        print(similar_word)
+        return ["There is no move by that name. Did you mean " + similar_word.title() + "?"]
 
 
 def get_data(name):
@@ -349,7 +381,7 @@ def get_data(name):
     if ret_string != "There is no capability by that name":
         num_hits += 1
         final_string += "Class: Capability\n" + ret_string + "\n\n"
-    ret_string = get_status_data(name)
+    ret_string = ''.join(get_status_data(name))
     if ret_string != "There is no status condition by that name":
         num_hits += 1
         final_string += "Class: Status Condition\n" + ret_string + "\n\n"
@@ -413,24 +445,93 @@ def get_status_data(name):
         data_block = statuses[match.group(0)]
         item_name = data_block["Status"]
         item_eff = "\n" + data_block["Effect"]
-        return [item_name, item_eff]
+        item_boss = "\n" + data_block["Boss Effect"]
+        return [item_name, item_eff, item_boss]
     else:
         similar_word = find_most_similar_string(statuses.keys(), name.lower())
         print(similar_word)
         return ["There is no status by that name. Did you mean " + similar_word + "?"]
 
 
-def get_treasure_spot(name):
+def get_book_data(name):
     criteria = re.compile('(?i)^' + name + "$")
-    match = encounters.findall(criteria)
-    if len(match) == 0:
-        return "No Treasure of that name can be found. Please make sure you are spelling it correctly."
+    if any((match := criteria.search(item)) for item in books.keys()):
+        data_block = books[match.group(0)]
+        book_name = data_block["Book Name"]
+        book_eff = "\n" + data_block["Book Effect"]
+        book_topic = "\nTopic: " + data_block["Book Topic"]
+        book_enc = "\nEncryption Type: " + data_block["Encryption Type"]
+        book_enc_dc = "\nEncryption DC: " + data_block["Encryption DC"]
+        book_type = "\nBook Type: " + data_block["Book Type"]
+        book_dc = "\nBook DC: " + data_block["Book DC"]
+        return [book_name, book_eff, book_topic, book_enc, book_enc_dc, book_type, book_dc]
     else:
-        areas = []
-        for item in match:
-            col = item.col
-            areas.append(encounters.cell(2, col).value)
-        ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(areas)
+        similar_word = find_most_similar_string(books.keys(), name.lower())
+        print(similar_word)
+        return ["There is no book by that name. Did you mean " + similar_word + "?"]
+
+
+def get_weather_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in weathers.keys()):
+        data_block = weathers[match.group(0)]
+        weather_name = data_block["Weather"]
+        weather_eff = "\n" + data_block["Effect"]
+        return [weather_name, weather_eff]
+    else:
+        similar_word = find_most_similar_string(weathers.keys(), name.lower())
+        print(similar_word)
+        return ["There is no weather by that name. Did you mean " + similar_word + "?"]
+
+
+def get_heritage_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in heritages.keys()):
+        data_block = heritages[match.group(0)]
+        heritage_name = data_block["Heritage Name"]
+        heritage_eff = "\n" + data_block["Heritage Benefits"]
+        heritage_topic = "\nDescription: " + data_block["Heritage Description"]
+        return [heritage_name, heritage_eff, heritage_topic]
+    else:
+        similar_word = find_most_similar_string(heritages.keys(), name.lower())
+        print(similar_word)
+        return ["There is no heritage by that name. Did you mean " + similar_word + "?"]
+
+
+def get_affiliation_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in affiliations.keys()):
+        data_block = affiliations[match.group(0)]
+        affiliation_name = data_block["Affiliation Name"]
+        affiliation_eff = "\nExamples: " + data_block["Affiliation Examples"]
+        affiliation_benefits = "\n" + data_block["Affiliation Benefits"]
+        affiliation_desc = "\nDescription: " + data_block["Affiliation Description"]
+        return [affiliation_name, affiliation_eff, affiliation_benefits, affiliation_desc]
+    else:
+        similar_word = find_most_similar_string(affiliations.keys(), name.lower())
+        print(similar_word)
+        return ["There is no affiliation by that name. Did you mean " + similar_word + "?"]
+
+
+def get_influence_data(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in influences.keys()):
+        data_block = influences[match.group(0)]
+        influence_name = data_block["Influence Name"]
+        influence_eff = "\n" + data_block["Influence Effects"]
+        return [influence_name, influence_eff]
+    else:
+        similar_word = find_most_similar_string(influences.keys(), name.lower())
+        print(similar_word)
+        return ["There is no influence by that name. Did you mean " + similar_word + "?"]
+
+
+def get_treasure_spot(name):
+    match = search_cell_value(worlddex, name)
+    if match[0] == "NO MATCH FOUND":
+        return "No Treasure of that name can be found. Did you mean " + match[1] + "?"
+    else:
+        ret_val = "**That treasure can be found in the following adventures areas:** " + ", ".join(match)
         return ret_val
 
 
@@ -497,3 +598,34 @@ def get_beans():
     intro_text = random.choice(intro_choice)
     return intro_text + " " + bean_taste
 """
+
+# def generate_tutor_list():
+#     pokedict = {}
+#     for item in ALLPOKEMON:
+#         pokedict[item["name"]] = item
+#     for entry in pokedex.pages(11, max_page):
+#         tutor_rect = fitz.Rect(360, 386, 576, 690)
+#         name_rect = fitz.Rect(28, 0, 457, 60)
+#         word_page = entry.get_text("words")
+#         tutor_temp = [w for w in word_page if fitz.Rect(w[:4]) in tutor_rect]
+#         tutor_moves = make_text(tutor_temp)
+#         temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
+#         poke_name = make_text(temp)
+#         index = poke_name.find(" - ")
+#         name_search = poke_name if index == -1 else poke_name[index + 3:]
+#         tutor_moves = tutor_moves.replace(" Unique:", ",")
+#         tutor_moves = tutor_moves.replace("Unique: ", "")
+#         tutor_moves = tutor_moves.replace(" Generic:", ",")
+#         tm_list = tutor_moves.split(", ")
+#         criteria = re.compile('(?i)^' + name_search + "$")
+#         if any((match := criteria.search(item)) for item in pokedict.keys()):
+#             data_block = pokedict[match.group(0)]
+#             for attack in tm_list:
+#                 data_block["moves"].append("Tutor " + attack)
+#
+#     # Iterate over the rows of data and add them to the dictionary
+#     with open('Uncommited Files/pokemon.txt', 'w', encoding='utf-8') as f:
+#         # Write the dictionary to the file as a string
+#         f.write(str(pokedict))
+
+

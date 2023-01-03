@@ -1,8 +1,12 @@
+import time
+
 import gspread
+import openpyxl
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 from gspread_credentials import *
+from utilities import *
 
 creds = ServiceAccountCredentials.from_json_keyfile_name('service_account_credentials.json',
                                                          scopes="https://www.googleapis.com/auth/documents.readonly")
@@ -11,6 +15,7 @@ service = build('docs', 'v1', credentials=creds)
 gc = gspread.service_account_from_dict(credentials)
 
 sh = gc.open("Data Get Test Sheet")
+ec = gc.open("Porybot2 Encounters Sheet")
 
 # Loading Worksheets for Primary Information Lookup
 abilities = sh.worksheet("Abilities Data")
@@ -21,14 +26,22 @@ moves = sh.worksheet("Moves Data")
 extras = sh.worksheet("Class Data")
 misc = sh.worksheet("Misc Data")
 habitat = gc.open("Data Habitat Areas").worksheet("Data")
+encounters = ec.worksheet("Encounter Slots")
+harvests = ec.worksheet("Harvest Slots")
+events = ec.worksheet("Event Slots")
 
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
               ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
               ("techniques", extras, 2, 4, 7),
               ("orders", features, 1, 6, 8), ("orders 2", features, 1, 9, 11), ("capabilities", misc, 1, 7, 8),
-              ("keywords", misc, 1, 17, 18), ("statuses", misc, 1, 9, 10), ("maneuvers", moves, 1, 10, 15)]
+              ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
+              ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
+              ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22)]
+areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
+worlddex = {}
 
+t1_start = time.perf_counter()
 for worksheet in worksheets:
 
     # Prompt the user to enter the row number to use for the key names
@@ -61,3 +74,74 @@ with open('moves.txt', 'w', encoding='utf-8') as f:
     # Write the dictionary to the file as a string
     f.write(str(infodex))
 '''
+
+wb = openpyxl.load_workbook('Documents/Porybot2 Encounters Sheet.xlsx')
+eggbook = openpyxl.load_workbook('Documents/Data Undaunted Egg Rolls.xlsx')
+# Create a dictionary to store the data for all sheets
+
+# Iterate over the sheets in the workbook
+for sheet_name in wb.sheetnames:
+    # Get the current sheet
+    ws = wb[sheet_name]
+
+    # Create a dictionary to store the data for the current sheet
+    sheet_data = {}
+
+    # Iterate over the columns in the worksheet
+    for col in ws.iter_cols(min_col=1, max_col=ws.max_column, min_row=1, max_row=70):
+        # Get the first cell in the column
+        key = col[0].value
+
+        # Create a nested dictionary for the column
+        nested_dict = {}
+
+        # Iterate over the cells in the column
+        for cell in col[1:]:
+            # Get the row number, cell value, and comment value
+            row_num = cell.row - 1
+            cell_val = cell.value
+            comment_val = cell.comment.text if cell.comment else None
+
+            # Add the row number, cell value, and comment value to the nested dictionary
+            if cell_val is not None:
+                nested_dict[str(row_num)] = (cell_val, comment_val)
+
+        # Add the nested dictionary to the sheet data dictionary
+        sheet_data[key] = nested_dict
+
+    # Add the sheet data dictionary to the main dictionary
+    worlddex[sheet_name] = sheet_data
+
+# Get the current sheet
+eggsheet = eggbook["Eggs"]
+
+# Create a dictionary to store the data for the current sheet
+eggdex = {}
+
+# Iterate over the columns in the worksheet
+for col in eggsheet.iter_cols(min_col=1, max_col=eggsheet.max_column, min_row=1, max_row=eggsheet.max_row):
+    # Get the first cell in the column
+    key = col[0].value
+
+    # Create a nested dictionary for the column
+    nested_dict = {}
+
+    # Iterate over the cells in the column
+    for cell in col[1:]:
+        # Get the row number, cell value, and comment value
+        row_num = cell.row
+        cell_val = cell.value
+        comment_val = create_item_list(cell.comment.text) if cell.comment else None
+        if comment_val is not None:
+            del comment_val[:2]
+
+        # Add the row number, cell value, and comment value to the nested dictionary
+        if cell_val is not None:
+            nested_dict[str(row_num)] = (cell_val, comment_val)
+
+    # Add the nested dictionary to the sheet data dictionary
+    eggdex[key] = nested_dict
+
+t1_stop = time.perf_counter()
+print("Elapsed time during the whole program in seconds:",
+      t1_stop - t1_start)
