@@ -128,7 +128,7 @@ def get_feature_data(name):
         return [feature_name, feature_pre, feature_tag, feature_freq, feature_eff]
     else:
         similar_word = find_most_similar_string(features.keys(), name.lower())
-        print(similar_word)
+
         return ["There is no feature by that name. Did you mean " + similar_word + "?"]
 
 
@@ -141,7 +141,7 @@ def get_item_data(name):
         return [item_name, item_eff]
     else:
         similar_word = find_most_similar_string(items.keys(), name.lower())
-        print(similar_word)
+
         return ["There is no item by that name. Did you mean " + similar_word + "?"]
 
 
@@ -155,7 +155,7 @@ def get_edge_data(name):
         return [edge_name, edge_prereq, edge_eff]
     else:
         similar_word = find_most_similar_string(edges.keys(), name.lower())
-        print(similar_word)
+
         return ["There is no edge by that name. Did you mean " + similar_word + "?"]
 
 
@@ -169,7 +169,7 @@ def get_trait_data(name):
         return [edge_name, edge_prereq, edge_eff]
     else:
         similar_word = find_most_similar_string(edges.keys(), name.lower())
-        print(similar_word)
+
         return ["There is no trait by that name. Did you mean " + similar_word + "?"]
 
 
@@ -189,7 +189,7 @@ def get_move_data(name):
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
-        print(similar_word)
+
         return ["There is no move by that name. Did you mean " + similar_word + "?"]
 
 
@@ -235,7 +235,7 @@ def get_technique(name):
         return ret_string
     else:
         similar_word = find_most_similar_string(techniques.keys(), name.lower())
-        print(similar_word)
+
         return "There is no technique by that name. Did you mean " + similar_word + "?"
 
 
@@ -249,21 +249,24 @@ def get_order(name):
         return ret_string
     else:
         similar_word = find_most_similar_string(features.col_values(6), name.lower())
-        print(similar_word)
         return "There is no general order by that name. Did you mean " + similar_word + "?"
 
 
 def get_keyword_moves(name):
-    criteria = re.compile('(?i)' + name)
-    ret_array = []
-    for item in moves.values():
-        if re.search(criteria, item.get("Range", "")) is not None:
-            ret_array.append(item["Attack Name"])
-    if len(ret_array) != 0:
-        ret_string = "Here is a list of all moves with that keyword: " + ", ".join(ret_array)
-        return ret_string
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in keywords.keys()):
+        ret_array = []
+        for item in moves.values():
+            if re.search(criteria, item.get("Range", "")) is not None:
+                ret_array.append(item["Attack Name"])
+        if len(ret_array) != 0:
+            ret_string = "Here is a list of all moves with that keyword: " + ", ".join(ret_array)
+            return ret_string
+        else:
+            return "No moves were found with that keyword."
     else:
-        return "That is not a valid attack Keyword. Please try again"
+        similar_word = find_most_similar_string(keywords.keys(), name.lower())
+        return ["There is no keyword by that name. Did you mean " + similar_word + "?"]
 
 
 def get_flair_moves(name, typing):
@@ -307,7 +310,6 @@ def learn_move(name):
         return ret_string
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
-        print(similar_word)
         return ["There is no move by that name. Did you mean " + similar_word + "?"]
 
 
@@ -346,8 +348,7 @@ def poke_flair(name, flair):
 
     else:
         similar_word = find_most_similar_string(ALLPOKEMON.keys(), name.upper())
-        print(similar_word)
-        return ["There is no move by that name. Did you mean " + similar_word.title() + "?"]
+        return ["There is no pokemon by that name. Did you mean " + similar_word.title() + "?"]
 
 
 def get_data(name):
@@ -409,7 +410,6 @@ def get_man_data(name):
         return [manu_name, manu_class, manu_freq, manu_range, manu_ac, manu_eff]
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
-        print(similar_word)
         return ["There is no move by that name. Did you mean " + similar_word + "?"]
 
 
@@ -422,7 +422,6 @@ def get_cap_data(name):
         return [item_name, item_eff]
     else:
         similar_word = find_most_similar_string(capabilities.keys(), name.lower())
-        print(similar_word)
         return ["There is no capability by that name. Did you mean " + similar_word + "?"]
 
 
@@ -434,8 +433,7 @@ def get_keyword_data(name):
         item_eff = "\n" + data_block["Effect"]
         return [item_name, item_eff]
     else:
-        similar_word = find_most_similar_string(capabilities.keys(), name.lower())
-        print(similar_word)
+        similar_word = find_most_similar_string(keywords.keys(), name.lower())
         return ["There is no keyword by that name. Did you mean " + similar_word + "?"]
 
 
@@ -449,7 +447,6 @@ def get_status_data(name):
         return [item_name, item_eff, item_boss]
     else:
         similar_word = find_most_similar_string(statuses.keys(), name.lower())
-        print(similar_word)
         return ["There is no status by that name. Did you mean " + similar_word + "?"]
 
 
@@ -467,7 +464,6 @@ def get_book_data(name):
         return [book_name, book_eff, book_topic, book_enc, book_enc_dc, book_type, book_dc]
     else:
         similar_word = find_most_similar_string(books.keys(), name.lower())
-        print(similar_word)
         return ["There is no book by that name. Did you mean " + similar_word + "?"]
 
 
@@ -480,7 +476,6 @@ def get_weather_data(name):
         return [weather_name, weather_eff]
     else:
         similar_word = find_most_similar_string(weathers.keys(), name.lower())
-        print(similar_word)
         return ["There is no weather by that name. Did you mean " + similar_word + "?"]
 
 
@@ -494,7 +489,6 @@ def get_heritage_data(name):
         return [heritage_name, heritage_eff, heritage_topic]
     else:
         similar_word = find_most_similar_string(heritages.keys(), name.lower())
-        print(similar_word)
         return ["There is no heritage by that name. Did you mean " + similar_word + "?"]
 
 
@@ -509,7 +503,6 @@ def get_affiliation_data(name):
         return [affiliation_name, affiliation_eff, affiliation_benefits, affiliation_desc]
     else:
         similar_word = find_most_similar_string(affiliations.keys(), name.lower())
-        print(similar_word)
         return ["There is no affiliation by that name. Did you mean " + similar_word + "?"]
 
 
@@ -522,7 +515,6 @@ def get_influence_data(name):
         return [influence_name, influence_eff]
     else:
         similar_word = find_most_similar_string(influences.keys(), name.lower())
-        print(similar_word)
         return ["There is no influence by that name. Did you mean " + similar_word + "?"]
 
 
@@ -628,4 +620,22 @@ def get_beans():
 #         # Write the dictionary to the file as a string
 #         f.write(str(pokedict))
 
-
+# def generate_dex_info():
+#     pokedict = {}
+#     pokedata = pokemon_data.get_all_values()
+#     for item in ALLPOKEMON.values():
+#         pokedict[item["name"]] = item
+#     key_row = pokedata[0][0:33]
+#     for i, row in enumerate(pokedata):
+#         if i == 0:
+#             continue
+#         pokemon_name = row[0].upper()
+#         if pokedict.get(pokemon_name) is not None:
+#             for j in range(len(key_row)):
+#                 pokedict[pokemon_name][key_row[j]] = row[j]
+# 
+#     # Iterate over the rows of data and add them to the dictionary
+#     with open('Uncommited Files/pokemon.py', 'w', encoding='utf-8') as f:
+#         # Write the dictionary to the file as a string
+#         f.write(str(pokedict))
+#

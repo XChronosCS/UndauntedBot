@@ -7,13 +7,13 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pytz import timezone
 
+from Autostatter import *
 from DataGet import *
 from Patronage import *
 from PokeRoller import *
 from RollingCommands import *
 from TableRoller import *
 from TownEvents import *
-from autostatter import *
 from utilities import *
 
 load_dotenv()
@@ -33,6 +33,7 @@ async def ability(ctx, *arg):
     result = get_ability_data(arg_full)
     ret_string = ''.join(result)
     (await ctx.send(ret_string))
+
 
 #
 # @bot.command(name='adfull')
@@ -397,31 +398,31 @@ async def chaos(ctx, *arg):
     (await ctx.send(result))
 
 
-# @bot.command(name='cmons')
-# async def cmons(ctx, *arg):
-#     def harvest_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(0, len(HARVESTABLES))))
-#
-#     user = ctx.author
-#     channel = ctx.channel
-#     arg_full = ' '.join(arg)
-#     if ('harvest' in arg_full.lower()):
-#         (await ctx.send(
-#             'Here is a list of harvestable items. Please enter the number next to the item you are searching for now.'))
-#         har_list = ''
-#         for i in range(len(HARVESTABLES)):
-#             har_list += (((str(i) + '. ') + HARVESTABLES[i]) + '\n')
-#         (await ctx.send(har_list))
-#         msg = (await bot.wait_for('message', check=harvest_check))
-#         material = HARVESTABLES[int(msg.content)]
-#         arg_full = ('Harvest (' + material)
-#     result = poke_capability(arg_full)
-#     if (len(result) > 2000):
-#         m_array = segment_list(result)
-#         for msg in m_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(result))
+@bot.command(name='cmons')
+async def cmons(ctx, *arg):
+    def harvest_check(m):
+        return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(0, len(HARVESTABLES))))
+
+    user = ctx.author
+    channel = ctx.channel
+    arg_full = ' '.join(arg)
+    if ('harvest' in arg_full.lower()):
+        (await ctx.send(
+            'Here is a list of harvestable items. Please enter the number next to the item you are searching for now.'))
+        har_list = ''
+        for i in range(len(HARVESTABLES)):
+            har_list += (((str(i) + '. ') + HARVESTABLES[i]) + '\n')
+        (await ctx.send(har_list))
+        msg = (await bot.wait_for('message', check=harvest_check))
+        material = HARVESTABLES[int(msg.content)]
+        arg_full = ('Harvest (' + material)
+    result = poke_capability(arg_full)
+    if (len(result) > 2000):
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(result))
 
 
 @bot.command(name='compendium')
@@ -906,26 +907,26 @@ async def on_command_error(ctx, error):
         (await ctx.send(message, delete_after=10))
 
 
-# @bot.command(name='patronage')
-# @commands.guild_only()
-# async def patronage(ctx, *args):
-#     category = args[0]
-#     legend_tuple = args[1:]
-#     legend = ' '.join(legend_tuple)
-#     if (category.title() not in PATRONAGE_CATEGORIES):
-#         (await ctx.send((category + ' is not a valid option. Please input Minor, Major, Pact, or Task')))
-#     else:
-#         notice = ((str(ctx.author.name) + ' used the patronage command to search up info on ') + legend)
-#         (await ctx.send(notice))
-#         ret_array = get_patronage_task(legend, category)
-#         for msg in ret_array:
-#             (await ctx.author.send(msg))
-#         eastern = timezone('US/Eastern')
-#         str_log = (((str(ctx.author.name) + ' used the patronage command with parameters [{0[0]}, {0[1]}] on '.format(
-#             [category, legend])) + datetime.now(eastern).strftime('%m/%d/%Y %I:%M %p')) + '\n')
-#         with open('Documents/log.txt', 'a') as logfile:
-#             logfile.write(str_log)
-#
+@bot.command(name='patronage')
+@commands.guild_only()
+async def patronage(ctx, *args):
+    category = args[0]
+    legend_tuple = args[1:]
+    legend = ' '.join(legend_tuple)
+    if (category.title() not in PATRONAGE_CATEGORIES):
+        (await ctx.send((category + ' is not a valid option. Please input Minor, Major, Pact, or Task')))
+    else:
+        notice = ((str(ctx.author.name) + ' used the patronage command to search up info on ') + legend)
+        (await ctx.send(notice))
+        ret_array = get_patronage_task(legend, category)
+        for msg in ret_array:
+            (await ctx.author.send(msg))
+        eastern = timezone('US/Eastern')
+        str_log = (((str(ctx.author.name) + ' used the patronage command with parameters [{0[0]}, {0[1]}] on '.format(
+            [category, legend])) + datetime.now(eastern).strftime('%m/%d/%Y %I:%M %p')) + '\n')
+        with open('Documents/log.txt', 'a') as logfile:
+            logfile.write(str_log)
+
 
 @bot.command(name='pokedex', aliases=['pokédex'])
 async def pokedex(ctx, *arg):
@@ -1000,6 +1001,7 @@ async def tech(ctx, *args):
     result = get_order(arg_full)
     (await ctx.send(result))
 
+
 #
 # @bot.command(name='tm')
 # async def tm(ctx, *arg):
@@ -1025,6 +1027,7 @@ async def townevent(ctx):
     result = get_town_event()
     ret_string = ((((('Event Invoked By: ' + ctx.author.mention) + '\n') + result[0]) + '\n') + result[1])
     (await ctx.send(ret_string))
+
 
 @bot.command(name='trait')
 async def trait(ctx, *arg):

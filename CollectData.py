@@ -14,6 +14,8 @@ service = build('docs', 'v1', credentials=creds)
 
 gc = gspread.service_account_from_dict(credentials)
 
+t1_start = time.perf_counter()
+
 sh = gc.open("Data Get Test Sheet")
 ec = gc.open("Porybot2 Encounters Sheet")
 
@@ -29,6 +31,8 @@ habitat = gc.open("Data Habitat Areas").worksheet("Data")
 encounters = ec.worksheet("Encounter Slots")
 harvests = ec.worksheet("Harvest Slots")
 events = ec.worksheet("Event Slots")
+pokeedges = sh.worksheet("Tutoring/Breeding")
+pokemon_data = sh.worksheet("Poke Data")
 
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
               ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
@@ -36,12 +40,12 @@ worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5)
               ("orders", features, 1, 6, 8), ("orders 2", features, 1, 9, 11), ("capabilities", misc, 1, 7, 8),
               ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
-              ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22)]
+              ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3)]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}
 
-t1_start = time.perf_counter()
+
 for worksheet in worksheets:
 
     # Prompt the user to enter the row number to use for the key names

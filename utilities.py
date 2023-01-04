@@ -244,3 +244,12 @@ def create_item_list(items_string):
         item = re.sub(r'^\d+\s+', '', line)
         items.append(item)
     return items
+
+def find_largest_smaller_number(numbers, x):
+    largest_smaller_number = None
+    # Iterate over the numbers in the list
+    for number in numbers:
+        # Check if the number is smaller than x and (either largest_smaller_number is not set or the number is greater than largest_smaller_number)
+        if number < x and (largest_smaller_number is None or number > largest_smaller_number):
+            largest_smaller_number = number
+    return largest_smaller_number
