@@ -20,12 +20,14 @@ load_dotenv()
 TOKEN = os.getenv('TEST_TOKEN')
 print(TOKEN)
 intents = discord.Intents.default()
-intents.messages = True
+intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
 
 bot.remove_command('help')
 
+
+# LEGACY COMMANDS FROM PORYBOT 1.0
 
 @bot.command(name='ability', aliases=['abil'])
 async def ability(ctx, *arg):
@@ -1045,6 +1047,17 @@ async def wander(ctx):
     for msg in g_array:
         (await ctx.send(msg))
 
+
+# NEW COMMANDS FOR PORYBOT 2.0
+
+@bot.command(name='advgen')
+async def advgen(ctx):
+    view = discord.ui.View()
+    options_list = [discord.SelectOption(label=name, value=name) for name in worlddex.keys()]
+    selectMenu = discord.ui.Select()
+    for i in options_list:
+        selectMenu.append_option(option=i)
+    view.add_item(selectMenu)
 
 
 
