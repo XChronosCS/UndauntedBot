@@ -8,11 +8,11 @@ from pytz import timezone
 from Autostatter import *
 from DataGet import *
 from Patronage import *
-from PokeRoller import *
+#  from PokeRoller import *
 from RollingCommands import *
 from TableRoller import *
 from TownEvents import *
-from Views import *
+from UIElements import *
 
 load_dotenv()
 TOKEN = os.getenv('TEST_TOKEN')
@@ -20,10 +20,8 @@ print(TOKEN)
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
-
-bot.remove_command('help')
-
+bot = commands.Bot(command_prefix='/', case_insensitive=True, intents=intents)
+UNDAUNTED_GUILD_ID = discord.Object(id = 712378096229023825)
 
 # LEGACY COMMANDS FROM PORYBOT 1.0
 
@@ -448,10 +446,10 @@ async def cookie(ctx, person: discord.Member = None):
     (await ctx.send(embed=embed))
 
 
-@bot.command(name='details')
-async def details(ctx):
-    (await ctx.send(roll_details()))
-
+# @bot.command(name='details')
+# async def details(ctx):
+#     (await ctx.send(roll_details()))
+#
 
 @bot.command(aliases=['droll', 'dr'])
 async def diceroll(ctx, *args):
@@ -489,35 +487,36 @@ async def edge(ctx, *arg):
     (await ctx.send(ret_string))
 
 
-@bot.command(name='eggmove', aliases=['emove'])
-async def eggmove(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
-    result = roll_egg_move(arg_full)
-    ret_string = (('Your egg hatched into a ' + result) + '!')
-    (await ctx.send(ret_string))
-
-
-@bot.command(name='eggrandom', aliases=['erand'])
-async def eggrandom(ctx):
-    result = roll_egg('Random')
-    ret_string = (('Your egg hatched into a ' + result) + '!')
-    (await ctx.send(ret_string))
-
-
-@bot.command(name='erm')
-async def eggrandom(ctx):
-    result = roll_egg_move('Random')
-    ret_string = (('Your egg hatched into a ' + result) + '!')
-    (await ctx.send(ret_string))
-
-
-@bot.command(name='eggroll', aliases=['eroll'])
-async def eggroll(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
-    result = roll_egg(arg_full)
-    ret_string = (('Your egg hatched into a ' + result) + '!')
-    (await ctx.send(ret_string))
-
+#
+# @bot.command(name='eggmove', aliases=['emove'])
+# async def eggmove(ctx, *arg):
+#     arg_full = string.capwords(' '.join(arg).lower())
+#     result = roll_egg_move(arg_full)
+#     ret_string = (('Your egg hatched into a ' + result) + '!')
+#     (await ctx.send(ret_string))
+#
+#
+# @bot.command(name='eggrandom', aliases=['erand'])
+# async def eggrandom(ctx):
+#     result = roll_egg('Random')
+#     ret_string = (('Your egg hatched into a ' + result) + '!')
+#     (await ctx.send(ret_string))
+#
+#
+# @bot.command(name='erm')
+# async def eggrandom(ctx):
+#     result = roll_egg_move('Random')
+#     ret_string = (('Your egg hatched into a ' + result) + '!')
+#     (await ctx.send(ret_string))
+#
+#
+# @bot.command(name='eggroll', aliases=['eroll'])
+# async def eggroll(ctx, *arg):
+#     arg_full = string.capwords(' '.join(arg).lower())
+#     result = roll_egg(arg_full)
+#     ret_string = (('Your egg hatched into a ' + result) + '!')
+#     (await ctx.send(ret_string))
+#
 
 """
 @bot.command(name='exploration', aliases=['explo'])
@@ -694,7 +693,7 @@ async def feature(ctx, *arg):
 @bot.command(name='finance')
 async def finance(ctx, arg):
     try:
-        sum_total = RollingCommands.roll_interest(int(arg))
+        sum_total = roll_interest(int(arg))
         (await ctx.send(sum_total))
     except TypeError:
         (await ctx.send('This is not a valid amount of money. Please try again.'))
@@ -930,10 +929,10 @@ async def pokedex(ctx, *arg):
     os.remove('{0}.png'.format(name))
 
 
-@bot.command(name='pokerandom', aliases=['prand'])
-async def pokerandom(ctx):
-    ret_string = (('You have encountered a wild ' + roll_mon()) + '!')
-    (await ctx.send(ret_string))
+# @bot.command(name='pokerandom', aliases=['prand'])
+# async def pokerandom(ctx):
+#     ret_string = (('You have encountered a wild ' + roll_mon()) + '!')
+#     (await ctx.send(ret_string))
 
 
 @bot.command(name='portal')
@@ -1048,12 +1047,22 @@ async def wander(ctx):
 
 # NEW COMMANDS FOR PORYBOT 2.0
 
-@bot.command(name='advgen')
-async def advgen(ctx):
-    view = SimpleView()
-    await ctx.send(view=view)
+# GUILD SPECIFIC COMMANDS:
 
 
+@bot.event
+async def on_ready():
+    bot.tree.copy_global_to(guild=UNDAUNTED_GUILD_ID)
+    await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
+
+
+@bot.tree.command(name='advgen')
+async def advgen(interaction: discord.Interaction):
+    view = AdventureModal()
+    await interaction.response.send_modal(view)
+    primary_details = view.enc_details
+    channel = interaction.channel
+    await channel.send(primary_details)
 
 
 bot.run(TOKEN)

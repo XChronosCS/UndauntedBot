@@ -69,32 +69,34 @@ def generate_harvest(skill_rank, area, num_rolls):
 # adven_names = secret_adventures.row_values(1)
 
 
-# def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
-#     criteria = re.compile('(?i)^' + area + "$")
-#     area_match = sheet.find(criteria, in_row=1)
-#     slot_match = sheet.find(str(slot), in_column=1)
-#     if area_match is None:
-#         return "There is no area with this name. Please try again"
-#     if slot_match is None:
-#         return "Please enter a valid encounter slot number."
-#     match = sheet.cell(slot_match.row, area_match.col)
-#     if match.value is None:
-#         return "This area does not have that many slots. Please try again."
-#     note_check = note_sheet.cell((match.row, match.col))
-#     ret_string = "Encounter in slot {0}".format(slot) + "  of area {0} is: ".format(area) + match.value + "\n"
-#     if note_check.note is not None:
-#         ret_string += "**Note:**\n" + note_check.note + "\n"
-#         if "treasure" in note_check.note.lower() or "abberation" in note_check.note.lower():
-#             if not non_treasure_flag:
-#                 ret_string += "\nPokemon accompanying Treasure / Pokemon that is Abberated is {0}\n\n".format(
-#                     get_non_treasure(area_match.col, sheet, note_sheet))
-#             else:
-#                 new_mon = sheet.find(get_non_treasure(area_match.col, sheet, note_sheet), in_column=area_match.col)
-#                 return get_mon(area, new_mon.row, sheet, note_sheet)
-#
-#         if "Check Note" in match.value:
-#             ret_string += "\nThe d5 roll for the Rare Pokemon is {0}\n\n".format(random.randint(1, 5))
-#     return ret_string
+def get_encounter_slot(gm_info, can_be_treasure=False):
+    encounter_table = worlddex["Encounter Slots"][gm_info["Area"]]
+    event_table = worlddex["Event Slots"][gm_info["Area"]]
+
+    area_match = sheet.find(criteria, in_row=1)
+    slot_match = sheet.find(str(slot), in_column=1)
+    if area_match is None:
+        return "There is no area with this name. Please try again"
+    if slot_match is None:
+        return "Please enter a valid encounter slot number."
+    match = sheet.cell(slot_match.row, area_match.col)
+    if match.value is None:
+        return "This area does not have that many slots. Please try again."
+    note_check = note_sheet.cell((match.row, match.col))
+    ret_string = "Encounter in slot {0}".format(slot) + "  of area {0} is: ".format(area) + match.value + "\n"
+    if note_check.note is not None:
+        ret_string += "**Note:**\n" + note_check.note + "\n"
+        if "treasure" in note_check.note.lower() or "abberation" in note_check.note.lower():
+            if not non_treasure_flag:
+                ret_string += "\nPokemon accompanying Treasure / Pokemon that is Abberated is {0}\n\n".format(
+                    get_non_treasure(area_match.col, sheet, note_sheet))
+            else:
+                new_mon = sheet.find(get_non_treasure(area_match.col, sheet, note_sheet), in_column=area_match.col)
+                return get_encounter_slot(area, new_mon.row, sheet, note_sheet)
+
+        if "Check Note" in match.value:
+            ret_string += "\nThe d5 roll for the Rare Pokemon is {0}\n\n".format(random.randint(1, 5))
+    return ret_string
 #
 #
 # def get_event(area, slot, sheet, note_sheet):
@@ -134,8 +136,8 @@ def generate_harvest(skill_rank, area, num_rolls):
 #
 # def get_hidden_slot_adventure(area, slot):
 #     if any(area.lower() == val.lower() for val in adven_names):
-#         return get_mon(area, slot, secret_adventures, sa_notes, False)
-#     return get_mon(area, slot, secret_explorations, sx_notes, False)
+#         return get_encounter_slot(area, slot, secret_adventures, sa_notes, False)
+#     return get_encounter_slot(area, slot, secret_explorations, sx_notes, False)
 #
 #
 # def get_hidden_event_adventure(area, slot):
@@ -173,7 +175,7 @@ def generate_harvest(skill_rank, area, num_rolls):
 #                 if int(th_target) in th_roll:
 #                     luck_roll = str(th_target)
 #                     break
-#     ret_string += get_mon(area, luck_roll, secret_adventures, sa_notes)
+#     ret_string += get_encounter_slot(area, luck_roll, secret_adventures, sa_notes)
 #     if "treasure" in ret_string.lower():
 #         treasure_flag = True
 #     if extra_players != 0 or bait_mons != 0:
@@ -181,7 +183,7 @@ def generate_harvest(skill_rank, area, num_rolls):
 #         for i in range(0, extra_mons):
 #             if i == 3:
 #                 time.sleep(60)
-#             ret_string += "Extra Encounter {0} of {1} is: ".format(i + 1, extra_mons) + get_mon(area,
+#             ret_string += "Extra Encounter {0} of {1} is: ".format(i + 1, extra_mons) + get_encounter_slot(area,
 #                                                                                                 str(random.randint(
 #                                                                                                     min_val,
 #                                                                                                     max_val)),
@@ -232,7 +234,7 @@ def generate_harvest(skill_rank, area, num_rolls):
 #         if rep_array is not None:
 #             while luck_roll in rep_array:
 #                 luck_roll = str(random.randint(1, max_val))
-#     ret_string += get_mon(area, luck_roll, exploration_table, et_notes)
+#     ret_string += get_encounter_slot(area, luck_roll, exploration_table, et_notes)
 #     if extra_players != 0 or bait_mons != 0:
 #         extra_mons = bait_mons + extra_players
 #         for i in range(0, extra_mons):
@@ -285,7 +287,7 @@ def generate_harvest(skill_rank, area, num_rolls):
 #                 if int(th_target) in th_roll:
 #                     luck_roll = str(th_target)
 #                     break
-#     ret_string += get_mon(area, luck_roll, adventure_table, ad_notes)
+#     ret_string += get_encounter_slot(area, luck_roll, adventure_table, ad_notes)
 #     if "treasure" in ret_string.lower():
 #         treasure_flag = True
 #     if extra_players != 0 or bait_mons != 0:
@@ -293,7 +295,7 @@ def generate_harvest(skill_rank, area, num_rolls):
 #         for i in range(0, extra_mons):
 #             if i == 3:
 #                 time.sleep(60)
-#             ret_string += "Extra Encounter {0} of {1} is: ".format(i + 1, extra_mons) + get_mon(area,
+#             ret_string += "Extra Encounter {0} of {1} is: ".format(i + 1, extra_mons) + get_encounter_slot(area,
 #                                                                                                 str(random.randint(
 #                                                                                                     min_val,
 #                                                                                                     max_val)),
