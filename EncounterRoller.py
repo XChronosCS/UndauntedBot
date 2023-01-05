@@ -1,4 +1,3 @@
-import math
 import random
 import time
 
@@ -16,18 +15,19 @@ def generate_harvest(skill_rank, area, num_rolls):
         ret_string = ""
         for i in range(int(num_rolls)):
             roll_list = []
-            roll = random.randint(1, 20)
+            roll = random.randint(1, 10)
             roll_list.append(roll)
             if skill_rank > 3:
                 roll_list.append(roll - 1 if roll != 1 else 1)
             if skill_rank > 5:
-                roll_list.append(roll + 1 if roll != 20 else 20)
+                roll_list.append(roll + 1 if roll != 10 else 10)
             ret_string += "**HERE ARE THE ITEMS WHICH YOU CAN ENCOUNTER ON HARVEST NUMBER {0}:**".format(i + 1)
             roll_list.sort()
             for item in roll_list:
                 # print("{0}: {1}".format(item, math.floor(item / 2) + 1))
-                slot_value = data_block[str(math.floor(item / 2.1) + 1)]
-                slot_string = slot_value[0] + (("**\nDescription: " + slot_value[1]) if slot_value[1] is not None else "**")
+                slot_value = data_block[str(item)]
+                slot_string = slot_value[0] + (
+                    ("**\nDescription: " + slot_value[1]) if slot_value[1] is not None else "**")
                 ret_string += "\n**Slot {0}: {1}".format(item, slot_string)
             ret_string += "\n\n"
         t1_stop = time.perf_counter()
@@ -39,6 +39,7 @@ def generate_harvest(skill_rank, area, num_rolls):
         return "There is no harvestable area with that name. Did you mean " + similar_word + "?"
 
 
+print(generate_harvest(6, "Emun Heath", 4))
 # sh = gc.open("Encounter Tables Data Doc")
 # ws = pg.open("Encounter Tables Data Doc")
 # exploration_table = sh.worksheet("Exploration Tables")
@@ -69,34 +70,34 @@ def generate_harvest(skill_rank, area, num_rolls):
 # adven_names = secret_adventures.row_values(1)
 
 
-def get_encounter_slot(gm_info, can_be_treasure=False):
-    encounter_table = worlddex["Encounter Slots"][gm_info["Area"]]
-    event_table = worlddex["Event Slots"][gm_info["Area"]]
-
-    area_match = sheet.find(criteria, in_row=1)
-    slot_match = sheet.find(str(slot), in_column=1)
-    if area_match is None:
-        return "There is no area with this name. Please try again"
-    if slot_match is None:
-        return "Please enter a valid encounter slot number."
-    match = sheet.cell(slot_match.row, area_match.col)
-    if match.value is None:
-        return "This area does not have that many slots. Please try again."
-    note_check = note_sheet.cell((match.row, match.col))
-    ret_string = "Encounter in slot {0}".format(slot) + "  of area {0} is: ".format(area) + match.value + "\n"
-    if note_check.note is not None:
-        ret_string += "**Note:**\n" + note_check.note + "\n"
-        if "treasure" in note_check.note.lower() or "abberation" in note_check.note.lower():
-            if not non_treasure_flag:
-                ret_string += "\nPokemon accompanying Treasure / Pokemon that is Abberated is {0}\n\n".format(
-                    get_non_treasure(area_match.col, sheet, note_sheet))
-            else:
-                new_mon = sheet.find(get_non_treasure(area_match.col, sheet, note_sheet), in_column=area_match.col)
-                return get_encounter_slot(area, new_mon.row, sheet, note_sheet)
-
-        if "Check Note" in match.value:
-            ret_string += "\nThe d5 roll for the Rare Pokemon is {0}\n\n".format(random.randint(1, 5))
-    return ret_string
+# def get_encounter_slot(gm_info, can_be_treasure=False):
+#     encounter_table = worlddex["Encounter Slots"][gm_info["Area"]]
+#     event_table = worlddex["Event Slots"][gm_info["Area"]]
+#
+#     area_match = sheet.find(criteria, in_row=1)
+#     slot_match = sheet.find(str(slot), in_column=1)
+#     if area_match is None:
+#         return "There is no area with this name. Please try again"
+#     if slot_match is None:
+#         return "Please enter a valid encounter slot number."
+#     match = sheet.cell(slot_match.row, area_match.col)
+#     if match.value is None:
+#         return "This area does not have that many slots. Please try again."
+#     note_check = note_sheet.cell((match.row, match.col))
+#     ret_string = "Encounter in slot {0}".format(slot) + "  of area {0} is: ".format(area) + match.value + "\n"
+#     if note_check.note is not None:
+#         ret_string += "**Note:**\n" + note_check.note + "\n"
+#         if "treasure" in note_check.note.lower() or "abberation" in note_check.note.lower():
+#             if not non_treasure_flag:
+#                 ret_string += "\nPokemon accompanying Treasure / Pokemon that is Abberated is {0}\n\n".format(
+#                     get_non_treasure(area_match.col, sheet, note_sheet))
+#             else:
+#                 new_mon = sheet.find(get_non_treasure(area_match.col, sheet, note_sheet), in_column=area_match.col)
+#                 return get_encounter_slot(area, new_mon.row, sheet, note_sheet)
+#
+#         if "Check Note" in match.value:
+#             ret_string += "\nThe d5 roll for the Rare Pokemon is {0}\n\n".format(random.randint(1, 5))
+#     return ret_string
 #
 #
 # def get_event(area, slot, sheet, note_sheet):
