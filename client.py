@@ -1058,6 +1058,7 @@ async def advgen(ctx):
     for i in options_list:
         selectMenu.append_option(option=i)
     view.add_item(selectMenu)
+    await ctx.send(view)
 
 
 

@@ -175,5 +175,4 @@ def autostatter(pokename, level, link):
     return ret_string
 
 
-print(autostatter("Mankey", "30",
-                  "https://docs.google.com/spreadsheets/d/1Q6CoAFiWgyVZ68LFCj2W_A5VDJvDPdKxG7RsLELr4IQ/edit?usp=sharing"))
+
