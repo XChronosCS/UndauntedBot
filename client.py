@@ -2,8 +2,6 @@
 import string
 from datetime import datetime
 
-import discord
-from discord.ext import commands
 from dotenv import load_dotenv
 from pytz import timezone
 
@@ -14,7 +12,7 @@ from PokeRoller import *
 from RollingCommands import *
 from TableRoller import *
 from TownEvents import *
-from utilities import *
+from Views import *
 
 load_dotenv()
 TOKEN = os.getenv('TEST_TOKEN')
@@ -1052,13 +1050,9 @@ async def wander(ctx):
 
 @bot.command(name='advgen')
 async def advgen(ctx):
-    view = discord.ui.View()
-    options_list = [discord.SelectOption(label=name, value=name) for name in worlddex.keys()]
-    selectMenu = discord.ui.Select()
-    for i in options_list:
-        selectMenu.append_option(option=i)
-    view.add_item(selectMenu)
+    view = SimpleView()
     await ctx.send(view=view)
+
 
 
 
