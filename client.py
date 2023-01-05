@@ -339,39 +339,33 @@ async def arcana(ctx, *args):
 
 @bot.command(name='autostat', aliases=['astat'])
 async def autostat(ctx, *args):
-    linkmail = args[(- 1)]
+    link = args[(- 1)]
     level = args[(- 2)]
     list_arg = list(args)
     del list_arg[(- 2):]
     name = ' '.join(list_arg)
-    link = None
-    email = None
-    if ('@' in linkmail):
-        email = linkmail
-    else:
-        link = linkmail
-    (await ctx.send('Now statting automatically... Please wait...'))
-    ret_string = ((ctx.author.mention + '\n') + autostatter(name, level, email, link))
-    (await ctx.send(ret_string))
+    await ctx.send('Now statting automatically... Please wait...')
+    ret_string = autostatter(name, level, link)
+    await ctx.send(ret_string)
 
 
-@bot.command(name='babystat', aliases=['bstat'])
-async def babystat(ctx, *args):
-    baby = True
-    linkmail = args[(- 1)]
-    level = args[(- 2)]
-    list_arg = list(args)
-    del list_arg[(- 2):]
-    name = ' '.join(list_arg)
-    link = None
-    email = None
-    if ('@' in linkmail):
-        email = linkmail
-    else:
-        link = linkmail
-    (await ctx.send('Now statting automatically... Please wait...'))
-    ret_string = ((ctx.author.mention + '\n') + autostatter(name, level, email, link, baby))
-    (await ctx.send(ret_string))
+# @bot.command(name='babystat', aliases=['bstat'])
+# async def babystat(ctx, *args):
+#     baby = True
+#     linkmail = args[(- 1)]
+#     level = args[(- 2)]
+#     list_arg = list(args)
+#     del list_arg[(- 2):]
+#     name = ' '.join(list_arg)
+#     link = None
+#     email = None
+#     if ('@' in linkmail):
+#         email = linkmail
+#     else:
+#         link = linkmail
+#     (await ctx.send('Now statting automatically... Please wait...'))
+#     ret_string = ((ctx.author.mention + '\n') + autostatter(name, level, email, link, baby))
+#     (await ctx.send(ret_string))
 
 
 '''
@@ -952,13 +946,6 @@ async def potofgreed(ctx):
     (await ctx.send('You draw two cards.'))
 
 
-@bot.command(name='quaglatin')
-async def quaglatin(ctx, *args):
-    sentence = ' '.join(args)
-    ret_string = quaglatin_gen(sentence)
-    (await ctx.send(ret_string))
-
-
 @bot.command(name='randombuild')
 async def randombuild(ctx):
     (await ctx.send(random_build()))
@@ -1044,13 +1031,6 @@ async def treasure(ctx, *args):
     (await ctx.send(result))
 
 
-@bot.command(name='turbo')
-async def turbo(ctx):
-    emote = '<a:WoolooTurbo:701937147862843412>'
-    (await ctx.send(emote))
-    (await ctx.message.delete())
-
-
 @bot.command(name='uprising')
 async def uprising(ctx):
     result = get_uprising_event()
@@ -1066,14 +1046,6 @@ async def wander(ctx):
         (await ctx.send(msg))
 
 
-@bot.command(name='whenfreya')
-async def whenfreya(ctx):
-    (await ctx.send('**S O O N**'))
-
-
-@bot.command(name='whenkostrya')
-async def whenkostrya(ctx):
-    (await ctx.send('After Freya is released. Please use the command !whenfreya to check how close it is to release.'))
 
 
 bot.run(TOKEN)
