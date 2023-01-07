@@ -45,7 +45,6 @@ areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", ev
 infodex = {}
 worlddex = {}
 
-
 for worksheet in worksheets:
 
     # Prompt the user to enter the row number to use for the key names
@@ -105,10 +104,12 @@ for sheet_name in wb.sheetnames:
             row_num = cell.row - 1
             cell_val = cell.value
             comment_val = cell.comment.text if cell.comment else None
-
+            hex_code = cell.fill.fgColor.rgb[2:].lower() if cell.fill and cell.fill.fgColor.type == "rgb" else None
+            treasure_tag = "Major Treasure" if hex_code == "ffd966" else "Minor Treasure" if hex_code == "ffff00" else \
+                "Guardian" if hex_code == "ff0000" else "Alpha Aberration" if hex_code == "#ea9999" else "Ignore"
             # Add the row number, cell value, and comment value to the nested dictionary
             if cell_val is not None:
-                nested_dict[str(row_num)] = (cell_val, comment_val)
+                nested_dict[str(row_num)] = (cell_val, comment_val, treasure_tag)
 
         # Add the nested dictionary to the sheet data dictionary
         sheet_data[key] = nested_dict

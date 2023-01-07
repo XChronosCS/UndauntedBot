@@ -2,7 +2,18 @@ import discord
 
 
 class OptionalDetails(discord.ui.Modal, title="Optional Details"):
-    enc_details = {}
+    enc_details = {
+        "Num TH": 0,
+        "Num Per TH": 0,
+        "TH Target": 0,
+        "Repel Array": [],
+        "Forced Slot": 0,
+        "Forced Event": 0,
+        "Extra Mons": 0
+    }
+
+    def set_details(self, req_details):
+        self.enc_details.update(req_details)
 
     encounter_area = discord.ui.TextInput(
         style=discord.TextStyle.short,
@@ -28,15 +39,22 @@ class OptionalDetails(discord.ui.Modal, title="Optional Details"):
     async def on_submit(self, interaction: discord.Interaction):
         self.enc_details["Area"] = self.encounter_area.value
         self.enc_details["Num Players "] = int(self.num_players.value)
+        self.enc_details["Avg Poke Lvl"] = int(self.max_level.value)
         await interaction.response.send_message(content="Thank you.", ephemeral=True)
 
 
 class SimpleView(discord.ui.View):
 
+    req_details = {}
+
+    def assign_req(self, rd):
+        self.req_details = rd
+
     @discord.ui.button(label="Add Optional Details",
                        style=discord.ButtonStyle.success)
     async def hello(self, interaction: discord.Interaction, button: discord.ui.Button):
         op_modal = OptionalDetails()
+        op_modal.set_details(req_details=self.req_details)
         await interaction.response.send_modal(op_modal)
 
     @discord.ui.button(label="Generate Now",
