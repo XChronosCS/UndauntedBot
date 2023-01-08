@@ -571,7 +571,7 @@ def get_patronage_task(legend, category):
         legend_personality = patrons[legend_name]['Personality']
         personality = "__**" + legend_name.title() + "**__\n" + "**Personality:** " + legend_personality
         subtask_variant = random.choice(list(patrons[legend_name][category.title()].keys()))
-        subtask = "**" + subtask_variant + "**\n" + random.choice(patrons[legend_name][category][subtask_variant])  # Selects the sub task
+        subtask = "**" + subtask_variant + "**\n" + random.choice(patrons[legend_name][category.title()][subtask_variant])  # Selects the sub task
         subtask_array = segment_text(subtask, "Legend")
         personality_array = [personality]
         return personality_array + subtask_array
