@@ -244,7 +244,7 @@ def fossil_roller():
 
 
 def roll_town_event():
-    name = random.choice(infodex["townevents"].keys())
+    name = random.choice(list(infodex["townevents"].keys()))
     effect = infodex["townevents"][name]["Effects"]
     name = "**" + name + "**"
     effect = effect.replace("Martial Modifier", "**Martial Modifier**")
@@ -258,7 +258,7 @@ def roll_town_event():
 
 
 def roll_uprising_event():
-    name = random.choice(infodex["uprisings"].keys())
+    name = random.choice(list(infodex["uprisings"].keys()))
     effect = infodex["uprisings"][name]["Effects"]
     name = "**" + name + "**"
     effect = effect.replace("Martial Modifier", "**Martial Modifier**")
