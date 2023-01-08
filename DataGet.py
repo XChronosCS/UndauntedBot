@@ -1,3 +1,5 @@
+import random
+
 import fitz
 import gspread
 from googleapiclient.discovery import build
@@ -568,7 +570,7 @@ def get_patronage_task(legend, category):
         legend_name = match[0]
         legend_personality = patrons[legend_name]['Personality']
         personality = "__**" + legend_name.title() + "**__\n" + "**Personality:** " + legend_personality
-        subtask_variant = random.choice(patrons[legend_name][category].keys())
+        subtask_variant = random.choice(list(patrons[legend_name][category].keys()))
         subtask = "**" + subtask_variant + "**\n" + random.choice(patrons[legend_name][category][subtask_variant])  # Selects the sub task
         subtask_array = segment_text(subtask, "Legend")
         personality_array = [personality]
