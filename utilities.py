@@ -253,3 +253,12 @@ def find_largest_smaller_number(numbers, x):
         if number < x and (largest_smaller_number is None or number > largest_smaller_number):
             largest_smaller_number = number
     return largest_smaller_number
+
+def exclusion(lst1, lst2):
+    lst3 = [value for value in lst1 if value not in lst2]
+    return lst3
+
+
+def intersection(lst1, lst2):
+    lst3 = [value for value in lst1 if value in lst2]
+    return lst3

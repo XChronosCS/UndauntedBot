@@ -2,16 +2,13 @@
 import string
 from datetime import datetime
 
+from discord.ext import commands
 from dotenv import load_dotenv
 from pytz import timezone
 
 from Autostatter import *
 from DataGet import *
-from Patronage import *
-#  from PokeRoller import *
 from RollingCommands import *
-from TableRoller import *
-from TownEvents import *
 from UIElements import *
 
 load_dotenv()
@@ -392,22 +389,7 @@ async def chaos(ctx, *arg):
 
 @bot.command(name='cmons')
 async def cmons(ctx, *arg):
-    def harvest_check(m):
-        return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(0, len(HARVESTABLES))))
-
-    user = ctx.author
-    channel = ctx.channel
     arg_full = ' '.join(arg)
-    if ('harvest' in arg_full.lower()):
-        (await ctx.send(
-            'Here is a list of harvestable items. Please enter the number next to the item you are searching for now.'))
-        har_list = ''
-        for i in range(len(HARVESTABLES)):
-            har_list += (((str(i) + '. ') + HARVESTABLES[i]) + '\n')
-        (await ctx.send(har_list))
-        msg = (await bot.wait_for('message', check=harvest_check))
-        material = HARVESTABLES[int(msg.content)]
-        arg_full = ('Harvest (' + material)
     result = poke_capability(arg_full)
     if (len(result) > 2000):
         m_array = segment_list(result)
@@ -446,10 +428,10 @@ async def cookie(ctx, person: discord.Member = None):
     (await ctx.send(embed=embed))
 
 
-# @bot.command(name='details')
-# async def details(ctx):
-#     (await ctx.send(roll_details()))
-#
+@bot.command(name='details')
+async def details(ctx):
+     (await ctx.send(roll_details()))
+
 
 @bot.command(aliases=['droll', 'dr'])
 async def diceroll(ctx, *args):
@@ -487,36 +469,36 @@ async def edge(ctx, *arg):
     (await ctx.send(ret_string))
 
 
-#
-# @bot.command(name='eggmove', aliases=['emove'])
-# async def eggmove(ctx, *arg):
-#     arg_full = string.capwords(' '.join(arg).lower())
-#     result = roll_egg_move(arg_full)
-#     ret_string = (('Your egg hatched into a ' + result) + '!')
-#     (await ctx.send(ret_string))
-#
-#
-# @bot.command(name='eggrandom', aliases=['erand'])
-# async def eggrandom(ctx):
-#     result = roll_egg('Random')
-#     ret_string = (('Your egg hatched into a ' + result) + '!')
-#     (await ctx.send(ret_string))
-#
-#
-# @bot.command(name='erm')
-# async def eggrandom(ctx):
-#     result = roll_egg_move('Random')
-#     ret_string = (('Your egg hatched into a ' + result) + '!')
-#     (await ctx.send(ret_string))
-#
-#
-# @bot.command(name='eggroll', aliases=['eroll'])
-# async def eggroll(ctx, *arg):
-#     arg_full = string.capwords(' '.join(arg).lower())
-#     result = roll_egg(arg_full)
-#     ret_string = (('Your egg hatched into a ' + result) + '!')
-#     (await ctx.send(ret_string))
-#
+
+@bot.command(name='eggmove', aliases=['emove'])
+async def eggmove(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    result = roll_egg(arg_full, True)
+    ret_string = result
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='eggrandom', aliases=['erand'])
+async def eggrandom(ctx):
+    result = roll_egg('Random')
+    ret_string = result
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='erm')
+async def erm(ctx):
+    result = roll_egg('Random', True)
+    ret_string = result
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='eggroll', aliases=['eroll'])
+async def eggroll(ctx, *arg):
+    arg_full = string.capwords(' '.join(arg).lower())
+    result = roll_egg(arg_full)
+    ret_string = result
+    (await ctx.send(ret_string))
+
 
 """
 @bot.command(name='exploration', aliases=['explo'])
@@ -802,7 +784,7 @@ async def keyword(ctx, *arg):
 @bot.command(name='lookup', aliases=['search'])
 async def lookup(ctx, *args):
     arg_full = ' '.join(args)
-    ret_string = get_data(arg_full)
+    ret_string = get_info_categories(arg_full)
     (await ctx.send(ret_string))
 
 
@@ -929,10 +911,10 @@ async def pokedex(ctx, *arg):
     os.remove('{0}.png'.format(name))
 
 
-# @bot.command(name='pokerandom', aliases=['prand'])
-# async def pokerandom(ctx):
-#     ret_string = (('You have encountered a wild ' + roll_mon()) + '!')
-#     (await ctx.send(ret_string))
+@bot.command(name='pokerandom', aliases=['prand'])
+async def pokerandom(ctx):
+    ret_string = (('You have encountered a wild ' + roll_mon()) + '!')
+    (await ctx.send(ret_string))
 
 
 @bot.command(name='portal')
@@ -988,19 +970,6 @@ async def tech(ctx, *args):
     (await ctx.send(result))
 
 
-#
-# @bot.command(name='tm')
-# async def tm(ctx, *arg):
-#     arg_full = ' '.join(arg)
-#     result = poke_tutor(arg_full)
-#     if len(result) >= 2000:
-#         m_array = segment_list(result)
-#         for msg in m_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(result))
-#
-
 @bot.command(name='town')
 async def town(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -1010,7 +979,7 @@ async def town(ctx, *arg):
 
 @bot.command(name='townevent', aliases=['tevent'])
 async def townevent(ctx):
-    result = get_town_event()
+    result = roll_town_event()
     ret_string = ((((('Event Invoked By: ' + ctx.author.mention) + '\n') + result[0]) + '\n') + result[1])
     (await ctx.send(ret_string))
 
@@ -1032,7 +1001,7 @@ async def treasure(ctx, *args):
 
 @bot.command(name='uprising')
 async def uprising(ctx):
-    result = get_uprising_event()
+    result = roll_uprising_event()
     ret_string = ((((('Event Invoked By: ' + ctx.author.mention) + '\n') + result[0]) + '\n') + result[1])
     (await ctx.send(ret_string))
 
@@ -1050,19 +1019,19 @@ async def wander(ctx):
 # GUILD SPECIFIC COMMANDS:
 
 
-@bot.event
-async def on_ready():
-    bot.tree.copy_global_to(guild=UNDAUNTED_GUILD_ID)
-    await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
-
-
-@bot.tree.command(name='advgen')
-async def advgen(interaction: discord.Interaction):
-    view = AdventureModal()
-    await interaction.response.send_modal(view)
-    primary_details = view.enc_details
-    channel = interaction.channel
-    await channel.send(primary_details)
+# @bot.event
+# async def on_ready():
+#     bot.tree.copy_global_to(guild=UNDAUNTED_GUILD_ID)
+#     await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
+#
+#
+# @bot.tree.command(name='advgen')
+# async def advgen(interaction: discord.Interaction):
+#     view = AdventureModal()
+#     await interaction.response.send_modal(view)
+#     primary_details = view.enc_details
+#     channel = interaction.channel
+#     await channel.send(primary_details)
 
 
 bot.run(TOKEN)

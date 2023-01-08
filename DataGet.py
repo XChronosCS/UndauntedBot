@@ -3,7 +3,7 @@ import gspread
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-from CollectData import infodex, worlddex
+from CollectData import infodex, worlddex, bossdex
 from Constants import *
 from gspread_credentials import *
 from utilities import *
@@ -35,6 +35,8 @@ affiliations = infodex["affiliations"]
 heritages = infodex["heritages"]
 influences = infodex["influences"]
 habitat = gc.open("Data Habitat Areas").worksheet("Data")
+patrons = bossdex["Patrons"]
+guardians = bossdex["Guardians"]
 
 # Finding Treasure Sheets Loading
 des = gc.open("Data Encounter Sheet")
@@ -310,25 +312,21 @@ def learn_move(name):
         return ret_string
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
-        return ["There is no move by that name. Did you mean " + similar_word + "?"]
+        return "There is no move by that name. Did you mean " + similar_word + "?"
 
 
 def poke_capability(name):
-    temp_name = name.title()
-    mon_names = []
-    for entry in pokedex.pages(12, max_page):
-        cap_rect = fitz.Rect(10, 450, 311, 532)
-        name_rect = fitz.Rect(28, 0, 457, 60)
-        word_page = entry.get_text("words")
-        cap_temp = [w for w in word_page if fitz.Rect(w[:4]) in cap_rect]
-        caps = make_text(cap_temp)
-        if temp_name in caps:
-            temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
-            poke_name = make_text(temp)
-            mon_names.append(poke_name)
-    ret_string = "**List of all pokemon with capability " + temp_name + ":** " + ", ".join(
-        mon_names)
-    return ret_string
+    criteria = re.compile('(?i)^' + name + "$")
+    if any((match := criteria.search(item)) for item in capabilities.keys()):
+        capa_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() for full_name in pokemon["Capabilities"] if
+                    name.title() == full_name.title()]
+        capa_array.sort()
+        ret_string = "**__Here is a list of all the pokemon who can have the capability " + name.title() + ":__** \n" + ", ".join(
+            capa_array)
+        return ret_string
+    else:
+        similar_word = find_most_similar_string(capabilities.keys(), name.lower())
+        return "There is no move by that name. Did you mean " + similar_word + "?"
 
 
 def poke_flair(name, flair):
@@ -351,50 +349,20 @@ def poke_flair(name, flair):
         return ["There is no pokemon by that name. Did you mean " + similar_word.title() + "?"]
 
 
-def get_data(name):
-    final_string = ''
-    num_hits = 0
-    ret_string = ''.join(get_feature_data(name))
-    if ret_string != "There is no feature by that name":
-        num_hits += 1
-        final_string += "Class: Feature\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_ability_data(name))
-    if ret_string != "There is no ability by that name":
-        num_hits += 1
-        final_string += "Class: Ability\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_edge_data(name))
-    if ret_string != "There is no edge by that name":
-        num_hits += 1
-        final_string += "Class: Edge\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_item_data(name))
-    if ret_string != "There is no item by that name":
-        num_hits += 1
-        final_string += "Class: Item\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_move_data(name))
-    if ret_string != "There is no move by that name":
-        num_hits += 1
-        final_string += "Class: Move\n" + ret_string + "\n\n"
-    ret_string = get_technique(name)
-    if ret_string != "There is no technique by that name":
-        num_hits += 1
-        final_string += "Class: Technique\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_cap_data(name))
-    if ret_string != "There is no capability by that name":
-        num_hits += 1
-        final_string += "Class: Capability\n" + ret_string + "\n\n"
-    ret_string = ''.join(get_status_data(name))
-    if ret_string != "There is no status condition by that name":
-        num_hits += 1
-        final_string += "Class: Status Condition\n" + ret_string + "\n\n"
-    ret_string = get_order(name)
-    if ret_string != "There is no general order by that name":
-        num_hits += 1
-        final_string += "Class: Order\n" + ret_string + "\n\n"
-    if num_hits == 0:
-        return "There is no Move, Feature, Ability, Edge, Item, Class Technique, Capability, " \
-               "Status Condition, or Order by that name"
-    else:
-        return "Number of possible matches: " + str(num_hits) + "\n\n" + final_string
+def get_info_categories(name):
+    criteria = re.compile('(?i)^' + name + "$")
+    categories = []
+    for key, value in infodex.items():
+        if any((match := criteria.search(item)) for item in value.keys()):
+            categories.append(key.title())
+        ret_string = "**__Entries of that name can be found within the following classifications:__** \n" + ", ".join(categories)
+
+        return ret_string
+    similar_words = []
+    for key, value in infodex.items():
+        similar_words.append(find_most_similar_string(value.keys(), name.lower()))
+    similar_word = find_most_similar_string(similar_words, name.lower())
+    return "There is no entry by that name. Did you mean " + similar_word + "?"
 
 
 def get_man_data(name):
@@ -528,7 +496,7 @@ def get_treasure_spot(name):
 
 
 def get_dex_entry(name):
-    pix = pokedex[ALLPOKEMON[name.upper()]["Page Num"]].get_pixmap()
+    pix = pokedex[ALLPOKEMON[find_most_similar_string(ALLPOKEMON.keys(), name).upper()]["Page Num"]].get_pixmap()
     pix.save("{0}.png".format(name.lower()))
 
 
@@ -571,18 +539,55 @@ def get_legend_entry(name):
             matching_pages.append(file_name)
     return matching_pages
 
+def get_wander_event():
+    wander_event = random.choice(infodex["wanders"].values())
+    name = "**" + wander_event["Event Name"] + "**"
+    effect = "\n\n" + wander_event["Details"]
+    ret_string = name
+    ret_string += effect
+    return ret_string
 
-"""
+
+def get_legend_personality(legend):
+    criteria = re.compile('(?i)^' + legend + "$")  # get all the cells with the name of the legend in them in column 1
+    if any((match := criteria.search(item)) for item in patrons.keys()):
+        legend_name = match[0]
+        legend_personality = patrons[legend_name]['Personality']
+        personality = "__**" + legend_name.title() + "**__\n" + "**Personality:** " + legend_personality
+        return personality
+
+    else:
+        similar_word = find_most_similar_string(patrons.keys(), legend.title())
+        return "A legend with this name could not be found. Did you mean " + similar_word + "?"
 
 
-def get_beans():
-    bean_list = neg if random.randint(1, 4) == 4 else pos
-    intro_choice = intro.col_values(1)
-    bean_options = bean_list.col_values(1)
-    bean_taste = random.choice(bean_options)
-    intro_text = random.choice(intro_choice)
-    return intro_text + " " + bean_taste
-"""
+def get_patronage_task(legend, category):
+    criteria = re.compile('(?i)^' + legend + "$")  # get all the cells with the name of the legend in them in column 1
+    if any((match := criteria.search(item)) for item in patrons.keys()):
+        legend_name = match[0]
+        legend_personality = patrons[legend_name]['Personality']
+        personality = "__**" + legend_name.title() + "**__\n" + "**Personality:** " + legend_personality
+        subtask_variant = random.choice(patrons[legend_name][category].keys())
+        subtask = "**" + subtask_variant + "**\n" + random.choice(patrons[legend_name][category][subtask_variant])  # Selects the sub task
+        subtask_array = segment_text(subtask, "Legend")
+        personality_array = [personality]
+        return personality_array + subtask_array
+
+    else:
+        similar_word = find_most_similar_string(patrons.keys(), legend.title())
+        return "A legend with this name could not be found. Did you mean " + similar_word + "?"
+
+
+def get_guardian_info(area):
+    criteria = re.compile('(?i)^' + area + "$")  # get all the cells with the name of the legend in them in column 1
+    if any((match := criteria.search(item)) for item in guardians.keys()):
+        data_block = guardians[match.group(0)]
+        guardian_string = data_block["Guardian"]
+        guardian_string += "\n" + data_block["Details"]
+
+    else:
+        similar_word = find_most_similar_string(guardians.keys(), area.title())
+        return "An area with that name that has a guardian could not be found. Did you mean " + similar_word + "?"
 
 
 # def generate_tutor_list():
@@ -652,19 +657,19 @@ def get_beans():
 #         # Write the dictionary to the file as a string
 #         f.write(str(pokedict))
 
-def add_missing_page_numbers():
-    pokedict = ALLPOKEMON
-    for key in ALLPOKEMON.keys():
-        pokedict[key]["Capabilities"] = [v for k, v in pokedict[key].items() if k.startswith("Capability ") and v != "-"]
-        for i in range(10):
-            if pokedict[key].get("Capability " + str(i + 1)) is not None:
-                del pokedict[key]["Capability " + str(i + 1)]
-            else:
-                print(key)
-                break
-    with open('Uncommited Files/pokemon.py', 'w', encoding='utf-8') as f:
-        # Write the dictionary to the file as a string#
-        f.write(str(pokedict))
-
-
-add_missing_page_numbers()
+# def add_missing_page_numbers():
+#     pokedict = ALLPOKEMON
+#     for key in ALLPOKEMON.keys():
+#         pokedict[key]["Capabilities"] = [v for k, v in pokedict[key].items() if k.startswith("Capability ") and v != "-"]
+#         for i in range(10):
+#             if pokedict[key].get("Capability " + str(i + 1)) is not None:
+#                 del pokedict[key]["Capability " + str(i + 1)]
+#             else:
+#                 print(key)
+#                 break
+#     with open('Uncommited Files/pokemon.py', 'w', encoding='utf-8') as f:
+#         # Write the dictionary to the file as a string#
+#         f.write(str(pokedict))
+#
+#
+# add_missing_page_numbers()

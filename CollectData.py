@@ -18,6 +18,8 @@ t1_start = time.perf_counter()
 
 sh = gc.open("Data Get Test Sheet")
 ec = gc.open("Porybot2 Encounters Sheet")
+gp = gc.open("Guardian and Patronage Doc")
+tt = gc.open("Test Town Tracker Sheet")
 
 # Loading Worksheets for Primary Information Lookup
 abilities = sh.worksheet("Abilities Data")
@@ -33,6 +35,11 @@ harvests = ec.worksheet("Harvest Slots")
 events = ec.worksheet("Event Slots")
 pokeedges = sh.worksheet("Tutoring/Breeding")
 pokemon_data = sh.worksheet("Poke Data")
+wander = gp.worksheet("Wander Events")
+patrons = gp.worksheet("Patronage Tasks")
+guardians = gp.worksheet("Guardian Table")
+townevents = tt.worksheet("Town Data")
+town_list = tt.worksheet("Town List")
 
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
               ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
@@ -40,10 +47,16 @@ worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5)
               ("orders", features, 1, 6, 8), ("orders 2", features, 1, 9, 11), ("capabilities", misc, 1, 7, 8),
               ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
-              ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3)]
+              ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3),
+              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10) ]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}
+eggdex = {}
+bossdex = {
+    "Guardians": {},
+    "Patrons": {},
+}
 
 for worksheet in worksheets:
 
@@ -71,15 +84,10 @@ for worksheet in worksheets:
 
 infodex["orders"].update(infodex["orders 2"])
 
-'''
-# Iterate over the rows of data and add them to the dictionary
-with open('moves.txt', 'w', encoding='utf-8') as f:
-    # Write the dictionary to the file as a string
-    f.write(str(infodex))
-'''
 
+# Filling Out Worlddex
 wb = openpyxl.load_workbook('Documents/Porybot2 Encounters Sheet.xlsx')
-eggbook = openpyxl.load_workbook('Documents/Data Undaunted Egg Rolls.xlsx')
+
 # Create a dictionary to store the data for all sheets
 
 # Iterate over the sheets in the workbook
@@ -117,11 +125,13 @@ for sheet_name in wb.sheetnames:
     # Add the sheet data dictionary to the main dictionary
     worlddex[sheet_name] = sheet_data
 
+# Filling Out Eggdex
+eggbook = openpyxl.load_workbook('Documents/Data Undaunted Egg Rolls.xlsx')
 # Get the current sheet
 eggsheet = eggbook["Eggs"]
 
 # Create a dictionary to store the data for the current sheet
-eggdex = {}
+
 
 # Iterate over the columns in the worksheet
 for col in eggsheet.iter_cols(min_col=1, max_col=eggsheet.max_column, min_row=1, max_row=eggsheet.max_row):
@@ -147,6 +157,32 @@ for col in eggsheet.iter_cols(min_col=1, max_col=eggsheet.max_column, min_row=1,
     # Add the nested dictionary to the sheet data dictionary
     eggdex[key] = nested_dict
 
+# Filling info in Bossdex
+
+guardian_data = guardians.get_all_values()
+keys = guardian_data[0][1:2]
+for i, row in enumerate(guardian_data):
+    if i <= 0:
+        continue  # Skip the row with the key names
+    bossdex["Guardians"][row[0]] = {keys[j]: row[j] for j in range(len(keys))}
+
+
+patronage_data = patrons.get_all_values()
+for i, row in enumerate(patronage_data):
+    if i <= 0:
+        continue  # Skip the row with the key names
+    if row[0] not in bossdex["Patrons"].keys():
+        bossdex["Patrons"][row[0]] = {
+            "Personality": None,
+            "Minor": {},
+            "Major": {},
+            "Pact": {},
+            "Task": {},
+            "Custom": {},
+        }
+    bossdex["Patrons"][row[0]]["Personality"] = row[1]
+    bossdex["Patrons"][row[0]][row[2]][row[3]] = [row[j] for j in range(4, 23) if row[j] != '']
+print(bossdex["Patrons"])
 
 t1_stop = time.perf_counter()
 print("Elapsed time during the whole program in seconds:",

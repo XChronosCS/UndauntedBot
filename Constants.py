@@ -111,7 +111,7 @@ FLORA = {
     ]
 }
 
-PATRONAGE_CATEGORIES = ["Pact", "Major", "Minor", "Task"]
+PATRONAGE_CATEGORIES = ["Pact", "Major", "Minor", "Task", "Custom"]
 
 HARVESTABLES = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
                 "Iron Scrap", "Chem Scrap", "Honey", "Money"]

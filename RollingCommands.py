@@ -1,20 +1,30 @@
 import random
-import re
 
+from CollectData import eggdex, infodex, town_list
 from Constants import *
+from utilities import *
 
 GENDER = ["Male", "Female"]
 reroll = 0
 
 
-def nature():
+def roll_nature():
     index = random.randrange(0, len(NATURES))
     return NATURES[index]
 
 
-def gender():
+def roll_gender():
     index = random.randrange(0, 2)
     return GENDER[index]
+
+
+def roll_details():
+    nature = roll_nature()
+    gender = roll_gender()
+    ability = random.randint(1, 2)
+    result_array = [nature, gender, ability]
+    return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
+           "if there are multiple options.".format(result_array)
 
 
 def roll_flora(tier, amount):
@@ -60,16 +70,6 @@ def roll_calc(dice_string, modifier_string, exclude_string, text_string):
         result = eval(result_string)
         ret_string += "\n**" + dice_string + "**\n" + text_string + rolls + " = " + str(result)
         return ret_string
-
-
-def roll_vals(match):
-    a, b = match.group(1).split('d')
-    ret_array = []
-    for i in range(int(a)):
-        roll = random.randint(1, 1 * int(b))
-        ret_array.append(str(roll))
-    ret_string = '[' + ', '.join(ret_array) + ']'
-    return ret_string
 
 
 def roll_vals(match):
@@ -190,27 +190,93 @@ def random_build():
     return "Your 4 Randomly Chosen Classes are: {0[0]}, {0[1]}, {0[2]} and {0[3]}".format(class_array)
 
 
-def quaglatin_gen(sentence):
-    words = sentence.lower().split()
+def roll_mon():
+    return random.choice(ALLPOKEMON.keys()).title()
 
-    for i, word in enumerate(words):
-        if word[0] in 'aeiou':
-            words[i] = words[i] + "uag"
+
+def roll_egg(p_type, egg_move=False):
+    chosen_type = ""
+    if p_type == 'Random':
+        chosen_type = TYPES[random.randrange(0, len(TYPES))].title()
+    else:
+        criteria = re.compile('(?i)' + p_type)
+        if any((match := criteria.search(item)) for item in eggdex.keys()):
+            chosen_type = match.group[0].title()
         else:
-            '''
-            else get vowel position and postfix all the consonants 
-            present before that vowel to the end of the word along with "ay"
-            '''
-            has_vowel = False
+            chosen_type = find_most_similar_string(eggdex.keys(), p_type.title())
+    mon_index = random.choice(eggdex[chosen_type])
+    mon = eggdex[chosen_type][mon_index]
+    ret_string = "Congratulations! Your pokemon egg hatched into a {0}".format(mon[0])
+    if egg_move:
+        ret_string += " with the egg move {0}".format(random.choice[mon[1]])
 
-            for j, letter in enumerate(word):
-                if letter in 'aeiou':
-                    words[i] = word[j:] + word[:j] + "uag"
-                    has_vowel = True
-                    break
+    return ret_string + "!"
 
-            if not has_vowel:
-                words[i] = words[i] + "uag"
 
-    quag_latin = ' '.join(words)
-    return quag_latin
+def chaos_roller(choice_entered):
+    choice = choice_entered.title()
+    ret_string = None
+    array_choice = None
+    if choice == "Basic":
+        array_choice = BASIC_MAGIC
+    elif choice == "Advanced":
+        array_choice = ADVANCED_MAGIC
+    elif choice == "Fluff":
+        array_choice = FLUFF_CHAOS_MAGIC
+    elif choice == "Combat":
+        array_choice = CHAOS_COMBAT
+    elif choice == "Status":
+        array_choice = CHAOS_STATUS
+    else:
+        ret_string = "No chaos could be summoned. Please try again."
+        return ret_string
+    array_length = len(array_choice)
+    index = random.randint(0, array_length)
+    ret_string = array_choice[index]['type'] + array_choice[index]['effect']
+    return ret_string
+
+
+def fossil_roller():
+    array_length = len(FOSSIL)
+    index = random.randrange(0, array_length)
+    ret_string = FOSSIL[index]['fossil'] + ", which revives into a(n) " + FOSSIL[index]['poke']
+    return ret_string
+
+
+def roll_town_event():
+    name = random.choice(infodex["townevents"].keys())
+    effect = infodex["townevents"][name]["Effects"]
+    name = "**" + name + "**"
+    effect = effect.replace("Martial Modifier", "**Martial Modifier**")
+    effect = effect.replace("Cultural Modifier", "**Cultural Modifier**")
+    effect = effect.replace("Spiritual Modifier", "**Spiritual Modifier**")
+    effect = effect.replace("Communal Modifier", "**Communal Modifier**")
+    effect = effect.replace("Industrial  Modifier", "**Industrial Modifier**")
+    effect = effect.replace("Mercantile Modifier", "**Mercantile Modifier**")
+    effect = effect.replace("Academic Modifier", "**Academic Modifier**")
+    return name, effect
+
+
+def roll_uprising_event():
+    name = random.choice(infodex["uprisings"].keys())
+    effect = infodex["uprisings"][name]["Effects"]
+    name = "**" + name + "**"
+    effect = effect.replace("Martial Modifier", "**Martial Modifier**")
+    effect = effect.replace("Cultural Modifier", "**Cultural Modifier**")
+    effect = effect.replace("Spiritual Modifier", "**Spiritual Modifier**")
+    effect = effect.replace("Communal Modifier", "**Communal Modifier**")
+    effect = effect.replace("Industrial  Modifier", "**Industrial Modifier**")
+    effect = effect.replace("Mercantile Modifier", "**Mercantile Modifier**")
+    effect = effect.replace("Academic Modifier", "**Academic Modifier**")
+    return name, effect
+
+
+def roll_town(region):
+    criteria = re.compile('(?i)^' + region + "$")
+    match = town_list.find(criteria, in_row=1)
+    if match is None:
+        return "There is no region under this name. Please try again."
+    else:
+        towns = town_list.col_values(match.col)
+        index = random.randrange(1, len(towns))
+        return "The town you have randomly selected is " + towns[index] + "!"
