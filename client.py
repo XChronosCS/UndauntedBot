@@ -781,11 +781,11 @@ async def keyword(ctx, *arg):
     (await ctx.send(result))
 
 
-@bot.command(name='lookup', aliases=['search'])
-async def lookup(ctx, *args):
+@bot.command(name='search', aliases=['search'])
+async def search(ctx, *args):
     arg_full = ' '.join(args)
     ret_string = get_info_categories(arg_full)
-    (await ctx.send(ret_string))
+    await ctx.send(ret_string)
 
 
 @bot.command(name='lorebook')

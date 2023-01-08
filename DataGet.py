@@ -355,14 +355,15 @@ def get_info_categories(name):
     for key, value in infodex.items():
         if any((match := criteria.search(item)) for item in value.keys()):
             categories.append(key.title())
+    if categories != []:
         ret_string = "**__Entries of that name can be found within the following classifications:__** \n" + ", ".join(categories)
-
         return ret_string
-    similar_words = []
-    for key, value in infodex.items():
-        similar_words.append(find_most_similar_string(value.keys(), name.lower()))
-    similar_word = find_most_similar_string(similar_words, name.lower())
-    return "There is no entry by that name. Did you mean " + similar_word + "?"
+    else:
+        similar_words = []
+        for key, value in infodex.items():
+            similar_words.append(find_most_similar_string(value.keys(), name.lower()))
+        similar_word = find_most_similar_string(similar_words, name.lower())
+        return "There is no entry by that name. Did you mean " + similar_word + "?"
 
 
 def get_man_data(name):
@@ -673,3 +674,5 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
+
+print(get_info_categories("Illusionist"))
