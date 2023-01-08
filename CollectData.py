@@ -147,6 +147,7 @@ for col in eggsheet.iter_cols(min_col=1, max_col=eggsheet.max_column, min_row=1,
     # Add the nested dictionary to the sheet data dictionary
     eggdex[key] = nested_dict
 
+
 t1_stop = time.perf_counter()
 print("Elapsed time during the whole program in seconds:",
       t1_stop - t1_start)
