@@ -121,7 +121,7 @@ Most get_x_data functions follow similar logic to get_ability_data in terms of h
 def get_feature_data(name):
     criteria = re.compile('(?i)^' + name.replace("(", "\(").replace(")", "\)") + "$")
     if any((match := criteria.search(item)) for item in features.keys()):
-        data_block = abilities[match.group(0)]
+        data_block = features[match.group(0)]
         feature_name = data_block["Name"]
         feature_pre = "\n" + data_block["Prerequisites"]
         feature_tag = "\n" + data_block["Tags"]
