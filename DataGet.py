@@ -499,7 +499,7 @@ def get_treasure_spot(name):
 
 
 def get_dex_entry(name):
-    pix = pokedex[ALLPOKEMON[find_most_similar_string(ALLPOKEMON.keys(), name).upper()]["Page Num"]].get_pixmap()
+    pix = pokedex[ALLPOKEMON[name.upper()]["Page Num"]].get_pixmap()
     pix.save("{0}.png".format(name.lower()))
 
 
@@ -676,3 +676,5 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
+
+get_dex_entry("squirtle")
