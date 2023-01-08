@@ -12,7 +12,7 @@ from RollingCommands import *
 from UIElements import *
 
 load_dotenv()
-TOKEN = os.getenv('TEST_TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 intents = discord.Intents.default()
 intents.message_content = True
