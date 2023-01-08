@@ -781,7 +781,7 @@ async def keyword(ctx, *arg):
     (await ctx.send(result))
 
 
-@bot.command(name='search', aliases=['search'])
+@bot.command(name='search')
 async def search(ctx, *args):
     arg_full = ' '.join(args)
     ret_string = get_info_categories(arg_full)
