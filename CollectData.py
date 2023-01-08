@@ -182,7 +182,6 @@ for i, row in enumerate(patronage_data):
         }
     bossdex["Patrons"][row[0]]["Personality"] = row[1]
     bossdex["Patrons"][row[0]][row[2]][row[3]] = [row[j] for j in range(4, 23) if row[j] != '']
-print(bossdex["Patrons"])
 
 t1_stop = time.perf_counter()
 print("Elapsed time during the whole program in seconds:",
