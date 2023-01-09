@@ -120,23 +120,27 @@ class PXPCalcView(discord.ui.View):
     @discord.ui.select(custom_id="Encounter Type", placeholder="Select Encounter Type",
                        options=[discord.SelectOption(label=name[0], value=name[1]) for name in
                        [("Exploration Base", "3"), ("Exploration Training Intent", "5"), ("Raid", "5"),
-                        ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"), ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]], max_values=1)
+                        ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"), ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]], max_values=1, row=1)
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.encounter_type = int(select.values[0])
         self.stop()
 
     @discord.ui.select(custom_id="Number Players", placeholder="# Players",
-                       options=[discord.SelectOption(label=str(i+1), value=str(i+1)) for i in range(4)], max_values=1)
+                       options=[discord.SelectOption(label=str(i+1), value=str(i+1)) for i in range(4)], max_values=1, row=2)
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.num_players = int(select.values[0])
         self.stop()
 
     @discord.ui.select(custom_id="Doubling Rewards?", placeholder="Choose yes or no",
                        options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
-                       max_values=1)
+                       max_values=1, row=3)
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.doubled = True if select.values[0] == "Yes" else False
         self.stop()
+
+    async def on_timeout(self) -> None:
+        await self.message.channel.send("Timedout")
+        await self.disable_all_items()
 
     @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success)
