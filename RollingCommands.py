@@ -208,7 +208,7 @@ def roll_egg(p_type, egg_move=False):
     mon = eggdex[chosen_type][mon_index]
     ret_string = "Congratulations! Your pokemon egg hatched into a {0}".format(mon[0])
     if egg_move:
-        ret_string += " with the egg move {0}".format(random.choice[mon[1]])
+        ret_string += " with the egg move {0}".format(random.choice(mon[1]))
 
     return ret_string + "!"
 
