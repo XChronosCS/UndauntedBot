@@ -72,8 +72,8 @@ def get_arcana_edges(legend):
                 prereq_list += f.readline().rstrip() + ", "
                 prereq_list += f.readline().rstrip()
                 break
-    if prereq_list == "":
-        return ["There is no legend by that name. Did you mean  . Please try again."]
+    if prereq_list == "" or legend == "":
+        return ["There is no legend by that name. Please try again."]
     prereqs = prereq_list.split(", ")
     for i in range(len(par_list)):
         if "\\n" in par_list[i]:
@@ -89,6 +89,21 @@ def get_arcana_edges(legend):
                 ret_array.append(ret_string)
     return ret_array
 
+def get_domain_edges(domain):
+    edges_array = []
+    criteria = re.compile('(?i)^' + domain)
+    if any((match := criteria.search(item["Prerequisites"])) for item in edges.values()):
+        data_blocks = match.groups()
+        for dict in data_blocks:
+            data_block = edges[match.group(0)]
+            arcana_edge = data_block["Name"]
+            arcana_edge += "\n" + data_block["Prerequisites"]
+            arcana_edge += "\n" + data_block["Effect"]
+            edges_array.append(arcana_edge)
+        return edges_array
+    else:
+        similar_word = find_most_similar_string(DOMAINS, domain.title())
+        return ["There is no domain by that name. Did you mean " + similar_word + "?"]
 
 def get_ability_data(name):
     """

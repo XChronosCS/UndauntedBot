@@ -111,6 +111,8 @@ FLORA = {
     ]
 }
 
+DOMAINS = ['Astral','Aura','Balance','Chaos','Creation','Death','Desires','Justice','Knowledge','Land','Life','Morality','Sea','Sky','Souls','Space','Time']
+
 PATRONAGE_CATEGORIES = ["Pact", "Major", "Minor", "Task", "Custom"]
 
 HARVESTABLES = ["Balm Mushroom", "Big Mushroom", "Tiny Mushroom", "Food Scrap", "Fashion Scrap", "Mech Scrap",
