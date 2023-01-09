@@ -44,7 +44,6 @@ class OptionalDetails(discord.ui.Modal, title="Optional Details"):
 
 
 class SimpleView(discord.ui.View):
-
     req_details = {}
 
     def assign_req(self, rd):
@@ -96,6 +95,7 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
                     "Extra Mons, etc.",
             view=next_view)
 
+
 # async def select_area(self, interaction: discord.Interaction, select_item: discord.ui.Select):
 #     self.enc_details["Area"] = select_item.values
 #     self.children[0].disabled = True
@@ -119,16 +119,19 @@ class PXPCalcView(discord.ui.View):
 
     @discord.ui.select(custom_id="Encounter Type", placeholder="Select Encounter Type",
                        options=[discord.SelectOption(label=name[0], value=name[1]) for name in
-                       [("Exploration Base", "3"), ("Exploration Training Intent", "5"), ("Raid", "5"),
-                        ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"), ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]], max_values=1, row=0)
-    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+                                [("Exploration Base", "3"), ("Exploration Training Intent", "5"), ("Raid", "5"),
+                                 ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"),
+                                 ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]],
+                       max_values=1, row=0)
+    async def select_encounter(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.encounter_type = int(select.values[0])
         self.stop()
         await interaction.response.defer()
 
     @discord.ui.select(custom_id="Number Players", placeholder="# Players",
-                       options=[discord.SelectOption(label=str(i+1), value=str(i+1)) for i in range(4)], max_values=1, row=1)
-    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+                       options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
+                       max_values=1, row=1)
+    async def select_players(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.num_players = int(select.values[0])
         self.stop()
         await interaction.response.defer()
@@ -136,14 +139,10 @@ class PXPCalcView(discord.ui.View):
     @discord.ui.select(custom_id="Doubling Rewards?", placeholder="Choose yes or no",
                        options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
                        max_values=1, row=2)
-    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+    async def select_rewards(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.doubled = True if select.values[0] == "Yes" else False
         self.stop()
         await interaction.response.defer()
-
-    async def on_timeout(self) -> None:
-        await self.message.channel.send("Timedout")
-        await self.disable_all_items()
 
     @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success, row=3)
@@ -163,7 +162,6 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
         self.num_players = np
         self.encounter_type = et
         self.doubled = d
-
 
     mon_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
@@ -215,7 +213,6 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
         self.calculation *= (self.encounter_type * 2 if self.doubled else self.encounter_type)
         await interaction.response.send_message(
             content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
-
 
 # foo: bool = None
 

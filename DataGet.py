@@ -91,7 +91,7 @@ def get_arcana_edges(legend):
 
 def get_domain_edges(domain):
     edges_array = []
-    criteria = re.compile('(?i)^' + domain)
+    criteria = re.compile('(?i)' + domain)
     if any((match := criteria.search(item["Prerequisites"])) for item in edges.values()):
         data_blocks = match.groups()
         for dict in data_blocks:
@@ -692,3 +692,4 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
+
