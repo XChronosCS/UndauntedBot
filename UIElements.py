@@ -141,14 +141,14 @@ class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
 
     mon_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Type the number of pokemon in the encounter and their average level seperated by a comma",
+        label="Type Num Pokemon, Average Level",
         required=True,
         placeholder="Ex: 4, 35"
     )
 
     raid_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Type the number and levels of every Raid Boss pokemon seperated by commas",
+        label="Type Num Raid Bosses, Average Level",
         required=False,
         default='0, 0',
         placeholder="Ex: 2, 45. Leave blank if not applicable"
@@ -156,7 +156,7 @@ class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
 
     swarm_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Type the number and levels of every Swarm Boss pokemon seperated by commas",
+        label="Type Num Swarm Bosses, Average Level",
         required=False,
         default='0, 0',
         placeholder="Ex: 1, 40. Leave blank if not applicable"
@@ -164,7 +164,7 @@ class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
 
     minion_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Type the number and levels of every Minion Boss pokemon seperated by commas",
+        label="Type Num Minions, Average Level",
         required=False,
         default='0, 0',
         placeholder="Ex: 2, 25. Leave blank if not applicable"
@@ -172,7 +172,7 @@ class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
 
     clash_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Type the number of clash trainers and their average tier seperated by a comma",
+        label="Type Num Trainers, Average Tier",
         required=False,
         default='0, 0',
         placeholder="Ex: 2, 2. Leave blank if not applicable"
