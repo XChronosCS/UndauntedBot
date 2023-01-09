@@ -204,7 +204,7 @@ def roll_egg(p_type, egg_move=False):
             chosen_type = match.group[0].title()
         else:
             chosen_type = find_most_similar_string(eggdex.keys(), p_type.title())
-    mon_index = random.choice(eggdex[chosen_type])
+    mon_index = random.choice(list(eggdex[chosen_type].keys()))
     mon = eggdex[chosen_type][mon_index]
     ret_string = "Congratulations! Your pokemon egg hatched into a {0}".format(mon[0])
     if egg_move:
@@ -280,3 +280,4 @@ def roll_town(region):
         towns = town_list.col_values(match.col)
         index = random.randrange(1, len(towns))
         return "The town you have randomly selected is " + towns[index] + "!"
+
