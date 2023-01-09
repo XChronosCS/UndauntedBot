@@ -1,5 +1,6 @@
 import random
 
+from Autostatter import get_gender
 from CollectData import eggdex, infodex, town_list
 from Constants import *
 from utilities import *
@@ -26,6 +27,12 @@ def roll_details():
     return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
            "if there are multiple options.".format(result_array)
 
+def roll_mon_details(pokemon):
+    nature = roll_nature()
+    gender = get_gender(pokemon)
+    ability = random.choice(pokemon['abilities'])
+    result_array = [nature, gender, ability]
+    return "This pokemon has a {0[0]} nature, is a {0[1]} gender, and has the ability {0[2]}.".format(result_array)
 
 def roll_flora(tier, amount):
     flora_list = []
@@ -210,7 +217,7 @@ def roll_egg(p_type, egg_move=False):
     if egg_move:
         ret_string += " with the egg move {0}".format(random.choice(mon[1]))
 
-    return ret_string + "!"
+    return ret_string + "!\n" + roll_mon_details(ALLPOKEMON[mon[0].upper()])
 
 
 def chaos_roller(choice_entered):
@@ -280,4 +287,3 @@ def roll_town(region):
         towns = town_list.col_values(match.col)
         index = random.randrange(1, len(towns))
         return "The town you have randomly selected is " + towns[index] + "!"
-
