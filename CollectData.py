@@ -160,11 +160,11 @@ for col in eggsheet.iter_cols(min_col=1, max_col=eggsheet.max_column, min_row=1,
 # Filling info in Bossdex
 
 guardian_data = guardians.get_all_values()
-keys = guardian_data[0][1:2]
+keys = guardian_data[0][1:3]
 for i, row in enumerate(guardian_data):
     if i <= 0:
         continue  # Skip the row with the key names
-    bossdex["Guardians"][row[0]] = {keys[j]: row[j] for j in range(len(keys))}
+    bossdex["Guardians"][row[0]] = {keys[j]: row[j + 1] for j in range(len(keys))}
 
 
 patronage_data = patrons.get_all_values()
