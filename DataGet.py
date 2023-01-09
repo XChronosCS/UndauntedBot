@@ -588,6 +588,7 @@ def get_guardian_info(area):
         print(data_block)
         guardian_string = data_block["Guardian"]
         guardian_string += "\n" + data_block["Details"]
+        return guardian_string
 
     else:
         similar_word = find_most_similar_string(guardians.keys(), area.title())
