@@ -201,7 +201,7 @@ def roll_egg(p_type, egg_move=False):
     else:
         criteria = re.compile('(?i)' + p_type)
         if any((match := criteria.search(item)) for item in eggdex.keys()):
-            chosen_type = match.group[0].title()
+            chosen_type = match.group(0).title()
         else:
             chosen_type = find_most_similar_string(eggdex.keys(), p_type.title())
     mon_index = random.choice(list(eggdex[chosen_type].keys()))
