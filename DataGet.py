@@ -585,7 +585,6 @@ def get_guardian_info(area):
     criteria = re.compile('(?i)^' + area + "$")  # get all the cells with the name of the legend in them in column 1
     if any((match := criteria.search(item)) for item in guardians.keys()):
         data_block = guardians[match.group(0)]
-        print(data_block)
         guardian_string = data_block["Guardian"]
         guardian_string += "\n" + data_block["Details"]
         return guardian_string
