@@ -677,4 +677,3 @@ def get_guardian_info(area):
 #
 # add_missing_page_numbers()
 
-get_dex_entry("squirtle")
