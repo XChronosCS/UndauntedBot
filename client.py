@@ -1037,7 +1037,7 @@ async def on_ready():
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
     view = PXPCalcView()
-    await interaction.response.send_message(view)
+    await interaction.response.send_message(view=view)
 
 # @bot.command(name='emote')
 # async def emote(ctx, args):

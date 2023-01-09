@@ -138,7 +138,7 @@ class PXPCalcView(discord.ui.View):
         self.doubled = True if select.values[0] == "Yes" else False
         self.stop()
 
-    @discord.ui.button(label="Add Optional Details",
+    @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         op_modal = PXPCalcModal()
