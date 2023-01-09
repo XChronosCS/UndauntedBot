@@ -113,7 +113,7 @@ def get_ability_data(name):
     :return: Description of the ability.
     """
     criteria = re.compile(
-        '(?i)^' + name + "$")  # Searches for the entered name regardless of capitalization and formatting.
+        '(?i)^' + re.escape(name) + "$")  # Searches for the entered name regardless of capitalization and formatting.
     if any((match := criteria.search(item)) for item in abilities.keys()):  # This code checks if any of the keys in
         # the abilities dictionary match the search criteria and assigns the match object to the variable "match" if
         # a match is found.
@@ -136,7 +136,7 @@ Most get_x_data functions follow similar logic to get_ability_data in terms of h
 
 
 def get_feature_data(name):
-    criteria = re.compile('(?i)^' + name.replace("(", "\(").replace(")", "\)") + "$")
+    criteria = re.compile('(?i)^' + re.escape(name).replace("(", "\(").replace(")", "\)") + "$")
     if any((match := criteria.search(item)) for item in features.keys()):
         data_block = features[match.group(0)]
         feature_name = data_block["Name"]
@@ -152,7 +152,7 @@ def get_feature_data(name):
 
 
 def get_item_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in items.keys()):
         data_block = items[match.group(0)]
         item_name = data_block["Name"]
@@ -165,7 +165,7 @@ def get_item_data(name):
 
 
 def get_edge_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in edges.keys()):
         data_block = edges[match.group(0)]
         edge_name = data_block["Name"]
@@ -179,7 +179,7 @@ def get_edge_data(name):
 
 
 def get_trait_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in edges.keys()):
         data_block = edges[match.group(0)]
         edge_name = data_block["Name"]
@@ -193,7 +193,7 @@ def get_trait_data(name):
 
 
 def get_move_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in moves.keys()):
         data_block = moves[match.group(0)]
         move_name = "Name: " + data_block["Attack Name"]
@@ -213,7 +213,7 @@ def get_move_data(name):
 
 
 def list_habitats(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     match = habitat.find(criteria, in_column=1)
     if match is None:
         similar_word = find_most_similar_string(habitat.col_values(1), name.lower())
@@ -236,7 +236,7 @@ def show_mechanics():
 
 
 def get_mechanic(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in mechanics.keys()):
         data_block = mechanics[match.group(0)]
         ret_string = "Mechanic: " + data_block["Mechanic"] + "\n\nEffect: " + data_block["Effect"]
@@ -244,7 +244,7 @@ def get_mechanic(name):
 
 
 def get_technique(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in techniques.keys()):
         data_block = techniques[match.group(0)]
         ret_string = data_block["Name"]
@@ -259,7 +259,7 @@ def get_technique(name):
 
 
 def get_order(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in orders.keys()):
         data_block = orders[match.group(0)]
         ret_string = data_block["Name"]
@@ -272,7 +272,7 @@ def get_order(name):
 
 
 def get_keyword_moves(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in keywords.keys()):
         ret_array = []
         for item in moves.values():
@@ -316,7 +316,7 @@ def poke_ability(name):
 
 
 def learn_move(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in moves.keys()):
         tm_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() for full_name in pokemon["moves"] if
                     name.lower() in full_name.lower() if "Tutor" in full_name]
@@ -333,7 +333,7 @@ def learn_move(name):
 
 
 def poke_capability(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in capabilities.keys()):
         capa_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() for full_name in pokemon["Capabilities"] if
                     name.title() == full_name.title()]
@@ -347,7 +347,7 @@ def poke_capability(name):
 
 
 def poke_flair(name, flair):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in ALLPOKEMON.keys()):
         data_block = ALLPOKEMON[match.group(0)]
         level_list = [full_name.split(" ", maxsplit=1)[1] for full_name in data_block["moves"] if
@@ -367,7 +367,7 @@ def poke_flair(name, flair):
 
 
 def get_info_categories(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     categories = []
     for key, value in infodex.items():
         if any((match := criteria.search(item)) for item in value.keys()):
@@ -384,7 +384,7 @@ def get_info_categories(name):
 
 
 def get_man_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in maneuvers.keys()):
         data_block = maneuvers[match.group(0)]
         manu_name = "Name: " + data_block["Name"]
@@ -400,7 +400,7 @@ def get_man_data(name):
 
 
 def get_cap_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in capabilities.keys()):
         data_block = capabilities[match.group(0)]
         item_name = data_block["Capability"]
@@ -412,7 +412,7 @@ def get_cap_data(name):
 
 
 def get_keyword_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in keywords.keys()):
         data_block = keywords[match.group(0)]
         item_name = data_block["Attack Keyword"]
@@ -424,7 +424,7 @@ def get_keyword_data(name):
 
 
 def get_status_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in statuses.keys()):
         data_block = statuses[match.group(0)]
         item_name = data_block["Status"]
@@ -437,7 +437,7 @@ def get_status_data(name):
 
 
 def get_book_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in books.keys()):
         data_block = books[match.group(0)]
         book_name = data_block["Book Name"]
@@ -454,7 +454,7 @@ def get_book_data(name):
 
 
 def get_weather_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in weathers.keys()):
         data_block = weathers[match.group(0)]
         weather_name = data_block["Weather"]
@@ -466,7 +466,7 @@ def get_weather_data(name):
 
 
 def get_heritage_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in heritages.keys()):
         data_block = heritages[match.group(0)]
         heritage_name = data_block["Heritage Name"]
@@ -479,7 +479,7 @@ def get_heritage_data(name):
 
 
 def get_affiliation_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in affiliations.keys()):
         data_block = affiliations[match.group(0)]
         affiliation_name = data_block["Affiliation Name"]
@@ -493,7 +493,7 @@ def get_affiliation_data(name):
 
 
 def get_influence_data(name):
-    criteria = re.compile('(?i)^' + name + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in influences.keys()):
         data_block = influences[match.group(0)]
         influence_name = data_block["Influence Name"]
@@ -627,7 +627,7 @@ def get_guardian_info(area):
 #         tutor_moves = tutor_moves.replace("Unique: ", "")
 #         tutor_moves = tutor_moves.replace(" Generic:", ",")
 #         tm_list = tutor_moves.split(", ")
-#         criteria = re.compile('(?i)^' + name_search + "$")
+#         criteria = re.compile('(?i)^' + re.escape(name)_search + "$")
 #         if any((match := criteria.search(item)) for item in pokedict.keys()):
 #             data_block = pokedict[match.group(0)]
 #             for attack in tm_list:
