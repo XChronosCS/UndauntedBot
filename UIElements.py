@@ -112,10 +112,9 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
 #     await interaction.response.defer()
 #     self.stop()
 
-class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
-    calculation = 0
-    num_players = None
-    encounter_type = None
+class PXPCalcView(discord.ui.View):
+    num_players = 0
+    encounter_type = 0
     doubled = False
 
     @discord.ui.select(custom_id="Encounter Type", placeholder="Select Encounter Type",
@@ -138,6 +137,26 @@ class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.doubled = True if select.values[0] == "Yes" else False
         self.stop()
+
+    @discord.ui.button(label="Add Optional Details",
+                       style=discord.ButtonStyle.success)
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        op_modal = PXPCalcModal()
+        op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
+        await interaction.response.send_modal(op_modal)
+
+
+class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
+    calculation = 0
+    num_players = None
+    encounter_type = None
+    doubled = False
+
+    def assign_req(self, np, et, d):
+        self.num_players = np
+        self.encounter_type = et
+        self.doubled = d
+
 
     mon_levels = discord.ui.TextInput(
         style=discord.TextStyle.short,
