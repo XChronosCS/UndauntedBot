@@ -1053,7 +1053,7 @@ async def pxpcal(interaction: discord.Interaction):
 #             (await ctx.message.delete())
 #             break
 
-@bot.tree.command(name='domain')
+@bot.command(name='domain')
 async def domain(ctx, *args):
     arg_full = ' '.join(args)
     ret_array = get_domain_edges(arg_full)
