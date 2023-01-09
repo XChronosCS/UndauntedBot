@@ -117,29 +117,29 @@ class PXPCalcView(discord.ui.View):
     encounter_type = 0
     doubled = False
 
-    @discord.ui.select(custom_id="Encounter Type", placeholder="Select Encounter Type",
+    @discord.ui.select(placeholder="Select Encounter Type",
                        options=[discord.SelectOption(label=name[0], value=name[1]) for name in
                                 [("Exploration Base", "3"), ("Exploration Training Intent", "5"), ("Raid", "5"),
                                  ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"),
                                  ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]],
                        max_values=1, row=0)
-    async def select(self, interaction: discord.Interaction, select_1: discord.ui.Select):
+    async def select_1(self, interaction: discord.Interaction, select_1: discord.ui.Select):
         self.encounter_type = int(select_1.values[0])
         self.stop()
         await interaction.response.defer()
 
-    @discord.ui.select(custom_id="Number Players", placeholder="# Players",
+    @discord.ui.select(placeholder="# Players",
                        options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
                        max_values=1, row=1)
-    async def select(self, interaction: discord.Interaction, select_2: discord.ui.Select):
+    async def select_2(self, interaction: discord.Interaction, select_2: discord.ui.Select):
         self.num_players = int(select_2.values[0])
         self.stop()
         await interaction.response.defer()
 
-    @discord.ui.select(custom_id="Doubling Rewards?", placeholder="Choose yes or no",
+    @discord.ui.select(placeholder="Choose yes or no",
                        options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
                        max_values=1, row=2)
-    async def select(self, interaction: discord.Interaction, select_3: discord.ui.Select):
+    async def select_3(self, interaction: discord.Interaction, select_3: discord.ui.Select):
         self.doubled = True if select_3.values[0] == "Yes" else False
         self.stop()
         await interaction.response.defer()
