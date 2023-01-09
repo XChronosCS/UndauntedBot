@@ -1019,12 +1019,12 @@ async def wander(ctx):
 # GUILD SPECIFIC COMMANDS:
 
 
-# @bot.event
-# async def on_ready():
-#     bot.tree.copy_global_to(guild=UNDAUNTED_GUILD_ID)
-#     await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
-#
-#
+@bot.event
+async def on_ready():
+    bot.tree.copy_global_to(guild=UNDAUNTED_GUILD_ID)
+    await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
+
+
 # @bot.tree.command(name='advgen')
 # async def advgen(interaction: discord.Interaction):
 #     view = AdventureModal()
@@ -1033,18 +1033,24 @@ async def wander(ctx):
 #     channel = interaction.channel
 #     await channel.send(primary_details)
 
-@bot.command(name='emote')
-async def emote(ctx, args):
-    arg_full = ' '.join(args)
-    for emoji in ctx.guild.emojis:
-        send_emote = ""
-        if emoji.name.lower() == arg_full.lower():
-            if emoji.animated:
-                send_emote = "<a:{0}:{1}>".format(emoji.name, emoji.id)
-            else:
-                send_emote = "<:{0}:{1}>".format(emoji.name, emoji.id)
-            (await ctx.send(send_emote))
-            (await ctx.message.delete())
-            break
+
+@bot.tree.command(name='pxpcal')
+async def pxpcal(interaction: discord.Interaction):
+    view = PXPCalcView()
+    await interaction.response.send_modal(view)
+
+# @bot.command(name='emote')
+# async def emote(ctx, args):
+#     arg_full = ' '.join(args)
+#     for emoji in ctx.guild.emojis:
+#         send_emote = ""
+#         if emoji.name.lower() == arg_full.lower():
+#             if emoji.animated:
+#                 send_emote = "<a:{0}:{1}>".format(emoji.name, emoji.id)
+#             else:
+#                 send_emote = "<:{0}:{1}>".format(emoji.name, emoji.id)
+#             (await ctx.send(send_emote))
+#             (await ctx.message.delete())
+#             break
 
 bot.run(TOKEN)

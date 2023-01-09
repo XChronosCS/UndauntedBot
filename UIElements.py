@@ -112,21 +112,83 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
 #     await interaction.response.defer()
 #     self.stop()
 
-# class SimpleView(discord.ui.View):
-#     enc_details = {}
-#
-#     @discord.ui.select(custom_id="Encounter Slots", placeholder="Select Encounter Area",
-#                        options=[discord.SelectOption(label=name, value=name) for name in
-#                                 worlddex["Encounter Slots"].keys()], max_values=1)
-#     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-#         self.enc_details["Area"] = select.values[0]
-#         self.stop()
-#
-#     @discord.ui.select(custom_id="Number Players", placeholder="# Players",
-#                        options=[discord.SelectOption(label=str(i+1), value=str(i+1)) for i in range(4)], max_values=1)
-#     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-#         self.enc_details["Num Players"] = select.values[0]
-#         self.stop()
+class PXPCalcView(discord.ui.Modal, title="PXP Calc"):
+    calculation = 0
+    num_players = None
+    encounter_type = None
+    doubled = False
+
+    @discord.ui.select(custom_id="Encounter Type", placeholder="Select Encounter Type",
+                       options=[discord.SelectOption(label=name[0], value=name[1]) for name in
+                       [("Exploration Base", "3"), ("Exploration Training Intent", "5"), ("Raid", "5"),
+                        ("Adventure Trial Pass", "4"), ("Adventure Trial Fail", "2"), ("Clash Encounter", "3"), ("Rescue Encounter", "3"), ("Request Encounter", "5"), ("Gauntlet Encounter", "5")]], max_values=1)
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.encounter_type = int(select.values[0])
+        self.stop()
+
+    @discord.ui.select(custom_id="Number Players", placeholder="# Players",
+                       options=[discord.SelectOption(label=str(i+1), value=str(i+1)) for i in range(4)], max_values=1)
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.num_players = int(select.values[0])
+        self.stop()
+
+    @discord.ui.select(custom_id="Doubling Rewards?", placeholder="Choose yes or no",
+                       options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
+                       max_values=1)
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.doubled = True if select.values[0] == "Yes" else False
+        self.stop()
+
+    mon_levels = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Type the number of pokemon in the encounter and their average level seperated by a comma",
+        required=True,
+        placeholder="Ex: 4, 35"
+    )
+
+    raid_levels = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Type the number and levels of every Raid Boss pokemon seperated by commas",
+        required=False,
+        default='0, 0',
+        placeholder="Ex: 2, 45. Leave blank if not applicable"
+    )
+
+    swarm_levels = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Type the number and levels of every Swarm Boss pokemon seperated by commas",
+        required=False,
+        default='0, 0',
+        placeholder="Ex: 1, 40. Leave blank if not applicable"
+    )
+
+    minion_levels = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Type the number and levels of every Minion Boss pokemon seperated by commas",
+        required=False,
+        default='0, 0',
+        placeholder="Ex: 2, 25. Leave blank if not applicable"
+    )
+
+    clash_levels = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Type the number of clash trainers and their average tier seperated by a comma",
+        required=False,
+        default='0, 0',
+        placeholder="Ex: 2, 2. Leave blank if not applicable"
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        for i in [self.mon_levels, self.clash_levels, self.minion_levels]:
+            muliply_tuple = i.value.split(", ")
+            self.calculation += int(muliply_tuple[0]) * int(muliply_tuple[1])
+        raid_boss_info = self.raid_levels.value.split()
+        self.calculation += int(raid_boss_info[1]) * int(raid_boss_info[0]) * (3 if self.num_players >= 3 else 2)
+        swarm_boss_info = self.swarm_levels.value.split()
+        self.calculation += int(swarm_boss_info[1]) * int(swarm_boss_info[0]) * (self.num_players + 1)
+        self.calculation *= (self.encounter_type * 2 if self.doubled else self.encounter_type)
+        await interaction.response.send_message(
+            content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
 
 
 # foo: bool = None
