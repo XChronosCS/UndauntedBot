@@ -201,9 +201,9 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
         for i in [self.mon_levels, self.clash_levels, self.minion_levels]:
             muliply_tuple = i.value.split(", ")
             self.calculation += int(muliply_tuple[0]) * int(muliply_tuple[1])
-        raid_boss_info = self.raid_levels.value.split()
+        raid_boss_info = self.raid_levels.value.split(", ")
         self.calculation += int(raid_boss_info[1]) * int(raid_boss_info[0]) * (3 if self.num_players >= 3 else 2)
-        swarm_boss_info = self.swarm_levels.value.split()
+        swarm_boss_info = self.swarm_levels.value.split(", ")
         self.calculation += int(swarm_boss_info[1]) * int(swarm_boss_info[0]) * (self.num_players + 1)
         self.calculation *= (self.encounter_type * 2 if self.doubled else self.encounter_type)
         await interaction.response.send_message(
