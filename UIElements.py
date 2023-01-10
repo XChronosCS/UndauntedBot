@@ -124,37 +124,37 @@ class PXPCalcView(discord.ui.View):
                                  ("Adventure Trial Pass", "ATP 4"), ("Adventure Trial Fail", " ATF 2"),
                                  ("Clash Encounter", "CE 3"),
                                  ("Rescue Encounter", "RE 3"), ("Request Encounter", "RQE 5"),
-                                 ("Gauntlet Encounter", "GE 5")]], max_values=1)
+                                 ("Gauntlet Encounter", "GE 5")]], max_values=1, row=0)
     async def select_1(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.encounter_type = int(select.values[0].split(" ")[1])
         self.stop()
         await interaction.response.defer()
 
 
-@discord.ui.select(placeholder="# Players",
-                   options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
-                   max_values=1)
-async def select_2(self, interaction: discord.Interaction, select: discord.ui.Select):
-    self.num_players = int(select.values[0])
-    self.stop()
-    await interaction.response.defer()
+    @discord.ui.select(placeholder="# Players",
+                       options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
+                       max_values=1, row=1)
+    async def select_2(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.num_players = int(select.values[0])
+        self.stop()
+        await interaction.response.defer()
 
 
-@discord.ui.select(placeholder="Choose yes or no",
-                   options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
-                   max_values=1)
-async def select_3(self, interaction: discord.Interaction, select: discord.ui.Select):
-    self.doubled = True if select.values[0] == "Yes" else False
-    self.stop()
-    await interaction.response.defer()
+    @discord.ui.select(placeholder="Choose yes or no",
+                       options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
+                       max_values=1, row=2)
+    async def select_3(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.doubled = True if select.values[0] == "Yes" else False
+        self.stop()
+        await interaction.response.defer()
 
 
-@discord.ui.button(label="Press to Continue",
-                   style=discord.ButtonStyle.success)
-async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
-    op_modal = PXPCalcModal()
-    op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
-    await interaction.response.send_modal(op_modal)
+    @discord.ui.button(label="Press to Continue",
+                       style=discord.ButtonStyle.success, row=3)
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        op_modal = PXPCalcModal()
+        op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
+        await interaction.response.send_modal(op_modal)
 
 
 class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
