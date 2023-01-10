@@ -1,3 +1,8 @@
+import random
+
+import discord
+
+
 def piglatinify(key, sentence):
     def strip_consonants(word):
         word_lower = word.lower()
@@ -25,3 +30,20 @@ def piglatinify(key, sentence):
         else:
             piglatin_words.append(piglatin(word))
     return " ".join(piglatin_words).capitalize()
+
+class MuffinButton(discord.ui.View):
+    @discord.ui.button(label="Push for Muffin",
+                       style=discord.ButtonStyle.success, row=3)
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        muf_var = random.randint(1, 4)
+        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)),
+                                                ephemeral=True)
+
+
+class BunnyButton(discord.ui.View):
+    @discord.ui.button(label="Push for Bnuuy",
+                       style=discord.ButtonStyle.success, row=3)
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        bun_var = random.randint(1, 40)
+        await interaction.response.send_message(
+            file=discord.File('Images/Bunny Pictures/bunny_{0}.png'.format(bun_var)), ephemeral=True)

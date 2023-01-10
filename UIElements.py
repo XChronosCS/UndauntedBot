@@ -1,5 +1,3 @@
-import random
-
 import discord
 
 
@@ -216,22 +214,43 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
             content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
 
 
-class MuffinButton(discord.ui.View):
-    @discord.ui.button(label="Push for Muffin",
+class PXPCalcView(discord.ui.View):
+    num_players = 0
+    encounter_type = 0
+    doubled = False
+
+    @discord.ui.select(placeholder="Select Encounter Type",
+                       options=[discord.SelectOption(label=name[0], value=name[1]) for name in
+                                [("Exploration Base", "EB 3"), ("Exploration Training Intent", " ETI 5"),
+                                 ("Raid", "R 5"),
+                                 ("Adventure Trial Pass", "ATP 4"), ("Adventure Trial Fail", " ATF 2"),
+                                 ("Clash Encounter", "CE 3"),
+                                 ("Rescue Encounter", "RE 3"), ("Request Encounter", "RQE 5"),
+                                 ("Gauntlet Encounter", "GE 5")]], max_values=1, row=0)
+    async def select_1(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.encounter_type = int(select.values[0].split(" ")[1])
+        await interaction.response.defer()
+
+    @discord.ui.select(placeholder="# Players",
+                       options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
+                       max_values=1, row=1)
+    async def select_2(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.num_players = int(select.values[0])
+        await interaction.response.defer()
+
+    @discord.ui.select(placeholder="Choose if doubled or not",
+                       options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
+                       max_values=1, row=2)
+    async def select_3(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.doubled = True if select.values[0] == "Yes" else False
+        await interaction.response.defer()
+
+    @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
-        muf_var = random.randint(1, 4)
-        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)),
-                                                ephemeral=True)
-
-
-class BunnyButton(discord.ui.View):
-    @discord.ui.button(label="Push for Bnuuy",
-                       style=discord.ButtonStyle.success, row=3)
-    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
-        bun_var = random.randint(1, 40)
-        await interaction.response.send_message(
-            file=discord.File('Images/Bunny Pictures/bunny_{0}.png'.format(bun_var)), ephemeral=True)
+        op_modal = PXPCalcModal()
+        op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
+        await interaction.response.send_modal(op_modal)
 # foo: bool = None
 
 # async def disable_all_items(self):

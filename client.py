@@ -1,5 +1,6 @@
 # client.py
 import string
+import typing
 from datetime import datetime
 
 from discord.ext import commands
@@ -8,6 +9,7 @@ from pytz import timezone
 
 from Autostatter import *
 from DataGet import *
+from JokeCommands import *
 from RollingCommands import *
 from UIElements import *
 
@@ -18,7 +20,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='/', case_insensitive=True, intents=intents)
-UNDAUNTED_GUILD_ID = discord.Object(id = 712378096229023825)
+UNDAUNTED_GUILD_ID = discord.Object(id=712378096229023825)
+
 
 # LEGACY COMMANDS FROM PORYBOT 1.0
 
@@ -370,7 +373,7 @@ async def beans(ctx):
 '''
 
 
-@bot.command(name='capa')
+@bot.command(name='capability', aliases=['capa', 'capabilities'])
 async def capa(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_cap_data(arg_full)
@@ -412,7 +415,7 @@ async def compendium(ctx, *arg):
             'There is no legend with this name / topic with this name in the compendium. Please try again.'))
 
 
-@bot.command(name='cond')
+@bot.command(name='condition', aliases=['cond', 'conditions'])
 async def cond(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_status_data(arg_full)
@@ -430,7 +433,7 @@ async def cookie(ctx, person: discord.Member = None):
 
 @bot.command(name='details')
 async def details(ctx):
-     (await ctx.send(roll_details()))
+    (await ctx.send(roll_details()))
 
 
 @bot.command(aliases=['droll', 'dr'])
@@ -461,7 +464,7 @@ async def diceroll(ctx, *args):
     (await ctx.send(ret_string))
 
 
-@bot.command(name='edge')
+@bot.command(name='edge', aliases=["edges"])
 async def edge(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_edge_data(arg_full)
@@ -469,33 +472,16 @@ async def edge(ctx, *arg):
     (await ctx.send(ret_string))
 
 
-
-@bot.command(name='eggmove', aliases=['emove'])
-async def eggmove(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
-    result = roll_egg(arg_full, True)
+@bot.command(name='eggmove', aliases=['emove', 'erm'])
+async def eggmove(ctx, arg: typing.Optional[str] = "Random"):
+    result = roll_egg(arg, True)
     ret_string = result
     (await ctx.send(ret_string))
 
 
-@bot.command(name='eggrandom', aliases=['erand'])
-async def eggrandom(ctx):
-    result = roll_egg('Random')
-    ret_string = result
-    (await ctx.send(ret_string))
-
-
-@bot.command(name='erm')
-async def erm(ctx):
-    result = roll_egg('Random', True)
-    ret_string = result
-    (await ctx.send(ret_string))
-
-
-@bot.command(name='eggroll', aliases=['eroll'])
-async def eggroll(ctx, *arg):
-    arg_full = string.capwords(' '.join(arg).lower())
-    result = roll_egg(arg_full)
+@bot.command(name='eggroll', aliases=['eroll', 'eggrandom'])
+async def eggroll(ctx, arg: typing.Optional[str] = "Random"):
+    result = roll_egg(arg.lower())
     ret_string = result
     (await ctx.send(ret_string))
 
@@ -664,7 +650,7 @@ async def exploration(ctx, *arg):
 """
 
 
-@bot.command(name='feature', aliases=['feats'])
+@bot.command(name='feature', aliases=['feats', 'features'])
 async def feature(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_feature_data(arg_full)
@@ -754,7 +740,7 @@ async def help(ctx):
 """
 
 
-@bot.command(name='items')
+@bot.command(name='items', aliases=["item"])
 async def items(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_item_data(arg_full)
@@ -800,7 +786,7 @@ async def lorebook(ctx, *arg):
         (await ctx.send('There is no area with this name / topic with this name in the lore book. Please try again.'))
 
 
-@bot.command(name='lum')
+@bot.command(name='lum', aliases=['learnmove'])
 async def lum(ctx, *arg):
     arg_full = ' '.join(arg)
     result = learn_move(arg_full)
@@ -812,7 +798,7 @@ async def lum(ctx, *arg):
         (await ctx.send(result))
 
 
-@bot.command(name='manu')
+@bot.command(name='manu', aliases = ['maneuver'])
 async def manu(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_man_data(arg_full)
@@ -820,7 +806,7 @@ async def manu(ctx, *arg):
     (await ctx.send(ret_string))
 
 
-@bot.command(name='mech')
+@bot.command(name='mech', aliases=["mechanic"])
 async def mech(ctx):
     channel = ctx.channel
     user = ctx.author
@@ -836,15 +822,12 @@ async def mech(ctx):
     (await ctx.send(get_mechanic(msg.content.lower())))
 
 
-@bot.command(name='move')
+@bot.command(name='move', aliases=['moves'])
 async def move(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_move_data(arg_full)
     ret_string = ''.join(result)
     (await ctx.send(ret_string))
-
-
-
 
 
 @bot.command(name='mythos')
@@ -940,8 +923,8 @@ async def shards(ctx, *args):
     (await ctx.send(ret_string))
 
 
-@bot.command(name='style', aliases=['smoves'])
-async def style(ctx, *arg):
+@bot.command(name='flair', aliases=['fmoves'])
+async def flair(ctx, *arg):
     style = arg[0]
     typing = arg[1]
     result = get_flair_moves(style, typing)
@@ -952,15 +935,26 @@ async def style(ctx, *arg):
     else:
         (await ctx.send(result))
 
+@bot.command(name='style', aliases=['smoves'])
+async def style(ctx, *arg):
+    style_tag = arg[1]
+    pokemon = arg[0]
+    result = poke_flair(pokemon, style_tag)
+    if (len(result) > 2000):
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(result))
 
-@bot.command(name='tech')
+@bot.command(name='tech', aliases=["technique", 'techniques'])
 async def tech(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_technique(arg_full)
     (await ctx.send(result))
 
 
-@bot.command(name='order')
+@bot.command(name='order', aliases=['orders'])
 async def tech(ctx, *args):
     arg_full = ' '.join(args)
     result = get_order(arg_full)
@@ -981,7 +975,7 @@ async def townevent(ctx):
     (await ctx.send(ret_string))
 
 
-@bot.command(name='trait')
+@bot.command(name='trait', aliases=['traits'])
 async def trait(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_trait_data(arg_full)
@@ -1035,15 +1029,18 @@ async def muffin(ctx):
     view = MuffinButton()
     await ctx.send(view=view)
 
+
 @bot.command(name='bunny')
 async def bunny(ctx):
     view = BunnyButton()
     await ctx.send(view=view)
 
+
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
     view = PXPCalcView()
     await interaction.response.send_message(view=view)
+
 
 # @bot.command(name='emote')
 # async def emote(ctx, args):
