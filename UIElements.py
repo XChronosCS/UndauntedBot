@@ -129,21 +129,22 @@ class PXPCalcView(discord.ui.View):
                                  ("Gauntlet Encounter", "GE 5")]], max_values=1, row=0)
     async def select_1(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.encounter_type = int(select.values[0].split(" ")[1])
-        self.stop()
+        await interaction.response.defer()
+
 
     @discord.ui.select(placeholder="# Players",
                        options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
                        max_values=1, row=1)
     async def select_2(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.num_players = int(select.values[0])
-        self.stop()
+        await interaction.response.defer()
 
     @discord.ui.select(placeholder="Choose if doubled or not",
                        options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
                        max_values=1, row=2)
     async def select_3(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.doubled = True if select.values[0] == "Yes" else False
-        self.stop()
+        await interaction.response.defer()
 
     @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success, row=3)
@@ -216,7 +217,7 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
             content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
 
 class MuffinButton(discord.ui.View):
-    @discord.ui.button(label="Press to Continue",
+    @discord.ui.button(label="Push for Muffin",
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         muf_var = random.randint(1, 4)
