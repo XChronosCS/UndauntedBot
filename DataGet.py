@@ -390,7 +390,7 @@ def get_man_data(name):
         manu_freq = "\n" + data_block["Action"]
         manu_range = "\n" + data_block["Range"]
         manu_ac = "\nAC: " + data_block["AC"]
-        manu_eff = "\nEffect: " + data_block["Effect"]
+        manu_eff = "\nEffect: " + data_block["Effects"]
         return [manu_name, manu_class, manu_freq, manu_range, manu_ac, manu_eff]
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
