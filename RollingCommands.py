@@ -198,7 +198,7 @@ def random_build():
 
 
 def roll_mon():
-    return random.choice(ALLPOKEMON.keys()).title()
+    return random.choice(list(ALLPOKEMON.keys())).title()
 
 
 def roll_egg(p_type, egg_move=False):

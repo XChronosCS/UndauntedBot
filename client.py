@@ -1063,7 +1063,7 @@ async def pxpcal(interaction: discord.Interaction):
 async def domain(ctx, *args):
     arg_full = ' '.join(args)
     ret_array = get_domain_edges(arg_full)
-    (await ctx.author.send('**Here are the following arcana edges you qualify for through that patron:**'))
+    (await ctx.author.send('**Here are the  arcana edges which fall under that domain:**'))
     for i in ret_array:
         (await ctx.author.send(i))
 
