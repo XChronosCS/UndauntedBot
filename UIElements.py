@@ -128,8 +128,6 @@ class PXPCalcView(discord.ui.View):
     async def select_1(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.encounter_type = int(select.values[0].split(" ")[1])
         self.stop()
-        await interaction.response.defer()
-
 
     @discord.ui.select(placeholder="# Players",
                        options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
@@ -137,17 +135,13 @@ class PXPCalcView(discord.ui.View):
     async def select_2(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.num_players = int(select.values[0])
         self.stop()
-        await interaction.response.defer()
 
-
-    @discord.ui.select(placeholder="Choose yes or no",
+    @discord.ui.select(placeholder="Choose if doubled or not",
                        options=[discord.SelectOption(label=i, value=i) for i in ["Yes", "No"]],
                        max_values=1, row=2)
     async def select_3(self, interaction: discord.Interaction, select: discord.ui.Select):
         self.doubled = True if select.values[0] == "Yes" else False
         self.stop()
-        await interaction.response.defer()
-
 
     @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success, row=3)
