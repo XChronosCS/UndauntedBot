@@ -1031,9 +1031,9 @@ async def on_ready():
 #     await channel.send(primary_details)
 
 @bot.command(name='muffin')
-async def muffin(interaction: discord.Interaction):
+async def muffin(ctx):
     view = MuffinButton()
-    await interaction.response.send_message(view=view)
+    await ctx.send_message(view=view)
 
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
