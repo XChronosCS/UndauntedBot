@@ -1033,7 +1033,7 @@ async def on_ready():
 @bot.command(name='muffin')
 async def muffin(ctx):
     view = MuffinButton()
-    await ctx.send_message(view=view)
+    await ctx.send(view=view)
 
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
