@@ -927,7 +927,8 @@ async def shards(ctx, *args):
 async def flair(ctx, *arg):
     style = arg[0]
     typing = arg[1]
-    result = get_flair_moves(style, typing)
+    ret_string = get_flair_moves(style, typing)
+    result = ''.join(ret_string)
     if (len(result) > 2000):
         m_array = segment_list(result)
         for msg in m_array:

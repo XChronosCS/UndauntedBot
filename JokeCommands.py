@@ -41,7 +41,7 @@ class MuffinButton(discord.ui.View):
 
 
 class BunnyButton(discord.ui.View):
-    @discord.ui.button(label="Push for Bnuuy",
+    @discord.ui.button(label="Push for Bunny",
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         bun_var = random.randint(1, 40)

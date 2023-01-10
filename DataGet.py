@@ -425,13 +425,13 @@ def get_status_data(name):
     criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in statuses.keys()):
         data_block = statuses[match.group(0)]
-        item_name = data_block["Status"]
-        item_eff = "\n" + data_block["Effect"]
-        item_boss = "\n" + data_block["Boss Effect"]
-        return [item_name, item_eff, item_boss]
+        item_eff = data_block["Status"]
+        item_eff += "\n" + data_block["Effect"]
+        item_eff += "\nBoss Effect: " + data_block["Boss Effect"]
+        return item_eff
     else:
         similar_word = find_most_similar_string(statuses.keys(), name.lower())
-        return ["There is no status by that name. Did you mean " + similar_word + "?"]
+        return "There is no status by that name. Did you mean " + similar_word + "?"
 
 
 def get_book_data(name):
