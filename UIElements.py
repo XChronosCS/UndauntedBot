@@ -218,9 +218,9 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
 class MuffinButton(discord.ui.View):
     @discord.ui.button(label="Press to Continue",
                        style=discord.ButtonStyle.success, row=3)
-    async def submit(self, ctx: discord.ext.commands.Context, button: discord.ui.Button):
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         muf_var = random.randint(1, 4)
-        await ctx.send(file=discord.File('Images/muffin_{0}.png'.format(muf_var)), emphemeral=True)
+        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)), emphemeral=True)
 # foo: bool = None
 
 # async def disable_all_items(self):
