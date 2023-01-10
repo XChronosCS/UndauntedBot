@@ -203,7 +203,8 @@ def get_move_data(name):
         move_db = "\nDB: " + data_block["DB"]
         move_eff = "\nEffect: " + data_block["Effect"]
         move_tag = "\nStyle Tag: " + data_block["Flair Battle Type / Effect"]
-        return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag]
+        move_tier = "\nTier: " + data_block["Tier"]
+        return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag, move_tier]
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())
 
@@ -299,6 +300,27 @@ def get_flair_moves(name, typing):
     else:
         return "That is not a valid style tag. Please try again"
 
+
+def get_moves_tiers(typing):
+    criteria = re.compile('(?i)' + typing)
+    tier1array = []
+    tier2array = []
+    tier3array = []
+    if typing.title() in TYPES:
+        for item in moves.values():
+            if item["Type"] == typing.title():
+                tier = item["Tier"]
+                if tier == "Tier 3":
+                    tier3array.append(item["Attack Name"])
+                elif tier == "Tier 2":
+                    tier2array.append(item["Attack Name"])
+                else:
+                    tier1array.append(item["Attack Name"])
+        ret_string = "**__Here is a list of the " + typing.title() + "type moves within each tier:__** \n**Tier 1:** " + ", ".join(
+           tier1array) + "\n\n**Tier 2:** " + ", ".join(tier2array) + "\n\n**Tier 3:** " + ", ".join(tier3array)
+        return ret_string
+    else:
+        return "That is not a valid type, and thus has no moves of any tier. Please try again."
 
 def poke_ability(name):
     basic_array = [pokemon['name'].title() for pokemon in ALLPOKEMON.values() if

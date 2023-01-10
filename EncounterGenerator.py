@@ -138,6 +138,7 @@ def generate_adventure(gm_info):
     else:
         adventure_details = get_event_slot(event_table, adventure_details)
 
+
 # def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
 #     criteria = re.compile('(?i)^' + area + "$")
 #     area_match = sheet.find(criteria, in_row=1)

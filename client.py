@@ -798,7 +798,7 @@ async def lum(ctx, *arg):
         (await ctx.send(result))
 
 
-@bot.command(name='manu', aliases = ['maneuver'])
+@bot.command(name='manu', aliases=['maneuver'])
 async def manu(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_man_data(arg_full)
@@ -936,6 +936,7 @@ async def flair(ctx, *arg):
     else:
         (await ctx.send(result))
 
+
 @bot.command(name='style', aliases=['smoves'])
 async def style(ctx, *arg):
     style_tag = arg[1]
@@ -947,6 +948,7 @@ async def style(ctx, *arg):
             (await ctx.send(msg))
     else:
         (await ctx.send(result))
+
 
 @bot.command(name='tech', aliases=["technique", 'techniques'])
 async def tech(ctx, *arg):
@@ -1064,6 +1066,17 @@ async def domain(ctx, *args):
     (await ctx.author.send('**Here are the  arcana edges which fall under that domain:**'))
     for i in ret_array:
         (await ctx.author.send(i))
+
+
+@bot.command(name='command626')
+async def command626(ctx, arg):
+    result = get_moves_tiers(arg)
+    if (len(result) > 2000):
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(result))
 
 
 bot.run(TOKEN)
