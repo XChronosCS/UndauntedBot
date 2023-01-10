@@ -131,7 +131,6 @@ class PXPCalcView(discord.ui.View):
         self.encounter_type = int(select.values[0].split(" ")[1])
         await interaction.response.defer()
 
-
     @discord.ui.select(placeholder="# Players",
                        options=[discord.SelectOption(label=str(i + 1), value=str(i + 1)) for i in range(4)],
                        max_values=1, row=1)
@@ -216,12 +215,23 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
         await interaction.response.send_message(
             content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
 
+
 class MuffinButton(discord.ui.View):
     @discord.ui.button(label="Push for Muffin",
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         muf_var = random.randint(1, 4)
-        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)), ephemeral=True)
+        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)),
+                                                ephemeral=True)
+
+
+class BunnyButton(discord.ui.View):
+    @discord.ui.button(label="Push for Muffin",
+                       style=discord.ButtonStyle.success, row=3)
+    async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        bun_var = random.randint(1, 40)
+        await interaction.response.send_message(
+            file=discord.File('Images/Bunny Pictures/bunny_{0}.png'.format(bun_var)), ephemeral=True)
 # foo: bool = None
 
 # async def disable_all_items(self):

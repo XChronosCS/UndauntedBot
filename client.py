@@ -1035,6 +1035,11 @@ async def muffin(ctx):
     view = MuffinButton()
     await ctx.send(view=view)
 
+@bot.command(name='bunny')
+async def bunny(ctx):
+    view = BunnyButton()
+    await ctx.send(view=view)
+
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
     view = PXPCalcView()

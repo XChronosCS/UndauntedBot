@@ -58,7 +58,6 @@ pokedex = fitz.Document("Documents/Phemenon Pokedex.pdf")
 lore_doc = fitz.Document("Documents/Phemenon Lore Book.pdf")
 compendium = fitz.Document("Documents/Mythology Compendium.pdf")
 
-max_page = 1211
 
 
 def get_arcana_edges(legend):
@@ -91,15 +90,14 @@ def get_arcana_edges(legend):
 
 def get_domain_edges(domain):
     edges_array = []
-    criteria = re.compile('(?i)' + domain)
-    if any((match := criteria.search(item["Prerequisites"])) for item in edges.values()):
-        data_blocks = match.groups()
-        for dict in data_blocks:
-            data_block = edges[match.group(0)]
-            arcana_edge = data_block["Name"]
-            arcana_edge += "\n" + data_block["Prerequisites"]
-            arcana_edge += "\n" + data_block["Effect"]
-            edges_array.append(arcana_edge)
+    if domain.title() in DOMAINS:
+        for item in edges.values():
+            if domain.title() in item["Prerequisites"]:
+                data_block = item
+                arcana_edge = data_block["Name"]
+                arcana_edge += "\n" + data_block["Prerequisites"]
+                arcana_edge += "\n" + data_block["Effect"]
+                edges_array.append(arcana_edge)
         return edges_array
     else:
         similar_word = find_most_similar_string(DOMAINS, domain.title())
@@ -692,4 +690,5 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
+
 

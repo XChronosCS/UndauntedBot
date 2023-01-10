@@ -124,10 +124,13 @@ def generate_adventure(gm_info):
             num_encounters -= 1
             adventure_details["Honor Spent"] = (num + 1)
             break
+
+    # Getting all the encounters for the Adventure, including forced slots.
     if gm_info["Forced Slot"] != 0:  # Represents the case where a person forced an encounter slot.
         adventure_details = get_encounter_slot(encounter_table, adventure_details, gm_info["Forced Slot"])
     for i in range(num_encounters):
         adventure_details = get_encounter_slot(encounter_table, adventure_details)
+    # Getting information on the Event for the Adventure
     if gm_info["Forced Event"] != 0 or adventure_details["Event"] is not None:
         adventure_details = get_event_slot(event_table, adventure_details,
                                            gm_info["Forced Slot"] if adventure_details["Event"]
