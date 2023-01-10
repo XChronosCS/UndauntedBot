@@ -226,7 +226,7 @@ class MuffinButton(discord.ui.View):
 
 
 class BunnyButton(discord.ui.View):
-    @discord.ui.button(label="Push for Muffin",
+    @discord.ui.button(label="Push for Bnuuy",
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         bun_var = random.randint(1, 40)
