@@ -414,11 +414,11 @@ def get_keyword_data(name):
     if any((match := criteria.search(item)) for item in keywords.keys()):
         data_block = keywords[match.group(0)]
         item_name = data_block["Attack Keyword"]
-        item_eff = "\n" + data_block["Definition"]
-        return [item_name, item_eff]
+        item_eff += "\n" + data_block["Definition"]
+        return item_name
     else:
         similar_word = find_most_similar_string(keywords.keys(), name.lower())
-        return ["There is no keyword by that name. Did you mean " + similar_word + "?"]
+        return "There is no keyword by that name. Did you mean " + similar_word + "?"
 
 
 def get_status_data(name):
