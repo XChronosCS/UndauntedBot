@@ -220,7 +220,7 @@ class MuffinButton(discord.ui.View):
                        style=discord.ButtonStyle.success, row=3)
     async def submit(self, interaction: discord.Interaction, button: discord.ui.Button):
         muf_var = random.randint(1, 4)
-        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)), emphemeral=True)
+        await interaction.response.send_message(file=discord.File('Images/muffin_{0}.png'.format(muf_var)), ephemeral=True)
 # foo: bool = None
 
 # async def disable_all_items(self):
