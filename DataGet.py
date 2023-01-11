@@ -308,7 +308,7 @@ def get_moves_tiers(typing):
     tier3array = []
     if typing.title() in TYPES:
         for item in moves.values():
-            if item["Type"] == typing.title():
+            if item["Type"] == typing.title() and item.get("Tier") is not None:
                 tier = item["Tier"]
                 if tier == "Tier 3":
                     tier3array.append(item["Attack Name"])
@@ -712,5 +712,4 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
-
 
