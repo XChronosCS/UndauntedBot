@@ -15,13 +15,6 @@ FLORA = {
           "Fadeweaver", "Aorato Root", "Castello Shroom", "Purple Haze", "Themis Root", "Celestial Berry",
           "Psion Berry", "Soul Berry", "Wildheart Berry"],
     "3": [
-        "Aqua Lotus",
-        "Frost Moss",
-        "Mandrake Root",
-        "Scrap Orchid",
-        "Spatial Camellia",
-        "Twilight Moss",
-        "Volcanic Lichen",
         "Amnesia Herb",
         "Curative Herb",
         "Mirror Herb",
@@ -53,6 +46,17 @@ FLORA = {
         "Passho Berry "
     ],
     "2": [
+        "Assorted Carnations",
+        "Glimmering Lily",
+        "Ruby Blushrose",
+        "Spirit Sap",
+        "Aqua Lotus",
+        "Frost Moss",
+        "Mandrake Root",
+        "Scrap Orchid",
+        "Spatial Camellia",
+        "Twilight Moss",
+        "Volcanic Lichen",
         "Fae Flower",
         "Powderpuff",
         "Titan Arum",
@@ -75,10 +79,6 @@ FLORA = {
         "Kelpsy Berry "
     ],
     "1": [
-        "Assorted Carnations",
-        "Glimmering Lily",
-        "Ruby Blushrose",
-        "Spirit Sap",
         "Insomnia Herb",
         "Mystic Herb",
         "Numbing Herb",

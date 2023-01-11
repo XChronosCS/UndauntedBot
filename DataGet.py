@@ -316,7 +316,7 @@ def get_moves_tiers(typing):
                     tier2array.append(item["Attack Name"])
                 else:
                     tier1array.append(item["Attack Name"])
-        ret_string = "**__Here is a list of the " + typing.title() + "type moves within each tier:__** \n**Tier 1:** " + ", ".join(
+        ret_string = "**__Here is a list of the " + typing.title() + " type moves within each tier:__** \n**Tier 1:** " + ", ".join(
            tier1array) + "\n\n**Tier 2:** " + ", ".join(tier2array) + "\n\n**Tier 3:** " + ", ".join(tier3array)
         return ret_string
     else:
