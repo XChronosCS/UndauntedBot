@@ -96,22 +96,6 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
             view=next_view)
 
 
-# async def select_area(self, interaction: discord.Interaction, select_item: discord.ui.Select):
-#     self.enc_details["Area"] = select_item.values
-#     self.children[0].disabled = True
-#     player_num = Number_Players()
-#     self.add_item(player_num)
-#     await interaction.message.edit(view=self)
-#     await interaction.response.defer()
-#
-#
-# async def respond_to_answer2(self, interaction: discord.Interaction, choices):
-#     self.enc_details["Num Players"] = choices
-#     self.children[1].disabled = True
-#     await interaction.message.edit(view=self)
-#     await interaction.response.defer()
-#     self.stop()
-
 class PXPCalcView(discord.ui.View):
     num_players = 0
     encounter_type = 0
@@ -251,27 +235,4 @@ class PXPCalcView(discord.ui.View):
         op_modal = PXPCalcModal()
         op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
         await interaction.response.send_modal(op_modal)
-# foo: bool = None
 
-# async def disable_all_items(self):
-#     for item in self.children:
-#         item.disabled = True
-#     await self.message.edit(view=self)
-#
-# async def on_timeout(self) -> None:
-#     await self.message.channel.send("Timedout")
-#     await self.disable_all_items()
-#
-# @discord.ui.button(label="Hello",
-#                    style=discord.ButtonStyle.success)
-# async def hello(self, interaction: discord.Interaction, button: discord.ui.Button):
-#     await interaction.response.send_message("World")
-#     self.foo = True
-#     self.stop()
-#
-# @discord.ui.button(label="Cancel",
-#                    style=discord.ButtonStyle.red)
-# async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-#     await interaction.response.send_message("Cancelling")
-#     self.foo = False
-#     self.stop()

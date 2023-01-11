@@ -650,7 +650,7 @@ async def exploration(ctx, *arg):
 """
 
 
-@bot.command(name='feature', aliases=['feats', 'features'])
+@bot.command(name='feature', aliases=['feat', 'features'])
 async def feature(ctx, *arg):
     arg_full = ' '.join(arg)
     result = get_feature_data(arg_full)
