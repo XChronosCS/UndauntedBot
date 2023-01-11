@@ -617,7 +617,7 @@ def get_patronage_task(legend, category):
 
 
 def get_guardian_info(area):
-    criteria = re.compile('(?i)^' + area)  # get all the cells with the name of the legend in them in column 1
+    criteria = re.compile('(?i)^' + area + '( Slot [0-9])?( [0-9])?')  # get all the cells with the name of the legend in them in column 1
     guardian_areas = list(guardians.keys())
     random.shuffle(guardian_areas)
     if any((match := criteria.search(item)) for item in guardian_areas):
