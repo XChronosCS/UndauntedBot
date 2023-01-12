@@ -534,8 +534,14 @@ def get_treasure_spot(name):
 
 
 def get_dex_entry(name):
-    pix = pokedex[ALLPOKEMON[name.upper()]["Page Num"]].get_pixmap()
-    pix.save("{0}.png".format(name.lower()))
+    try:
+        pix = pokedex[ALLPOKEMON[name.upper()]["Page Num"]].get_pixmap()
+        pix.save("{0}.png".format(name.lower()))
+    except KeyError:
+        similar_word = find_most_similar_string(ALLPOKEMON.keys(), name.lower())
+        pix = pokedex[ALLPOKEMON[similar_word.upper()]["Page Num"]].get_pixmap()
+        pix.save("{0}.png".format(name.lower()))
+
 
 
 def get_lore_entry(name):
