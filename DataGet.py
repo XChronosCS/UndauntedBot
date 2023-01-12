@@ -578,7 +578,7 @@ def get_legend_entry(name):
     return matching_pages
 
 def get_wander_event():
-    wander_event = random.choice(infodex["wanders"].values())
+    wander_event = random.choice(list(infodex["wanders"].values()))
     name = "**" + wander_event["Event Name"] + "**"
     effect = "\n\n" + wander_event["Details"]
     ret_string = name
@@ -714,4 +714,3 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
-
