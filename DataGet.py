@@ -308,7 +308,7 @@ def get_moves_tiers(typing):
     tier3array = []
     if typing.title() in TYPES:
         for item in moves.values():
-            if item["Type"] == typing.title() and item.get("Tier") is not None:
+            if item["Type"] == typing.title() and item.get("Tier") is not None and item["Attack Name"] not in SIGNATURE_MOVES:
                 tier = item["Tier"]
                 if tier == "Tier 3":
                     tier3array.append(item["Attack Name"])
@@ -316,7 +316,7 @@ def get_moves_tiers(typing):
                     tier2array.append(item["Attack Name"])
                 else:
                     tier1array.append(item["Attack Name"])
-        ret_string = "**__Here is a list of the " + typing.title() + " type moves within each tier:__** \n**Tier 1:** " + ", ".join(
+        ret_string = "**__Here is a list of the non-signature " + typing.title() + " type moves within each tier:__** \n**Tier 1:** " + ", ".join(
            tier1array) + "\n\n**Tier 2:** " + ", ".join(tier2array) + "\n\n**Tier 3:** " + ", ".join(tier3array)
         return ret_string
     else:
@@ -720,6 +720,3 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
-
-print(get_keyword_moves("Five Strike"))
-
