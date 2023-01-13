@@ -275,7 +275,7 @@ def get_keyword_moves(name):
     if any((match := criteria.search(item)) for item in keywords.keys()):
         ret_array = []
         for item in moves.values():
-            if re.search(criteria, item.get("Range", "")) is not None:
+            if name.lower() in item["Range"].lower():
                 ret_array.append(item["Attack Name"])
         if len(ret_array) != 0:
             ret_string = "Here is a list of all moves with that keyword: " + ", ".join(ret_array)
@@ -284,7 +284,7 @@ def get_keyword_moves(name):
             return "No moves were found with that keyword."
     else:
         similar_word = find_most_similar_string(keywords.keys(), name.lower())
-        return ["There is no keyword by that name. Did you mean " + similar_word + "?"]
+        return "There is no keyword by that name. Did you mean " + similar_word + "?"
 
 
 def get_flair_moves(name, typing):
@@ -721,4 +721,5 @@ def get_guardian_info(area):
 #
 # add_missing_page_numbers()
 
-get_dex_entry("Gimmighoul")
+print(get_keyword_moves("Five Strike"))
+
