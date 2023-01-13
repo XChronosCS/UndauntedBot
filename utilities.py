@@ -101,7 +101,6 @@ def find_most_similar_string(string_list, input_string):
 
         # Calculate the similarity ratio
         similarity_ratio = matcher.ratio()
-
         # If the similarity ratio is higher than the current highest, update the most similar string and highest similarity ratio
         if similarity_ratio > highest_similarity_ratio:
             highest_similarity_ratio = similarity_ratio

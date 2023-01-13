@@ -538,7 +538,7 @@ def get_dex_entry(name):
         pix = pokedex[ALLPOKEMON[name.upper()]["Page Num"]].get_pixmap()
         pix.save("{0}.png".format(name.lower()))
     except KeyError:
-        similar_word = find_most_similar_string(ALLPOKEMON.keys(), name.lower())
+        similar_word = find_most_similar_string(ALLPOKEMON.keys(), name.upper())
         pix = pokedex[ALLPOKEMON[similar_word.upper()]["Page Num"]].get_pixmap()
         pix.save("{0}.png".format(name.lower()))
 
@@ -720,3 +720,5 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
+
+get_dex_entry("Gimmighoul")
