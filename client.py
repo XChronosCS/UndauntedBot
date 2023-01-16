@@ -939,8 +939,8 @@ async def flair(ctx, *arg):
 
 @bot.command(name='style', aliases=['smoves'])
 async def style(ctx, *arg):
-    style_tag = arg[1]
-    pokemon = arg[0]
+    style_tag = arg[-1]
+    pokemon = " ".join(arg[:-1])
     result = poke_flair(pokemon, style_tag)
     if (len(result) > 2000):
         m_array = segment_list(result)
