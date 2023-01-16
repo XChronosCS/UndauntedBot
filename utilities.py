@@ -218,7 +218,7 @@ def search_cell_value(data, name):
     # Iterate over the columns in the sheet
     for key, nested_dict in sheet_data.items():
         # Iterate over the cells in the column
-        for row_num, (val, comment) in nested_dict.items():
+        for row_num, (val, comment, treasure_tag) in nested_dict.items():
             # If the cell value matches the regex pattern, add the key to the list
             if regex.match(val):
                 matching_keys.append(key)
