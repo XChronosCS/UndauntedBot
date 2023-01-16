@@ -1040,7 +1040,7 @@ async def bunny(ctx):
     await ctx.send(view=view)
 
 
-@bot.tree.command(name='foragecommand')
+@bot.command(name='foragecommand')
 async def foragecommand(ctx, *args):
     rank = int(args[0])
     num_rolls = int(args[-1])
