@@ -87,6 +87,18 @@ def get_encounter_slot(encounter_table, adventure_details, forced_slot=None):
     return adventure_details
 
 
+def reveal_encounter_slot_only(area_name, encounter_slot):
+    area_keys = worlddex["Encounter Slots"].keys()
+    area_match = find_most_similar_string(area_keys, area_name.title())
+    encounter_table = worlddex["Encounter Slots"][area_match]
+    revealed_slot = encounter_table[encounter_slot]
+    ret_string = "Encounter in slot {0}".format(str(encounter_slot)) + "  of area {0} is: ".format(area_match) + \
+                 revealed_slot[0] + "\n"
+    if revealed_slot[1] is not None:
+        ret_string += "**Description:**\n" + revealed_slot[1]
+    return ret_string
+
+
 def get_event_slot(event_table, adventure_details, forced_slot=None):
     event_key = random.choice(event_table.keys()) if forced_slot is None else forced_slot
     event_slot = event_table[event_key]
@@ -137,7 +149,6 @@ def generate_adventure(gm_info):
                                                                      is None else adventure_details["Event"])
     else:
         adventure_details = get_event_slot(event_table, adventure_details)
-
 
 # def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
 #     criteria = re.compile('(?i)^' + area + "$")

@@ -3,7 +3,6 @@ import string
 import typing
 from datetime import datetime
 
-from discord.ext import commands
 from dotenv import load_dotenv
 from pytz import timezone
 
@@ -177,22 +176,22 @@ async def ability(ctx, *arg):
 #         (await ctx.send(ret_string))
 #
 #
-# @bot.command(name='admon')
-# @commands.guild_only()
-# async def admon(ctx, *arg):
-#     id_var = 942329291549589544
-#     poke_slot = arg[(- 1)]
-#     list_arg = list(arg)
-#     del list_arg[(- 1):]
-#     area = ' '.join(list_arg)
-#     ret_string = get_hidden_slot_adventure(area, poke_slot)
-#     ret_string += (('\n' + f'<@&') + '{0}>'.format(id_var))
-#     if (len(ret_string) > 2000):
-#         g_array = segment_text(ret_string)
-#         for msg in g_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(ret_string))
+@bot.command(name='reveal')
+@commands.guild_only()
+async def reveal(ctx, *arg):
+    id_var = 942329291549589544
+    poke_slot = arg[(- 1)]
+    list_arg = list(arg)
+    del list_arg[(- 1):]
+    area = ' '.join(list_arg)
+    ret_string = reveal_encounter_slot_only(area, poke_slot)
+    ret_string += (('\n' + f'<@&') + '{0}>'.format(id_var))
+    if (len(ret_string) > 2000):
+        g_array = segment_text(ret_string)
+        for msg in g_array:
+            (await ctx.send(msg))
+    else:
+        (await ctx.send(ret_string))
 #
 #
 # @bot.command(name='adventure', aliases=['adven'])
