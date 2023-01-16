@@ -9,6 +9,7 @@ from pytz import timezone
 
 from Autostatter import *
 from DataGet import *
+from EncounterGenerator import *
 from JokeCommands import *
 from RollingCommands import *
 from UIElements import *
@@ -1037,6 +1038,18 @@ async def muffin(ctx):
 async def bunny(ctx):
     view = BunnyButton()
     await ctx.send(view=view)
+
+
+@bot.tree.command(name='foragecommand')
+async def foragecommand(ctx, *args):
+    rank = int(args[0])
+    num_rolls = int(args[-1])
+    area_name = " ".join(args[1:-1])
+    harvest_results = generate_harvest(rank, area_name, num_rolls)
+    with open('Documents/harvest_results.txt', 'w') as logfile:
+        logfile.write(harvest_results)
+    await ctx.send(file=discord.File('Documents/harvest_results.txt'))
+    os.remove('Documents/harvest_results.txt')
 
 
 @bot.tree.command(name='pxpcal')

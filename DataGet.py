@@ -721,4 +721,3 @@ def get_guardian_info(area):
 #
 # add_missing_page_numbers()
 
-print(get_treasure_spot("Verdant Bark"))
