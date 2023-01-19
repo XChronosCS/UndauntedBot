@@ -7,12 +7,13 @@ from utilities import *
 harvests = worlddex['Harvest Slots']
 
 
-def generate_harvest(skill_rank, area, num_rolls):
+def generate_forage(skill_rank, area, num_rolls):
     t1_start = time.perf_counter()
     criteria = re.compile('(?i)^' + area + "$")
     if any((match := criteria.search(item)) for item in harvests.keys()):
         data_block = harvests[match.group(0)]
         ret_string = ""
+        desc_string = ""
         for i in range(int(num_rolls)):
             roll_list = []
             roll = random.randint(1, 10)
@@ -21,52 +22,25 @@ def generate_harvest(skill_rank, area, num_rolls):
                 roll_list.append(roll - 1 if roll != 1 else 1)
             if skill_rank > 5:
                 roll_list.append(roll + 1 if roll != 10 else 10)
-            ret_string += "**HERE ARE THE ITEMS WHICH YOU CAN ENCOUNTER ON HARVEST NUMBER {0}:**".format(i + 1)
+            ret_string += "HERE ARE THE ITEMS WHICH YOU CAN ENCOUNTER ON FORAGE NUMBER {0}:".format(i + 1)
             roll_list.sort()
             for item in roll_list:
                 # print("{0}: {1}".format(item, math.floor(item / 2) + 1))
                 slot_value = data_block[str(item)]
-                slot_string = slot_value[0] + (
-                    ("**\nDescription: " + slot_value[1]) if slot_value[1] is not None else "**")
-                ret_string += "\n**Slot {0}: {1}".format(item, slot_string)
+                slot_string = slot_value[0] + (" (Desc. at the End)" if slot_value[1] is not None else "")
+                ret_string += "\nSlot {0}: {1}".format(item, slot_string)
+                if slot_value[1] is not None:
+                    slot_desc = slot_value[0] + "\nDescription: " + slot_value[1]
+                    if "\nSlot {0}: {1}\n".format(item, slot_desc) not in desc_string:
+                        desc_string += "\nSlot {0}: {1}\n".format(item, slot_desc)
             ret_string += "\n\n"
         t1_stop = time.perf_counter()
-
+        ret_string += "\n\nSlot Descriptions:\n\n" + desc_string
         return ret_string
     else:
         similar_word = find_most_similar_string(harvests.keys(), area.lower())
         print(similar_word)
-        return "There is no harvestable area with that name. Did you mean " + similar_word + "?"
-
-
-# sh = gc.open("Encounter Tables Data Doc")
-# ws = pg.open("Encounter Tables Data Doc")
-# exploration_table = sh.worksheet("Exploration Tables")
-# et_notes = ws.worksheet_by_title("Exploration Tables")
-# adventure_table = sh.worksheet("Adventure Tables")
-# ad_notes = ws.worksheet_by_title("Adventure Tables")
-# ex_events = sh.worksheet("Exploration Area Events")
-# ex_event_notes = ws.worksheet_by_title("Exploration Area Events")
-# ad_events = sh.worksheet("Adventure Area Events")
-# ad_event_notes = ws.worksheet_by_title("Adventure Area Events")
-# disp_sheet = sh.worksheet("Disposition Tables")
-# harvest = sh.worksheet("Harvest Tables")
-# h_notes = ws.worksheet_by_title("Harvest Tables")
-# sk = gc.open("Test Sunken City")
-# wk = pg.open("Test Sunken City")
-# sunken = sk.worksheet("Sunken City")
-# sunken_notes = wk.worksheet_by_title("Sunken City")
-# secret_areas = gc.open("New Encounter Areas")
-# secret_areas_notes = pg.open("New Encounter Areas")
-# secret_adventures = secret_areas.worksheet("Adventure Tables")
-# secret_explorations = secret_areas.worksheet("Exploration Tables")
-# secret_events = secret_areas.worksheet("Area Events")
-# sa_notes = secret_areas_notes.worksheet_by_title("Adventure Tables")
-# sx_notes = secret_areas_notes.worksheet_by_title("Exploration Tables")
-# se_notes = secret_areas_notes.worksheet_by_title("Area Events")
-# explo_names = secret_explorations.row_values(1)
-# time.sleep(60)
-# adven_names = secret_adventures.row_values(1)
+        return "There is no forage-able area with that name. Did you mean " + similar_word + "?"
 
 
 def get_encounter_slot(encounter_table, adventure_details, forced_slot=None):
@@ -76,12 +50,14 @@ def get_encounter_slot(encounter_table, adventure_details, forced_slot=None):
     if encounter_flag in ["Minor Treasure", "Major Treasure", "Alpha Aberration"]:
         if (adventure_details["Get Treasure"][0] is False) or (
                 adventure_details["Get Treasure"][1] is False and encounter_flag == "Major Treasure"):
+            # Triggers if a treasure slot is rolled but the treasure is invalid to add
             adventure_details = get_encounter_slot(encounter_table, adventure_details)
         else:
             adventure_details["Treasure Rolled"] = encounter_value  # Remember to Roll for a mon guarding it later.
             adventure_details["Get Treasure"] = (False, False)
-    elif encounter_flag == "Guardian" and adventure_details["Get Treasure"][2] is False:
+    elif encounter_flag == "Guardian" and adventure_details["Get Treasure"][2] is True:
         adventure_details["Event"] = 20
+        adventure_details["Get Treasure"][2] = False
     else:
         adventure_details["Encounters"].append(encounter_value)
     return adventure_details
@@ -110,17 +86,20 @@ def generate_adventure(gm_info):
     area_dict = worlddex["Encounter Slots"][gm_info["Area"]]
     encounter_table = {key: val for key, val in area_dict.items() if key not in gm_info["Repel Array"]}
     event_table = worlddex["Event Slots"][gm_info["Area"]]
+    area_details = worlddex["Effect Slots"][gm_info["Area"]]
     can_be_treasure_flag = (True, True if gm_info[
                                               "Avg Poke Lvl"] >= 45 else False,
-                            False)  # (Can be a treasure at all, party
-    # high enough level for major treasure, Can Still Role Guardian. True means that
+                            True if gm_info["Avg Trainer Lvl"] >= 20 else False)  # (Can be a treasure at all, party
+    # high enough level for major treasure, Can Still Role Guardian). True means available
 
     adventure_details = {
         "Encounters": [],
         "Get Treasure": can_be_treasure_flag,
         "Event": None,
         "Honor Spent": 0,
-        "Treasure Rolled": None
+        "Treasure Rolled": None,
+        "Treasure Guardian": None,
+        "Area Description": ""
     }
 
     """
@@ -149,6 +128,18 @@ def generate_adventure(gm_info):
                                                                      is None else adventure_details["Event"])
     else:
         adventure_details = get_event_slot(event_table, adventure_details)
+    # Retrieves information about trial, features, and entry requirements.
+    for key in area_details.keys():
+        if area_details.get(key) is not None:
+            adventure_details["Area Description"] += str(key) + ":\n " + str(area_details[key]) + "\n\n"
+
+    # Clause for if Treasure Rolled is true
+    if adventure_details["Treasure Rolled"] is not None:
+        adventure_details["Treasure Guardian"] = get_encounter_slot(encounter_table, adventure_details)
+
+    return(str(adventure_details))
+
+
 
 # def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
 #     criteria = re.compile('(?i)^' + area + "$")
@@ -425,3 +416,4 @@ def generate_adventure(gm_info):
 #     if match is None:
 #         return "This area does not exist. Please try again"
 #     return "\nThe starting disposition of this encounter is " + match.value + "\n"
+

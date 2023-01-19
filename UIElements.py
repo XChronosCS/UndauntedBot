@@ -1,16 +1,15 @@
 import discord
 
+from EncounterGenerator import *
+
+
+def adventure_export_to_file(adventure_results):
+    with open('Documents/adventure_results.txt', 'w') as logfile:
+        logfile.write(adventure_results)
+
 
 class OptionalDetails(discord.ui.Modal, title="Optional Details"):
-    enc_details = {
-        "Num TH": 0,
-        "Num Per TH": 0,
-        "TH Target": 0,
-        "Repel Array": [],
-        "Forced Slot": 0,
-        "Forced Event": 0,
-        "Extra Mons": 0
-    }
+    enc_details = {}
 
     def set_details(self, req_details):
         self.enc_details.update(req_details)
@@ -59,11 +58,20 @@ class SimpleView(discord.ui.View):
     @discord.ui.button(label="Generate Now",
                        style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("Cancelling")
+        adventure_export_to_file(generate_adventure(self.req_details))
+        await interaction.response.send_message(file="Documents/adventure_results.txt")
 
 
 class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
-    enc_details = {}
+    enc_details = {
+        "Num TH": 0,
+        "Num Per TH": 0,
+        "TH Target": 0,
+        "Repel Array": [],
+        "Forced Slot": 0,
+        "Forced Event": 0,
+        "Extra Mons": 0
+    }
 
     encounter_area = discord.ui.TextInput(
         style=discord.TextStyle.short,
@@ -79,7 +87,14 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
         placeholder="Type # from 1 to 4"
     )
 
-    max_level = discord.ui.TextInput(
+    max_trainer_level = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Average Trainer Level?",
+        required=True,
+        placeholder="Type # from 1 to 40"
+    )
+
+    max_poke_level = discord.ui.TextInput(
         style=discord.TextStyle.short,
         label="Average Strongest Pokemon Level?",
         required=True,
@@ -88,7 +103,9 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
 
     async def on_submit(self, interaction: discord.Interaction):
         self.enc_details["Area"] = self.encounter_area.value
-        self.enc_details["Num Players "] = int(self.num_players.value)
+        self.enc_details["Num Players"] = int(self.num_players.value)
+        self.enc_details["Avg Poke Lvl"] = int(self.max_poke_level.value)
+        self.enc_details["Avg Trainer Lvl"] = int(self.max_trainer_level.value)
         next_view = SimpleView()
         await interaction.response.send_message(
             content="Would you like to add Optional Information? Ex. Forced Slots, Forced Events, Repelled Slots, "
@@ -235,4 +252,3 @@ class PXPCalcView(discord.ui.View):
         op_modal = PXPCalcModal()
         op_modal.assign_req(np=self.num_players, et=self.encounter_type, d=self.doubled)
         await interaction.response.send_modal(op_modal)
-

@@ -48,7 +48,7 @@ worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5)
               ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
               ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3),
-              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10) ]
+              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10)]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}
@@ -91,7 +91,6 @@ for row in attack_table.iter_rows(min_row=2, max_row=attack_table.max_row, min_c
     if row[0].value in list(infodex["moves"].keys()):
         infodex["moves"][row[0].value]["Tier"] = row[9].value
 
-
 # Filling Out Worlddex
 wb = openpyxl.load_workbook('Documents/Porybot2 Encounters Sheet.xlsx')
 
@@ -113,18 +112,38 @@ for sheet_name in wb.sheetnames:
         # Create a nested dictionary for the column
         nested_dict = {}
 
-        # Iterate over the cells in the column
-        for cell in col[1:]:
-            # Get the row number, cell value, and comment value
-            row_num = cell.row - 1
-            cell_val = cell.value
-            comment_val = cell.comment.text if cell.comment else None
-            hex_code = cell.fill.fgColor.rgb[2:].lower() if cell.fill and cell.fill.fgColor.type == "rgb" else None
-            treasure_tag = "Major Treasure" if hex_code == "ffd966" else "Minor Treasure" if hex_code == "ffff00" else \
-                "Guardian" if hex_code == "ff0000" else "Alpha Aberration" if hex_code == "#ea9999" else "Ignore"
-            # Add the row number, cell value, and comment value to the nested dictionary
-            if cell_val is not None:
-                nested_dict[str(row_num)] = (cell_val, comment_val, treasure_tag)
+        # Seperates Effect Sheet dictionary for easy retrieval
+        if sheet_name == "Effect Slots":
+            nested_dict = {
+                "Trial": None,
+                "Features": None,
+                "Reqs": None
+            }
+
+            for cell in col[1:]:
+                # Get the row number, cell value, and comment value
+                row_num = cell.row - 1
+                cell_val = cell.value
+                if cell_val is not None:
+                    nested_dict["Trial" if row_num == 1 else "Features" if row_num == 2 else "Reqs"] = str(cell_val)
+
+        else:
+
+            # Iterate over the cells in the column
+            for cell in col[1:]:
+                # Get the row number, cell value, and comment value
+                row_num = cell.row - 1
+                cell_val = cell.value
+                comment_val = cell.comment.text if cell.comment else None
+                treasure_tag = None
+                if sheet_name == "Encounter Slots":
+                    hex_code = cell.fill.fgColor.rgb[
+                               2:].lower() if cell.fill and cell.fill.fgColor.type == "rgb" else None
+                    treasure_tag = "Major Treasure" if hex_code == "ffd966" else "Minor Treasure" if hex_code == "ffff00" else \
+                        "Guardian" if hex_code == "ff0000" else "Alpha Aberration" if hex_code == "#ea9999" else "Ignore"
+                # Add the row number, cell value, and comment value to the nested dictionary
+                if cell_val is not None:
+                    nested_dict[str(row_num)] = (cell_val, comment_val, treasure_tag)
 
         # Add the nested dictionary to the sheet data dictionary
         sheet_data[key] = nested_dict
@@ -172,7 +191,6 @@ for i, row in enumerate(guardian_data):
     if i <= 0:
         continue  # Skip the row with the key names
     bossdex["Guardians"][row[0]] = {keys[j]: row[j + 1] for j in range(len(keys))}
-
 
 patronage_data = patrons.get_all_values()
 for i, row in enumerate(patronage_data):
