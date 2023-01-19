@@ -1019,13 +1019,13 @@ async def on_ready():
     await bot.tree.sync(guild=UNDAUNTED_GUILD_ID)
 
 
-# @bot.tree.command(name='advgen')
-# async def advgen(interaction: discord.Interaction):
-#     view = AdventureModal()
-#     await interaction.response.send_modal(view)
-#     primary_details = view.enc_details
-#     channel = interaction.channel
-#     await channel.send(primary_details)
+@bot.tree.command(name='genadv')
+async def advgen(interaction: discord.Interaction):
+    view = AdventureModal()
+    await interaction.response.send_modal(view)
+    # primary_details = view.enc_details
+    # channel = interaction.channel
+    # await channel.send(primary_details)
 
 @bot.command(name='muffin')
 async def muffin(ctx):
