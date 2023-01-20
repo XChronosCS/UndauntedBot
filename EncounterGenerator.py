@@ -39,12 +39,11 @@ def generate_forage(skill_rank, area, num_rolls):
         return ret_string
     else:
         similar_word = find_most_similar_string(harvests.keys(), area.lower())
-        print(similar_word)
         return "There is no forage-able area with that name. Did you mean " + similar_word + "?"
 
 
-def get_encounter_slot(encounter_table, adventure_details, forced_slot=None):
-    encounter_key = random.choice(encounter_table.keys()) if forced_slot is None else forced_slot
+def get_encounter_slot(encounter_table, adventure_details, forced_slot=None, treasure_guardian_roll=False):
+    encounter_key = random.choice(list(encounter_table.keys())) if forced_slot is None else str(forced_slot)
     encounter_value = encounter_table[encounter_key]
     encounter_flag = encounter_table[encounter_key][2]
     if encounter_flag in ["Minor Treasure", "Major Treasure", "Alpha Aberration"]:
@@ -54,12 +53,17 @@ def get_encounter_slot(encounter_table, adventure_details, forced_slot=None):
             adventure_details = get_encounter_slot(encounter_table, adventure_details)
         else:
             adventure_details["Treasure Rolled"] = encounter_value  # Remember to Roll for a mon guarding it later.
-            adventure_details["Get Treasure"] = (False, False)
+            adventure_details["Get Treasure"] = (False, False, adventure_details["Get Treasure"][2])
+        return adventure_details
     elif encounter_flag == "Guardian" and adventure_details["Get Treasure"][2] is True:
         adventure_details["Event"] = 20
         adventure_details["Get Treasure"][2] = False
+        return adventure_details
     else:
-        adventure_details["Encounters"].append(encounter_value)
+        if treasure_guardian_roll:
+            adventure_details["Treasure Guardian"] = encounter_value
+        else:
+            adventure_details["Encounters"].append(encounter_value)
     return adventure_details
 
 
@@ -76,7 +80,7 @@ def reveal_encounter_slot_only(area_name, encounter_slot):
 
 
 def get_event_slot(event_table, adventure_details, forced_slot=None):
-    event_key = random.choice(event_table.keys()) if forced_slot is None else forced_slot
+    event_key = random.choice(list(event_table.keys())) if forced_slot is None else str(forced_slot)
     event_slot = event_table[event_key]
     adventure_details["Event"] = event_slot
     return adventure_details
@@ -99,7 +103,7 @@ def generate_adventure(gm_info):
         "Honor Spent": 0,
         "Treasure Rolled": None,
         "Treasure Guardian": None,
-        "Area Description": ""
+        "Area Description": []
     }
 
     """
@@ -108,9 +112,9 @@ def generate_adventure(gm_info):
     """
 
     target = gm_info["TH Target"]
-    num_encounters = gm_info["Num Players"] + gm_info["Extra Mons"] - gm_info["Forced Slot"]
+    num_encounters = gm_info["Num Players"] + gm_info["Extra Mons"] - (1 if gm_info["Forced Slot"] != 0 else 0)
     for num in range(gm_info["Num TH"]):
-        if target in [random.choice(area_dict.keys()) for i in range(gm_info["Num Per TH"])]:
+        if target in [random.choice(list(area_dict.keys())) for i in range(gm_info["Num Per TH"])]:
             adventure_details = get_encounter_slot(encounter_table, adventure_details, forced_slot=target)
             num_encounters -= 1
             adventure_details["Honor Spent"] = (num + 1)
@@ -124,20 +128,19 @@ def generate_adventure(gm_info):
     # Getting information on the Event for the Adventure
     if gm_info["Forced Event"] != 0 or adventure_details["Event"] is not None:
         adventure_details = get_event_slot(event_table, adventure_details,
-                                           gm_info["Forced Slot"] if adventure_details["Event"]
+                                           forced_slot=gm_info["Forced Event"] if adventure_details["Event"]
                                                                      is None else adventure_details["Event"])
     else:
         adventure_details = get_event_slot(event_table, adventure_details)
     # Retrieves information about trial, features, and entry requirements.
     for key in area_details.keys():
-        if area_details.get(key) is not None:
-            adventure_details["Area Description"] += str(key) + ":\n " + str(area_details[key]) + "\n\n"
+        adventure_details["Area Description"].append(str(area_details[key]).replace("\u25a0", "-"))
 
     # Clause for if Treasure Rolled is true
     if adventure_details["Treasure Rolled"] is not None:
-        adventure_details["Treasure Guardian"] = get_encounter_slot(encounter_table, adventure_details)
+        adventure_details = get_encounter_slot(encounter_table, adventure_details, treasure_guardian_roll=True)
 
-    return(str(adventure_details))
+    return adventure_details
 
 
 

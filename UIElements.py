@@ -3,9 +3,42 @@ import discord
 from EncounterGenerator import *
 
 
-def adventure_export_to_file(adventure_results):
-    with open('Documents/adventure_results.txt', 'w') as logfile:
-        logfile.write(adventure_results)
+async def adventure_results_publish(adventure_results, interaction):
+    no_note_mon_array = [poke[0] for poke in adventure_results["Encounters"] if poke[1] is None]
+    note_mon_array = ["{0}: {1}\n".format(poke[0], poke[1]) for poke in adventure_results["Encounters"] if
+                      poke[1] is not None]
+    result = 'ADVENTURE GENERATION RESULTS:\n' + '\n' + '**Pokemon Encountered**: {pokemon}\n'.format(
+        pokemon=", ".join(no_note_mon_array))
+    if len(note_mon_array) != 0:
+        result += '__Notes__: {Notes}\n'.format(Notes="".join(note_mon_array)) + '\n'
+    else:
+        result += '\n'
+    result += '**Event Rolled**: {Event}\n'.format(Event=
+                                                   adventure_results["Event"][
+                                                       0]) + '__Description__: {EventDescription}\n'.format(
+        EventDescription=adventure_results["Event"][1]) + '\n'
+    if adventure_results["Treasure Rolled"] is not None:
+        result += '**Treasure Rolled**: {Treasure}\n'.format(
+            Treasure=adventure_results["Treasure Rolled"][0]) + '__Description__: {TreasureDescription}\n'.format(
+            TreasureDescription=adventure_results["Treasure Rolled"][
+                1]) + '__Defending Pokemon__: {TreasureDefender}\n'.format(
+            TreasureDefender=adventure_results["Treasure Guardian"][0]) + ('__Notes__: {DefenderNotes}\n'.format(
+            DefenderNotes=adventure_results["Treasure Guardian"][1]) if adventure_results["Treasure Guardian"][
+                                                                            1] is not None else "\n") + '\n'
+    if adventure_results["Honor Spent"] != 0:
+        result += '**Number of Treasure Hunts Performed:** {NumHonor}\n'.format(NumHonor=
+                                                                                str(adventure_results[
+                                                                                        "Honor Spent"])) + '\n'
+    area_details = adventure_results["Area Description"]
+    result += '**Area Trial**: {Trial}\n\n**Area Features**: {Features}\n\n**Area Entry Requirements**: {Reqs}'.format(
+        Trial=area_details[0].rstrip(), Features=area_details[1].rstrip(), Reqs=area_details[2].rstrip())
+    channel = interaction.channel
+    if (len(result) > 2000):
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await channel.send(msg))
+    else:
+        (await channel.send(result))
 
 
 class OptionalDetails(discord.ui.Modal, title="Optional Details"):
@@ -14,32 +47,55 @@ class OptionalDetails(discord.ui.Modal, title="Optional Details"):
     def set_details(self, req_details):
         self.enc_details.update(req_details)
 
-    encounter_area = discord.ui.TextInput(
+    treasure_target = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="What is the Encounter Area?",
-        required=True,
-        placeholder="Type Encounter Area here"
+        label="What Slot are you Treasure Hunting?",
+        required=False,
+        default='0',
+        placeholder="Leave Empty if None"
     )
 
-    num_players = discord.ui.TextInput(
+    num_th = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="How many players?",
-        required=True,
-        placeholder="Type # from 1 to 4"
+        label="Num TH, Rolls per TH?",
+        required=False,
+        default='0, 3',
+        placeholder="Ex: 5, 5"
     )
 
-    max_level = discord.ui.TextInput(
+    repelled_slots = discord.ui.TextInput(
         style=discord.TextStyle.short,
-        label="Average Strongest Pokemon Level?",
-        required=True,
-        placeholder="Type # from 1 to 80"
+        label="Repelled Slots? Comma Between",
+        required=False,
+        default='0',
+        placeholder="Empty if None. Ex: 1, 4, 5"
+    )
+
+    forced_mon = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Forced Mon Slot?",
+        required=False,
+        default='0',
+        placeholder="Leave Empty if None"
+    )
+
+    forced_event = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="Forced Event Slot?",
+        required=False,
+        default='0',
+        placeholder="Leave Empty if None"
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        self.enc_details["Area"] = self.encounter_area.value
-        self.enc_details["Num Players "] = int(self.num_players.value)
-        self.enc_details["Avg Poke Lvl"] = int(self.max_level.value)
-        await interaction.response.send_message(content="Thank you.", ephemeral=True)
+        self.enc_details["TH Target"] = int(self.treasure_target.value)
+        self.enc_details["Num TH"] = int(self.num_th.value.split(", ")[0])
+        self.enc_details["Num Per TH"] = int(self.num_th.value.split(", ")[1])
+        self.enc_details["Repel Array"] = [int(i) for i in self.repelled_slots.value.split(", ")]
+        self.enc_details["Forced Slot"] = int(self.forced_mon.value)
+        self.enc_details["Forced Event"] = int(self.forced_event.value)
+        await adventure_results_publish(generate_adventure(self.enc_details), interaction)
+        self.stop()
 
 
 class SimpleView(discord.ui.View):
@@ -58,8 +114,8 @@ class SimpleView(discord.ui.View):
     @discord.ui.button(label="Generate Now",
                        style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        adventure_export_to_file(generate_adventure(self.req_details))
-        await interaction.response.send_message(file="Documents/adventure_results.txt")
+        await adventure_results_publish(generate_adventure(self.req_details), interaction)
+        self.stop()
 
 
 class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
@@ -101,15 +157,25 @@ class AdventureModal(discord.ui.Modal, title="Adventure Generation"):
         placeholder="Type # from 1 to 100"
     )
 
+    additional_mons = discord.ui.TextInput(
+        style=discord.TextStyle.short,
+        label="How many additional pokemon rolls?",
+        required=False,
+        default='0',
+        placeholder="Leave Empty if None"
+    )
+
     async def on_submit(self, interaction: discord.Interaction):
         self.enc_details["Area"] = self.encounter_area.value
         self.enc_details["Num Players"] = int(self.num_players.value)
         self.enc_details["Avg Poke Lvl"] = int(self.max_poke_level.value)
         self.enc_details["Avg Trainer Lvl"] = int(self.max_trainer_level.value)
+        self.enc_details["Extra Mons"] = int(self.additional_mons.value)
         next_view = SimpleView()
+        next_view.assign_req(self.enc_details)
         await interaction.response.send_message(
             content="Would you like to add Optional Information? Ex. Forced Slots, Forced Events, Repelled Slots, "
-                    "Extra Mons, etc.",
+                    "Treasure Hunt, etc.",
             view=next_view)
 
 
@@ -215,7 +281,7 @@ class PXPCalcModal(discord.ui.Modal, title="Pokemon Details"):
             content="The total amount of PXP gained in this encounter is: " + str(self.calculation))
 
 
-class PXPCalcView(discord.ui.View):
+class PXPCalcView2(discord.ui.View):
     num_players = 0
     encounter_type = 0
     doubled = False

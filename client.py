@@ -1053,7 +1053,7 @@ async def foragecommand(ctx, *args):
 
 @bot.tree.command(name='pxpcal')
 async def pxpcal(interaction: discord.Interaction):
-    view = PXPCalcView()
+    view = PXPCalcView2()
     await interaction.response.send_message(view=view)
 
 
