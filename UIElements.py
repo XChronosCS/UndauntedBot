@@ -95,7 +95,7 @@ class OptionalDetails(discord.ui.Modal, title="Optional Details"):
         self.enc_details["Forced Slot"] = int(self.forced_mon.value)
         self.enc_details["Forced Event"] = int(self.forced_event.value)
         await adventure_results_publish(generate_adventure(self.enc_details), interaction)
-        self.stop()
+        await interaction.response.defer()
 
 
 class SimpleView(discord.ui.View):
@@ -288,7 +288,7 @@ class PXPCalcView2(discord.ui.View):
 
     @discord.ui.select(placeholder="Select Encounter Type",
                        options=[discord.SelectOption(label=name[0], value=name[1]) for name in
-                                [("Exploration Base", "EB 3"), ("Exploration Training Intent", " ETI 5"),
+                                [("Exploration Base", "EB 3"), ("Exploration Training Intent", "ETI 5"),
                                  ("Raid", "R 5"),
                                  ("Adventure Trial Pass", "ATP 4"), ("Adventure Trial Fail", " ATF 2"),
                                  ("Clash Encounter", "CE 3"),

@@ -78,7 +78,7 @@ for worksheet in worksheets:
     for i, row in enumerate(data):
         if i <= key_row_num - 1:
             continue  # Skip the row with the key names
-        data_dict[row[start_col - 1]] = {keys[j]: row[j + start_col - 1] for j in range(len(keys))}
+        data_dict[row[start_col - 1]] = {keys[j].rstrip(): row[j + start_col - 1].rstrip() for j in range(len(keys))}
 
     infodex[worksheet[0]] = data_dict
 
