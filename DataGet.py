@@ -216,8 +216,8 @@ def list_habitats(name):
         ret_string = "This pokemon is found in the following locations: " + ", ".join(data_block)
         return ret_string
     else:
-        similar_word = find_most_similar_string(moves.keys(), name.title())
-        return "There is no pokemon by that name. Did you mean " + similar_word + "?"
+        similar_word = find_most_similar_string(habitats.keys(), name.title())
+        return "There is no pokemon by that name which is a base form. Did you mean " + similar_word + "?"
 
 
 def show_mechanics():
