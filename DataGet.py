@@ -36,13 +36,11 @@ weathers = infodex["weathers"]
 affiliations = infodex["affiliations"]
 heritages = infodex["heritages"]
 influences = infodex["influences"]
-habitat = gc.open("Data Habitat Areas").worksheet("Data")
+habitats = infodex["habitats"]
 patrons = bossdex["Patrons"]
 guardians = bossdex["Guardians"]
 
 # Finding Treasure Sheets Loading
-des = gc.open("Data Encounter Sheet")
-encounters = des.worksheet("Encounter Tables")
 
 # Loading Arcana Edges Information
 arcana = service.documents().get(documentId="1gc6eTktgcQo9zViLghnWfxWmNrFzKKH6Y4QWMlwMzlo").execute()
@@ -134,7 +132,7 @@ Most get_x_data functions follow similar logic to get_ability_data in terms of h
 
 
 def get_feature_data(name):
-    criteria = re.compile('(?i)^' + re.escape(name).replace("(", "\(").replace(")", "\)") + "$")
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in features.keys()):
         data_block = features[match.group(0)]
         feature_name = data_block["Name"]
@@ -213,19 +211,13 @@ def get_move_data(name):
 
 def list_habitats(name):
     criteria = re.compile('(?i)^' + re.escape(name) + "$")
-    match = habitat.find(criteria, in_column=1)
-    if match is None:
-        similar_word = find_most_similar_string(habitat.col_values(1), name.lower())
-        return "This is either not the species's basic form, it cannot be found anywhere at the moment, or it is misspelled. Did you mean " + similar_word + "?"
-    else:
-        row = match.row
-        ret_array = []
-        areas = habitat.range(row, 3, row, 32)
-        for x in areas:
-            if x.value is not None and x.value != '':
-                ret_array.append(x.value)
-        ret_string = "This pokemon is found in the following locations: " + ", ".join(ret_array)
+    if any((match := criteria.search(item)) for item in habitats.keys()):
+        data_block = habitats[match.group(0)]
+        ret_string = "This pokemon is found in the following locations: " + ", ".join(data_block)
         return ret_string
+    else:
+        similar_word = find_most_similar_string(moves.keys(), name.title())
+        return "There is no pokemon by that name. Did you mean " + similar_word + "?"
 
 
 def show_mechanics():
@@ -720,4 +712,3 @@ def get_guardian_info(area):
 #
 #
 # add_missing_page_numbers()
-

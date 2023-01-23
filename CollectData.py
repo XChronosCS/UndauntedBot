@@ -41,6 +41,7 @@ guardians = gp.worksheet("Guardian Table")
 townevents = tt.worksheet("Town Data")
 town_list = tt.worksheet("Town List")
 
+
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
               ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
               ("techniques", extras, 2, 4, 7),
@@ -48,7 +49,7 @@ worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5)
               ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
               ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3),
-              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10)]
+              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10), ("artifacts", townevents, 1, 1, 2), ("expansions", townevents, 1, 3, 4), ("monuments", townevents, 1, 5, 6)]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}
@@ -83,6 +84,16 @@ for worksheet in worksheets:
     infodex[worksheet[0]] = data_dict
 
 infodex["orders"].update(infodex["orders 2"])
+
+# creating dictionary for habitat command so that it runs faster
+
+habitat_data = habitat.get_all_values()
+habitat_dict = {}
+for i, row in enumerate(habitat_data):
+    if i <= 0:
+        continue  # Skip the row with the key names
+    habitat_dict[row[0]] = [row[j].rstrip() for j in range(2, 32) if row[j].rstrip() != "" and row[j] is not None]
+infodex["habitats"] = habitat_dict
 
 # Adds the tier to the moves in infodex.
 mb = openpyxl.load_workbook('Documents/Homebrew Attacks.xlsx')
