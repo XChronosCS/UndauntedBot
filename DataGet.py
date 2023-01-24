@@ -264,7 +264,7 @@ def get_order(name):
 
 def get_keyword_moves(name):
     criteria = re.compile('(?i)^' + re.escape(name) + "$")
-    if any((match := criteria.search(item)) for item in keywords.keys()):
+    if any((match := criteria.search(item)) for item in keywords.keys()) or name.title() in RANGE:
         ret_array = []
         for item in moves.values():
             if name.lower() in item["Range"].lower():
@@ -366,9 +366,9 @@ def poke_flair(name, flair):
                       "Tutor" not in full_name]
         tutor_list = [full_name.split(" ", maxsplit=1)[1] for full_name in data_block["moves"] if "Tutor" in full_name]
         level_flair_moves = [move_name for move_name in level_list if
-                             moves[move_name.title()]["Flair Battle Type / Effect"] == flair.title()]
+                             moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
         tm_flair_moves = [move_name for move_name in tutor_list if
-                          moves[move_name.title()]["Flair Battle Type / Effect"] == flair.title()]
+                          moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
         ret_string = "**__Here is a list of all moves learned by " + name.title() + " with the style tag " + flair.title() + ":__** \n**Can Learn by Level Up:** " + ", ".join(
             level_flair_moves) + "\n\n**Can learn through Move Tutor:** " + ", ".join(tm_flair_moves)
         return ret_string
