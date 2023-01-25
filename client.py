@@ -1091,7 +1091,7 @@ async def command626(ctx, arg):
         (await ctx.send(result))
 
 
-@bot.command(name="pet", aliases="pat")
+@bot.command(name="pet", aliases=["pat"])
 async def pet(ctx):
     msg = ctx.message
     await msg.add_reaction('<:MewLove:685284882221629450>')
