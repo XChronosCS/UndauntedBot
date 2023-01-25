@@ -390,7 +390,7 @@ async def chaos(ctx, *arg):
     (await ctx.send(result))
 
 
-@bot.command(name='cmons', aliases='cmon')
+@bot.command(name='cmons', aliases=['cmon'])
 async def cmons(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_capability(arg_full)
