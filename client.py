@@ -314,7 +314,7 @@ async def reveal(ctx, *arg):
 #         (await ctx.send(ret_string))
 #
 
-@bot.command(name='amons')
+@bot.command(name='amons', aliases=["amon"])
 async def amons(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_ability(arg_full)
@@ -390,7 +390,7 @@ async def chaos(ctx, *arg):
     (await ctx.send(result))
 
 
-@bot.command(name='cmons')
+@bot.command(name='cmons', aliases='cmon')
 async def cmons(ctx, *arg):
     arg_full = ' '.join(arg)
     result = poke_capability(arg_full)
@@ -1089,6 +1089,12 @@ async def command626(ctx, arg):
             (await ctx.send(msg))
     else:
         (await ctx.send(result))
+
+
+@bot.command(name="pet", aliases="pat")
+async def pet(ctx):
+    msg = ctx.message
+    await msg.add_reaction('<:MewLove:685284882221629450>')
 
 
 bot.run(TOKEN)
