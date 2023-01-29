@@ -33,149 +33,6 @@ async def ability(ctx, *arg):
     (await ctx.send(ret_string))
 
 
-#
-# @bot.command(name='adfull')
-# async def adfull(ctx, *arg):
-#     id_var = 942329291549589544
-#     pl = arg[(- 1)]
-#     tl = arg[(- 2)]
-#     list_arg = list(arg)
-#     del list_arg[(- 2):]
-#     area = ' '.join(list_arg)
-#     channel = ctx.channel
-#     user = ctx.author
-#     status = 0
-#     th = None
-#     target = None
-#     extra_players = 0
-#     bait_mons = 0
-#     rep_array = None
-#     luck_roll = None
-#     event = None
-#
-#     def extra_bait_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (m.content in ['1', '2', '3']))
-#
-#     def repel_check(m):
-#         pattern = re.compile('(\\d*, )*')
-#         return ((user == m.author) and (m.channel == channel) and bool(re.match(pattern, m.content)))
-#
-#     def f_event_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 21)))
-#
-#     def th_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 4)))
-#
-#     def f_mon_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 101)))
-#
-#     def check(m):
-#         return (m.author == user) and (m.channel == channel) and (m.content.lower() in ['y', 'n'])
-#
-#     sent = (await ctx.send('Are they treasure hunting anything? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('How many times are they treasure hunting? Please type a number between 1 and 3'))
-#         msg = (await bot.wait_for('message', check=th_check))
-#         th = msg.content
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'What slot are they Treasure Hunting for? Please type the number slot of the thing they want to encounter.'))
-#         msg = (await bot.wait_for('message', check=f_mon_check))
-#         target = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they forcing a pokemon slot? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('What slot are they forcing? Please type the number of the slot.'))
-#         msg = (await bot.wait_for('message', check=f_mon_check))
-#         luck_roll = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they using a repel? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'Which slots are they repelling? Please type a list of numbers seperated by a comma space(ex. 15, 3)'))
-#         msg = (await bot.wait_for('message', check=repel_check))
-#         rep_array.append(msg.content.split(', '))
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they forcing an event slot? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('What slot are they forcing? Please type a number between 1 and 20.'))
-#         msg = (await bot.wait_for('message', check=f_event_check))
-#         event = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Is there more than one player in this party? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('How many extra players? Please type a number between 1 and 3.'))
-#         msg = (await bot.wait_for('message', check=extra_bait_check))
-#         extra_players = int(msg.content)
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they using a bait or bait-like ability? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'How many successful bait rolls were there? Please type a number between 1 and 3. If they have not rolled for bait yet, have them roll it now.'))
-#         msg = (await bot.wait_for('message', check=extra_bait_check))
-#         bait_mons = int(msg.content)
-#     (await sent.delete())
-#     (await msg.delete())
-#     (await ctx.send('Now generating adventure...'))
-#     if ((bait_mons + extra_players) >= 4):
-#         (await ctx.send(
-#             'NOTICE: Due to the limitations of Google Sheets, this command will need an additional minute of operation to refresh sheet requests. Please be patient.'))
-#     ret_string = ((((user.mention + '\n**') + area) + '**\n') + roll_hidden_adventure(area, tl, pl, luck_roll, event,
-#                                                                                       rep_array, bait_mons,
-#                                                                                       extra_players, th, target))
-#     ret_string += (('\n' + f'<@&') + '{0}>'.format(id_var))
-#     if (len(ret_string) > 2000):
-#         g_array = segment_text(ret_string)
-#         for msg in g_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(ret_string))
-#
-#
-# @bot.command(name='adinfo')
-# @commands.guild_only()
-# async def adinfo(ctx, *arg):
-#     id_var = 942329291549589544
-#     event_slot = arg[(- 1)]
-#     poke_slot = arg[(- 2)]
-#     list_arg = list(arg)
-#     del list_arg[(- 2):]
-#     area = ' '.join(list_arg)
-#     ret_string = get_hidden_slot_adventure(area, poke_slot)
-#     ret_string += get_hidden_event_adventure(area, event_slot)
-#     ret_string += (('\n' + f'<@&') + '{0}>'.format(id_var))
-#     if (len(ret_string) > 2000):
-#         g_array = segment_text(ret_string)
-#         for msg in g_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(ret_string))
-#
-#
 @bot.command(name='reveal')
 @commands.guild_only()
 async def reveal(ctx, *arg):
@@ -192,127 +49,6 @@ async def reveal(ctx, *arg):
             (await ctx.send(msg))
     else:
         (await ctx.send(ret_string))
-#
-#
-# @bot.command(name='adventure', aliases=['adven'])
-# async def adventure(ctx, *arg):
-#     pl = arg[(- 1)]
-#     tl = arg[(- 2)]
-#     list_arg = list(arg)
-#     del list_arg[(- 2):]
-#     area = ' '.join(list_arg)
-#     channel = ctx.channel
-#     user = ctx.author
-#     status = 0
-#     th = None
-#     target = None
-#     extra_players = 0
-#     bait_mons = 0
-#     rep_array = None
-#     luck_roll = None
-#     event = None
-#
-#     def extra_bait_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (m.content in ['1', '2', '3']))
-#
-#     def repel_check(m):
-#         pattern = re.compile('(\\d*, )*')
-#         return ((user == m.author) and (m.channel == channel) and bool(re.match(pattern, m.content)))
-#
-#     def f_event_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 21)))
-#
-#     def th_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 10)))
-#
-#     def f_mon_check(m):
-#         return ((user == m.author) and (m.channel == channel) and (int(m.content) in range(1, 101)))
-#
-#     def check(m):
-#         return ((m.author == user) and (m.channel == channel) and (m.content.lower() in ['y', 'n']))
-#
-#     sent = (await ctx.send('Are they treasure hunting anything? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('How many times are they treasure hunting? Please type a number between 1 and 9'))
-#         msg = (await bot.wait_for('message', check=th_check))
-#         th = msg.content
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'What slot are they Treasure Hunting for? Please type the number slot of the thing they want to encounter.'))
-#         msg = (await bot.wait_for('message', check=f_mon_check))
-#         target = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they forcing a pokemon slot? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('What slot are they forcing? Please type the number of the slot.'))
-#         msg = (await bot.wait_for('message', check=f_mon_check))
-#         luck_roll = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they using a repel? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'Which slots are they repelling? Please type a list of numbers seperated by a comma space(ex. 15, 3)'))
-#         msg = (await bot.wait_for('message', check=repel_check))
-#         rep_array.append(msg.content.split(', '))
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they forcing an event slot? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('What slot are they forcing? Please type a number between 1 and 20.'))
-#         msg = (await bot.wait_for('message', check=f_event_check))
-#         event = msg.content
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Is there more than one player in this party? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send('How many extra players? Please type a number between 1 and 3.'))
-#         msg = (await bot.wait_for('message', check=extra_bait_check))
-#         extra_players = int(msg.content)
-#     (await sent.delete())
-#     (await msg.delete())
-#     sent = (await ctx.send('Are they using a bait or bait-like ability? Respond with y for yes or n for no'))
-#     msg = (await bot.wait_for('message', check=check))
-#     if (msg.content.lower() == 'y'):
-#         (await sent.delete())
-#         (await msg.delete())
-#         sent = (await ctx.send(
-#             'How many successful bait rolls were there? Please type a number between 1 and 3. If they have not rolled for bait yet, have them roll it now.'))
-#         msg = (await bot.wait_for('message', check=extra_bait_check))
-#         bait_mons = int(msg.content)
-#     (await sent.delete())
-#     (await msg.delete())
-#     (await ctx.send('Now generating adventure...'))
-#     if ((bait_mons + extra_players) >= 4):
-#         (await ctx.send(
-#             'NOTICE: Due to the limitations of Google Sheets, this command will need an additional minute of operation to refresh sheet requests. Please be patient.'))
-#     ret_string = (
-#             (((user.mention + '\n**') + area) + '**\n') + roll_adventure(area, tl, pl, luck_roll, event, rep_array,
-#                                                                          bait_mons, extra_players, th, target))
-#     if (len(ret_string) > 2000):
-#         g_array = segment_text(ret_string)
-#         for msg in g_array:
-#             (await ctx.send(msg))
-#     else:
-#         (await ctx.send(ret_string))
-#
 
 @bot.command(name='amons', aliases=["amon"])
 async def amons(ctx, *arg):
@@ -346,24 +82,6 @@ async def autostat(ctx, *args):
     ret_string = autostatter(name, level, link)
     await ctx.send(ret_string)
 
-
-# @bot.command(name='babystat', aliases=['bstat'])
-# async def babystat(ctx, *args):
-#     baby = True
-#     linkmail = args[(- 1)]
-#     level = args[(- 2)]
-#     list_arg = list(args)
-#     del list_arg[(- 2):]
-#     name = ' '.join(list_arg)
-#     link = None
-#     email = None
-#     if ('@' in linkmail):
-#         email = linkmail
-#     else:
-#         link = linkmail
-#     (await ctx.send('Now statting automatically... Please wait...'))
-#     ret_string = ((ctx.author.mention + '\n') + autostatter(name, level, email, link, baby))
-#     (await ctx.send(ret_string))
 
 
 '''
@@ -481,7 +199,7 @@ async def eggmove(ctx, arg: typing.Optional[str] = "Random"):
 
 @bot.command(name='eggroll', aliases=['eroll', 'eggrandom'])
 async def eggroll(ctx, arg: typing.Optional[str] = "Random"):
-    result = roll_egg(arg.lower())
+    result = roll_egg(arg.title())
     ret_string = result
     (await ctx.send(ret_string))
 
@@ -1075,7 +793,7 @@ async def pxpcal(interaction: discord.Interaction):
 async def domain(ctx, *args):
     arg_full = ' '.join(args)
     ret_array = get_domain_edges(arg_full)
-    (await ctx.author.send('**Here are the  arcana edges which fall under that domain:**'))
+    (await ctx.author.send('**Here are the arcana edges which fall under that domain:**'))
     for i in ret_array:
         (await ctx.author.send(i))
 

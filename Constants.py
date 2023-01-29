@@ -110,7 +110,7 @@ FLORA = {
         "Magost Berry",
         "Rabuta Berry",
         "Nomel Berry",
-        "Pantry Berry",
+        "Pantre Berry",
         "Bluk Berry",
         "Nanab Berry",
         "Wepear Berry",
