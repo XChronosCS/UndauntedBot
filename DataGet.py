@@ -201,7 +201,8 @@ def get_move_data(name):
         move_db = "\nDB: " + data_block["DB"]
         move_eff = "\nEffect: " + data_block["Effect"]
         move_tag = "\nStyle Tag: " + data_block["Flair Battle Type / Effect"]
-        move_tier = "\nTier: " + data_block.get("Tier")
+        if data_block.get("Tier") is not None:
+            move_tier = "\nTier: " + data_block.get("Tier")
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag, move_tier]
     else:
         similar_word = find_most_similar_string(moves.keys(), name.lower())

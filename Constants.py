@@ -119207,8 +119207,8 @@ ALLPOKEMON = {
         'EggGroup2': 'Plant',
         'Page Num': 41,
         },
-    'MEOWSCARDA': {
-        'name': 'MEOWSCARDA',
+    'MEOWSCARADA': {
+        'name': 'MEOWSCARADA',
         'abilities': ['Keen Eye', 'Overgrow'],
         'advabilities': ['Defiant', 'Magician'],
         'highabilities': ['Protean'],
@@ -119299,7 +119299,7 @@ ALLPOKEMON = {
             'Tutor Giga Impact',
             'Tutor Mega Kick',
             ],
-        'Pokemon:': 'Meowscarda',
+        'Pokemon:': 'Meowscarada',
         'Type1': 'Grass',
         'Type2': 'Dark',
         'HP': '8',

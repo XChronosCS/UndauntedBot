@@ -50,6 +50,7 @@ async def reveal(ctx, *arg):
     else:
         (await ctx.send(ret_string))
 
+
 @bot.command(name='amons', aliases=["amon"])
 async def amons(ctx, *arg):
     arg_full = ' '.join(arg)
@@ -81,7 +82,6 @@ async def autostat(ctx, *args):
     await ctx.send('Now statting automatically... Please wait...')
     ret_string = autostatter(name, level, link)
     await ctx.send(ret_string)
-
 
 
 '''
@@ -745,6 +745,7 @@ async def advgen(interaction: discord.Interaction):
     # channel = interaction.channel
     # await channel.send(primary_details)
 
+
 @bot.command(name='muffin')
 async def muffin(ctx):
     view = MuffinButton()
@@ -813,6 +814,46 @@ async def command626(ctx, arg):
 async def pet(ctx):
     msg = ctx.message
     await msg.add_reaction('<:MewLove:685284882221629450>')
+
+
+@bot.command(name='books', aliases=["book"])
+async def books(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_book_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='weathers', aliases=["weather"])
+async def weathers(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_weather_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='heritages', aliases=["heritage", "hert"])
+async def heritages(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_heritage_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='influences', aliases=["influence", "inf"])
+async def influences(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_influence_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+@bot.command(name='affiliations', aliases=["affiliation", "aff"])
+async def affiliations(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_affiliation_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
 
 
 bot.run(TOKEN)
