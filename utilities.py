@@ -6,6 +6,19 @@ import re
 import astunparse
 
 
+def unique(list1):
+    # initialize a null list
+    unique_list = []
+
+    # traverse for all elements
+    for x in list1:
+        # check if exists in unique_list or not
+        if x not in unique_list and x != "":
+            unique_list.append(x)
+
+    return unique_list
+
+
 def find_and_replace_in_file(file_path, search_pattern, replacement):
     # Open the file in read mode
     with open(file_path, "r") as file:
@@ -106,6 +119,7 @@ def find_most_similar_string(string_list, input_string):
             highest_similarity_ratio = similarity_ratio
             most_similar_string = string
 
+    # print(highest_similarity_ratio)
     # Return the most similar string
     return most_similar_string
 
@@ -244,6 +258,7 @@ def create_item_list(items_string):
         items.append(item)
     return items
 
+
 def find_largest_smaller_number(numbers, x):
     largest_smaller_number = None
     # Iterate over the numbers in the list
@@ -252,6 +267,7 @@ def find_largest_smaller_number(numbers, x):
         if number < x and (largest_smaller_number is None or number > largest_smaller_number):
             largest_smaller_number = number
     return largest_smaller_number
+
 
 def exclusion(lst1, lst2):
     lst3 = [value for value in lst1 if value not in lst2]

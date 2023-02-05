@@ -16,7 +16,7 @@ SIGNATURE_MOVES = ['Transform', 'Attack Order', 'Defend Order', 'Heal Order', 'S
 
 FLORA = {
     "4": ["Faebloom Herb", "Vampiric Herb", "Violent Herb", "Shroudveil", "Sakura Sapling", "Gracedia Flower",
-          "Fadeweaver", "Aorato Root", "Castello Shroom", "Purple Haze", "Themis Root", "Celestial Berry",
+          "Fadeweave", "Aorato Root", "Castello Shroom", "Purple Haze", "Themis Root", "Celestial Berry",
           "Psion Berry", "Soul Berry", "Wildheart Berry"],
     "3": [
         "Amnesia Herb",

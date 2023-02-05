@@ -143,6 +143,44 @@ def generate_adventure(gm_info):
     return adventure_details
 
 
+async def adventure_results_publish(adventure_results, interaction):
+    no_note_mon_array = [poke[0] for poke in adventure_results["Encounters"] if poke[1] is None]
+    note_mon_array = ["{0}: {1}\n".format(poke[0], poke[1]) for poke in adventure_results["Encounters"] if
+                      poke[1] is not None]
+    result = 'ADVENTURE GENERATION RESULTS:\n' + '\n' + '**Pokemon Encountered**: {pokemon}\n'.format(
+        pokemon=", ".join(no_note_mon_array))
+    if len(note_mon_array) != 0:
+        result += '__Notes__: {Notes}\n'.format(Notes="".join(note_mon_array)) + '\n'
+    else:
+        result += '\n'
+    result += '**Event Rolled**: {Event}\n'.format(Event=
+                                                   adventure_results["Event"][
+                                                       0]) + '__Description__: {EventDescription}\n'.format(
+        EventDescription=adventure_results["Event"][1]) + '\n'
+    if adventure_results["Treasure Rolled"] is not None:
+        result += '**Treasure Rolled**: {Treasure}\n'.format(
+            Treasure=adventure_results["Treasure Rolled"][0]) + '__Description__: {TreasureDescription}\n'.format(
+            TreasureDescription=adventure_results["Treasure Rolled"][
+                1]) + '__Defending Pokemon__: {TreasureDefender}\n'.format(
+            TreasureDefender=adventure_results["Treasure Guardian"][0]) + ('__Notes__: {DefenderNotes}\n'.format(
+            DefenderNotes=adventure_results["Treasure Guardian"][1]) if adventure_results["Treasure Guardian"][
+                                                                            1] is not None else "\n") + '\n'
+    if adventure_results["Honor Spent"] != 0:
+        result += '**Number of Treasure Hunts Performed:** {NumHonor}\n'.format(NumHonor=
+                                                                                str(adventure_results[
+                                                                                        "Honor Spent"])) + '\n'
+    area_details = adventure_results["Area Description"]
+    result += '**Area Trial**: {Trial}\n\n**Area Features**: {Features}\n\n**Area Entry Requirements**: {Reqs}'.format(
+        Trial=area_details[0].rstrip(), Features=area_details[1].rstrip(), Reqs=area_details[2].rstrip())
+    channel = interaction.channel
+    if (len(result) > 2000):
+        m_array = segment_list(result)
+        for msg in m_array:
+            (await channel.send(msg))
+    else:
+        (await channel.send(result))
+
+
 
 # def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
 #     criteria = re.compile('(?i)^' + area + "$")

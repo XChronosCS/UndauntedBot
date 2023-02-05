@@ -22,6 +22,22 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', case_insensitive=True, intents=intents)
 UNDAUNTED_GUILD_ID = discord.Object(id=712378096229023825)
 
+bot_owner = bot.get_user(int("164529173379940352"))
+
+
+# BOT EVENTS
+
+# @bot.event
+# async def on_command_error(ctx, error):
+#     if isinstance(error, commands.CommandNotFound):
+#         return
+#     if isinstance(error, commands.CommandInvokeError):
+#         msg = ctx.message
+#         await msg.add_reaction('<:EeveeWhy:1070764628520489011>')
+#         await bot_owner.send(str(error) + '\nCommand User: ' + str(ctx.author))
+
+
+# BOT COMMANDS CATEGORY
 
 # LEGACY COMMANDS FROM PORYBOT 1.0
 
@@ -578,17 +594,6 @@ async def offerings(ctx):
     (await ctx.send(roll_deity()))
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        return
-    if isinstance(error, commands.CommandInvokeError):
-        message = ('Command Error: Something went wrong. Please check command details and try again.\n' + str(error))
-        print(error)
-        print(('\nCommand User: ' + str(ctx.author)))
-        (await ctx.send(message, delete_after=10))
-
-
 @bot.command(name='patronage')
 @commands.guild_only()
 async def patronage(ctx, *args):
@@ -863,6 +868,26 @@ async def affiliations(ctx, *arg):
     result = get_affiliation_data(arg_full)
     ret_string = ''.join(result)
     (await ctx.send(ret_string))
+
+
+@bot.group()
+async def rolechange(ctx):
+    pass
+
+
+@rolechange.command()
+async def color(ctx, hue):
+    member = ctx.author
+    role = discord.utils.get(member.guild.roles, name="Test Role")
+    await role.edit(color=int(hue))
+
+
+@rolechange.command()
+async def name(ctx, *title_words):
+    title = " ".join(title_words)
+    member = ctx.author
+    role = discord.utils.get(member.guild.roles, name="Test Role")
+    await role.edit(name=title)
 
 
 bot.run(TOKEN)
