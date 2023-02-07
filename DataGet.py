@@ -200,7 +200,7 @@ def get_move_data(name):
         move_ac = "\nAC: " + data_block["AC"]
         move_db = "\nDB: " + data_block["DB"]
         move_eff = "\nEffect: " + data_block["Effect"]
-        move_tag = "\nStyle Tag: " + data_block["Flair Battle Type / Effect"]
+        move_tag = "\nStyle Tag: " + data_block["Attack Style"]
         if data_block.get("Tier") is not None:
             move_tier = "\nTier: " + data_block.get("Tier")
         return [move_name, move_type, move_class, move_freq, move_range, move_ac, move_db, move_eff, move_tag, move_tier]
@@ -284,7 +284,7 @@ def get_flair_moves(name, typing):
     criteria = re.compile('(?i)' + name)
     ret_array = []
     for item in moves.values():
-        if (re.search(criteria, item["Flair Battle Type / Effect"]) is not None) and (item["Type"] == typing.title()):
+        if (re.search(criteria, item["Attack Style"]) is not None) and (item["Type"] == typing.title()):
             ret_array.append(item["Attack Name"])
     if len(ret_array) != 0:
         ret_string = "Here is a list of all moves of type " + typing.title() + " with the style tag " + name.title() + ": " + ", ".join(
@@ -367,9 +367,9 @@ def poke_flair(name, flair):
                       "Tutor" not in full_name]
         tutor_list = [full_name.split(" ", maxsplit=1)[1] for full_name in data_block["moves"] if "Tutor" in full_name]
         level_flair_moves = [move_name for move_name in level_list if
-                             moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
+                             moves[move_name]["Attack Style"] == flair.title()]
         tm_flair_moves = [move_name for move_name in tutor_list if
-                          moves[move_name]["Flair Battle Type / Effect"] == flair.title()]
+                          moves[move_name]["Attack Style"] == flair.title()]
         ret_string = "**__Here is a list of all moves learned by " + name.title() + " with the style tag " + flair.title() + ":__** \n**Can Learn by Level Up:** " + ", ".join(
             level_flair_moves) + "\n\n**Can learn through Move Tutor:** " + ", ".join(tm_flair_moves)
         return ret_string
