@@ -116,7 +116,7 @@ def get_ability_data(name):
         data_block = abilities[match.group(0)]  # Stores matching dict entry in data block variable
         ability_name = data_block["Name"]  # retrieves ability name from dict entry
         ability_freq = "\n" + data_block["Frequency"]  # retrieves ability frequency from dict entry
-        ability_eff = "\n" + data_block["Effect 2"]  # retrieves ability effect from dict entry
+        ability_eff = "\n" + data_block["Effect"]  # retrieves ability effect from dict entry
         return [ability_name, ability_freq, ability_eff]  # Returns information variables for the bot to format later.
     else:  # Activates in the case where no keys match the search criteria, meaning that no ability of that name exists.
         similar_word = find_most_similar_string(abilities.keys(),
