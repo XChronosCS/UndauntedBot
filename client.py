@@ -150,17 +150,18 @@ async def cookie(ctx, person: discord.Member = None):
 
 
 @bot.command(name='details')
-async def details(ctx, arg=None):
+async def details(ctx, *arg):
     if arg is None:
         await ctx.send(roll_details())
     else:
-        if type(arg) is list:
+        if type(arg) is tuple:
             arg = " ".join(arg)
         try:
             await ctx.send(roll_mon_details(ALLPOKEMON[arg.upper()]))
         except KeyError:
             similar_word = find_most_similar_string(ALLPOKEMON.keys(), arg.upper())
             await ctx.send(roll_mon_details(ALLPOKEMON[similar_word]))
+
 
 
 @bot.command(aliases=['droll', 'dr'])
