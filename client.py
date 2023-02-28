@@ -179,6 +179,7 @@ async def details(ctx, *arg):
             await ctx.send(roll_mon_details(ALLPOKEMON[similar_word]))
 
 
+
 @bot.command(aliases=['droll', 'dr'])
 async def diceroll(ctx, *args):
     arg_full = ' '.join(args)
