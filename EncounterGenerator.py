@@ -6,6 +6,17 @@ from utilities import *
 
 harvests = worlddex['Harvest Slots']
 
+MULTI_CHART_AREAS = {
+    "Andeil Forest": ["1, 2, 3, 4"],
+    "Astral Plane": ["Dream", "Nightmare"],
+    "Duathan Isles": ["Land Sect", "Hunt Sect", "Seer Sect"]
+}
+
+
+def generate_mon_from_area(encounter_table):
+    available_pokemon = [poke_cell[0] for poke_cell in list(encounter_table.values()) if poke_cell[2] == "Ignore"]
+    return random.choice(available_pokemon)
+
 
 def generate_forage(skill_rank, area, num_rolls):
     t1_start = time.perf_counter()
@@ -86,9 +97,31 @@ def get_event_slot(event_table, adventure_details, forced_slot=None):
     return adventure_details
 
 
-def generate_adventure(gm_info):
+def generate_adventure(gm_info, interaction):
     area_dict = worlddex["Encounter Slots"][gm_info["Area"]]
     encounter_table = {key: val for key, val in area_dict.items() if key not in gm_info["Repel Array"]}
+    if gm_info["Area"] in MULTI_CHART_AREAS.keys():
+        async def subfunction():
+            channel = interaction.channel
+            bot = interaction.client
+            options = MULTI_CHART_AREAS[gm_info["Area"]]
+
+            def area_subset_check(m):
+                return (interaction.user == m.author) and (m.channel == channel) and (m.content.title() in options)
+
+            options_string = ", ".join(options)
+            await channel.send(
+                "You have selected {Area} as your Encounter Area. Please select one of the following subareas"
+                "by typing it below: {Options}".format(Area=gm_info["Area"], Options=options_string))
+            msg = await bot.wait_for('message', check=area_subset_check)
+            sub_table = gm_info["Area"] + msg.content.title()
+            print("Test Successful")
+            # sub_area_dict = worlddex["Encounter Slots"][sub_table]
+            # sub_encounter_table = {key: val for key, val in sub_area_dict.items() if key not in gm_info["Repel Array"]}
+            # return sub_encounter_table
+
+        encounter_table = subfunction()
+        raise Exception("Breaking code because table does not actually exist")
     event_table = worlddex["Event Slots"][gm_info["Area"]]
     area_details = worlddex["Effect Slots"][gm_info["Area"]]
     can_be_treasure_flag = (True, True if gm_info[
@@ -129,7 +162,8 @@ def generate_adventure(gm_info):
     if gm_info["Forced Event"] != 0 or adventure_details["Event"] is not None:
         adventure_details = get_event_slot(event_table, adventure_details,
                                            forced_slot=gm_info["Forced Event"] if adventure_details["Event"]
-                                                                     is None else adventure_details["Event"])
+                                                                                  is None else adventure_details[
+                                               "Event"])
     else:
         adventure_details = get_event_slot(event_table, adventure_details)
     # Retrieves information about trial, features, and entry requirements.
@@ -170,17 +204,18 @@ async def adventure_results_publish(adventure_results, interaction):
                                                                                 str(adventure_results[
                                                                                         "Honor Spent"])) + '\n'
     area_details = adventure_results["Area Description"]
-    result += '**Area Trial**: {Trial}\n\n**Area Features**: {Features}\n\n**Area Entry Requirements**: {Reqs}'.format(
-        Trial=area_details[0].rstrip(), Features=area_details[1].rstrip(), Reqs=area_details[2].rstrip())
+    result += '**Area Trial**: {Trial}\n\n**Area Features**: {Features}\n\n**Area Entry Requirements**: ' \
+              '{Reqs}\n\n**Skill Check: {Skills}'.format(Trial=area_details[0].rstrip(),
+                                                         Features=area_details[1].rstrip(),
+                                                         Reqs=area_details[2].rstrip(),
+                                                         Skills=area_details[3].rstrip())
     channel = interaction.channel
-    if (len(result) > 2000):
+    if len(result) > 2000:
         m_array = segment_list(result)
         for msg in m_array:
             (await channel.send(msg))
     else:
         (await channel.send(result))
-
-
 
 # def get_mon(area, slot, sheet, note_sheet, non_treasure_flag=True):
 #     criteria = re.compile('(?i)^' + area + "$")
@@ -457,4 +492,3 @@ async def adventure_results_publish(adventure_results, interaction):
 #     if match is None:
 #         return "This area does not exist. Please try again"
 #     return "\nThe starting disposition of this encounter is " + match.value + "\n"
-

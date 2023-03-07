@@ -286,4 +286,4 @@ def roll_town(region):
     else:
         towns = town_list.col_values(match.col)
         index = random.randrange(1, len(towns))
-        return "The town you have randomly selected is " + towns[index] + "!"
+        return towns[index]

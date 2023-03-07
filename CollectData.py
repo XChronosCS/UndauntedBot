@@ -41,7 +41,6 @@ guardians = gp.worksheet("Guardian Table")
 townevents = tt.worksheet("Town Data")
 town_list = tt.worksheet("Town List")
 
-
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
               ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
               ("techniques", extras, 2, 4, 7),
@@ -49,7 +48,9 @@ worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5)
               ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
               ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3),
-              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10), ("artifacts", townevents, 1, 1, 2), ("expansions", townevents, 1, 3, 4), ("monuments", townevents, 1, 5, 6)]
+              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10),
+              ("artifacts", townevents, 1, 1, 2), ("expansions", townevents, 1, 3, 4),
+              ("monuments", townevents, 1, 5, 6)]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}
@@ -128,7 +129,14 @@ for sheet_name in wb.sheetnames:
             nested_dict = {
                 "Trial": None,
                 "Features": None,
-                "Reqs": None
+                "Reqs": None,
+                "Skills": None,
+                "Region": None,
+                "Biome": None,
+                "Type1": None,
+                "Type2": None,
+                "Type3": None,
+                "ExploCategory": None
             }
 
             for cell in col[1:]:
@@ -136,7 +144,11 @@ for sheet_name in wb.sheetnames:
                 row_num = cell.row - 1
                 cell_val = cell.value
                 if cell_val is not None:
-                    nested_dict["Trial" if row_num == 1 else "Features" if row_num == 2 else "Reqs"] = str(cell_val)
+                    nested_dict[
+                        "Trial" if row_num == 1 else "Features" if row_num == 2 else "Reqs" if row_num == 3 else
+                        "Skills" if row_num == 4 else "Region" if row_num == 5 else "Biome" if row_num == 6 else
+                        "Type1" if row_num == 7 else "Type2" if row_num == 8 else "Type3" if row_num == 9 else
+                        "ExploCategory"] = str(cell_val)
 
         else:
 
