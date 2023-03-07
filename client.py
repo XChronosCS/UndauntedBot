@@ -151,7 +151,7 @@ async def cookie(ctx, person: discord.Member = None):
 
 @bot.command(name='details')
 async def details(ctx, *arg):
-    if arg[0] is None:
+    if not arg:
         await ctx.send(roll_details())
     else:
         if type(arg) is tuple:
