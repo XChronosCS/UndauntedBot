@@ -125407,7 +125407,7 @@ ALLPOKEMON = {
         },
     'CHARCADET': {
         'name': 'CHARCADET',
-        'abilities': ['Flash Fire', 'Steadfast'],
+        'abilities': ['Flash Fire', 'Vital Spirit'],
         'advabilities': ['Moxie', 'Discipline'],
         'highabilities': ['Courage'],
         'evolutions': {'30': ['ARMAROUGE', 'CERULEDGE']},
@@ -129861,9 +129861,6 @@ ALLPOKEMON = {
         'Page Num': 1085,
         },
     }
-
-
-
 
 XP_VALS = [
 0,

@@ -39,6 +39,7 @@ influences = infodex["influences"]
 habitats = infodex["habitats"]
 patrons = bossdex["Patrons"]
 guardians = bossdex["Guardians"]
+factions = infodex["factions"]
 
 # Finding Treasure Sheets Loading
 
@@ -505,6 +506,21 @@ def get_affiliation_data(name):
         return ["There is no affiliation by that name. Did you mean " + similar_word + "?"]
 
 
+def get_faction_data(name):
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
+    if any((match := criteria.search(item)) for item in factions.keys()):
+        data_block = factions[match.group(0)]
+        faction_building = "**__" + data_block["Building"] + "__**"
+        faction_narrative = "\n**Narrative Effect**: " + data_block["Narrative Effect"]
+        faction_occupied = "\n**Occupuied Bonus**: " + data_block["Occupied Bonus"]
+        faction_rank_1 = "\n**Rank 1 Effect**: " + data_block["Rank 1 Effect"]
+        faction_rank_2 = "\n**Rank 2 Effect**: " + data_block["Rank 2 Effect"]
+        return [faction_building, faction_narrative, faction_occupied, faction_rank_1, faction_rank_2]
+    else:
+        similar_word = find_most_similar_string(factions.keys(), name.lower())
+        return ["There is no faction building by that name. Did you mean " + similar_word + "?"]
+
+
 def get_influence_data(name):
     criteria = re.compile('(?i)^' + re.escape(name) + "$")
     if any((match := criteria.search(item)) for item in influences.keys()):
@@ -630,86 +646,5 @@ def get_guardian_info(area):
         return "An area with that name that has a guardian could not be found. Did you mean " + similar_word + "?"
 
 
-# def generate_tutor_list():
-#     pokedict = {}
-#     for item in ALLPOKEMON:
-#         pokedict[item["name"]] = item
-#     for entry in pokedex.pages(11, max_page):
-#         tutor_rect = fitz.Rect(360, 386, 576, 690)
-#         name_rect = fitz.Rect(28, 0, 457, 60)
-#         word_page = entry.get_text("words")
-#         tutor_temp = [w for w in word_page if fitz.Rect(w[:4]) in tutor_rect]
-#         tutor_moves = make_text(tutor_temp)
-#         temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
-#         poke_name = make_text(temp)
-#         index = poke_name.find(" - ")
-#         name_search = poke_name if index == -1 else poke_name[index + 3:]
-#         tutor_moves = tutor_moves.replace(" Unique:", ",")
-#         tutor_moves = tutor_moves.replace("Unique: ", "")
-#         tutor_moves = tutor_moves.replace(" Generic:", ",")
-#         tm_list = tutor_moves.split(", ")
-#         criteria = re.compile('(?i)^' + re.escape(name)_search + "$")
-#         if any((match := criteria.search(item)) for item in pokedict.keys()):
-#             data_block = pokedict[match.group(0)]
-#             for attack in tm_list:
-#                 data_block["moves"].append("Tutor " + attack)
-#
-#     # Iterate over the rows of data and add them to the dictionary
-#     with open('Uncommited Files/pokemon.txt', 'w', encoding='utf-8') as f:
-#         # Write the dictionary to the file as a string
-#         f.write(str(pokedict))
+# Testing commands for DataGet functions
 
-# def generate_dex_info():
-#     pokedict = {}
-#     pokedata = pokemon_data.get_all_values()
-#     for item in ALLPOKEMON.values():
-#         pokedict[item["name"]] = item
-#     key_row = pokedata[0][0:33]
-#     for i, row in enumerate(pokedata):
-#         if i == 0:
-#             continue
-#         pokemon_name = row[0].upper()
-#         if pokedict.get(pokemon_name) is not None:
-#             for j in range(len(key_row)):
-#                 pokedict[pokemon_name][key_row[j]] = row[j]
-# 
-#     # Iterate over the rows of data and add them to the dictionary
-#     with open('Uncommited Files/pokemon.py', 'w', encoding='utf-8') as f:
-#         # Write the dictionary to the file as a string
-#         f.write(str(pokedict))
-#
-
-# def get_dex_page_numbers():
-#     pokedict = ALLPOKEMON
-#     page_num = 12
-#     for entry in pokedex.pages(12, max_page):
-#         cap_rect = fitz.Rect(10, 450, 311, 532)
-#         name_rect = fitz.Rect(28, 0, 457, 60)
-#         word_page = entry.get_text("words")
-#         temp = [w for w in word_page if fitz.Rect(w[:4]) in name_rect]
-#         poke_name = make_text(temp)
-#         if poke_name.upper() in ALLPOKEMON.keys():
-#             pokedict[poke_name.upper()]["Page Num"] = page_num
-#         else:
-#             print(poke_name)
-#         page_num += 1
-#     with open('pokemon.py', 'w', encoding='utf-8') as f:
-#         # Write the dictionary to the file as a string
-#         f.write(str(pokedict))
-
-# def add_missing_page_numbers():
-#     pokedict = ALLPOKEMON
-#     for key in ALLPOKEMON.keys():
-#         pokedict[key]["Capabilities"] = [v for k, v in pokedict[key].items() if k.startswith("Capability ") and v != "-"]
-#         for i in range(10):
-#             if pokedict[key].get("Capability " + str(i + 1)) is not None:
-#                 del pokedict[key]["Capability " + str(i + 1)]
-#             else:
-#                 print(key)
-#                 break
-#     with open('Uncommited Files/pokemon.py', 'w', encoding='utf-8') as f:
-#         # Write the dictionary to the file as a string#
-#         f.write(str(pokedict))
-#
-#
-# add_missing_page_numbers()

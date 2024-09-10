@@ -56,7 +56,7 @@ class OptionalDetails(discord.ui.Modal, title="Optional Details"):
         self.enc_details["Repel Array"] = [int(i) for i in self.repelled_slots.value.split(", ")]
         self.enc_details["Forced Slot"] = int(self.forced_mon.value)
         self.enc_details["Forced Event"] = int(self.forced_event.value)
-        await adventure_results_publish(generate_adventure(self.enc_details), interaction)
+        await adventure_results_publish(generate_adventure(self.enc_details, interaction), interaction)
         await interaction.response.defer()
 
 

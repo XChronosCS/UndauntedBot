@@ -12,6 +12,7 @@ from DataGet import *
 from JokeCommands import *
 from RollingCommands import *
 from UIElements import *
+from WorldEvents import WorldEventGenerator
 
 load_dotenv()
 TOKEN = os.getenv('TEST_TOKEN')
@@ -700,7 +701,7 @@ async def tech(ctx, *args):
 @bot.command(name='town')
 async def town(ctx, *arg):
     arg_full = ' '.join(arg)
-    result = roll_town(arg_full)
+    result = "The town you have randomly selected is " + roll_town(arg_full) + "!"
     (await ctx.send(result))
 
 
@@ -869,6 +870,27 @@ async def affiliations(ctx, *arg):
     result = get_affiliation_data(arg_full)
     ret_string = ''.join(result)
     (await ctx.send(ret_string))
+
+
+@bot.command(name="factions", aliases=["faction", "fact"])
+async def factions(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_faction_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+
+
+@bot.command(name='worldevent')
+async def worldevent(ctx):
+    generator = WorldEventGenerator()
+    await ctx.send(generator.select_event())
+
+
+@bot.group()
+async def mining(ctx):
+    await ctx.send(roll_mining())
 
 
 @bot.group()
