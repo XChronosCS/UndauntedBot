@@ -29,6 +29,7 @@ edges = sh.worksheet("Edges Data")
 moves = sh.worksheet("Moves Data")
 extras = sh.worksheet("Class Data")
 misc = sh.worksheet("Misc Data")
+factions = sh.worksheet("Faction Data")
 habitat = gc.open("Data Habitat Areas").worksheet("Data")
 encounters = ec.worksheet("Encounter Slots")
 harvests = ec.worksheet("Harvest Slots")
@@ -42,15 +43,13 @@ townevents = tt.worksheet("Town Data")
 town_list = tt.worksheet("Town List")
 
 worksheets = [("abilities", abilities, 1, 1, 3), ("features", features, 1, 1, 5), ("items", items, 2, 28, 29),
-              ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 9), ("mechanics", extras, 2, 1, 3),
+              ("edges", edges, 1, 1, 3), ("moves", moves, 1, 1, 10), ("mechanics", extras, 2, 1, 3),
               ("techniques", extras, 2, 4, 7),
               ("orders", features, 1, 6, 8), ("orders 2", features, 1, 9, 11), ("capabilities", misc, 1, 7, 8),
-              ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 10, 15),
+              ("keywords", misc, 1, 23, 24), ("statuses", misc, 1, 9, 11), ("maneuvers", moves, 1, 11, 16),
               ("books", misc, 1, 37, 43), ("weathers", misc, 1, 12, 13), ("affiliations", misc, 1, 14, 17),
               ("heritages", misc, 1, 18, 20), ("influences", misc, 1, 21, 22), ("pokeedges", pokeedges, 1, 1, 3),
-              ("wanders", wander, 1, 1, 2), ("townevents", townevents, 1, 7, 8), ("uprisings", townevents, 1, 9, 10),
-              ("artifacts", townevents, 1, 1, 2), ("expansions", townevents, 1, 3, 4),
-              ("monuments", townevents, 1, 5, 6)]
+              ("wanders", wander, 1, 1, 2), ("factions", factions, 1, 1, 5)]
 areas = [("encounters", encounters, 1), ("harvests", harvests, 1), ("events", events, 1)]
 infodex = {}
 worlddex = {}

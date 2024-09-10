@@ -125407,7 +125407,7 @@ ALLPOKEMON = {
         },
     'CHARCADET': {
         'name': 'CHARCADET',
-        'abilities': ['Flash Fire', 'Steadfast'],
+        'abilities': ['Flash Fire', 'Vital Spirit'],
         'advabilities': ['Moxie', 'Discipline'],
         'highabilities': ['Courage'],
         'evolutions': {'30': ['ARMAROUGE', 'CERULEDGE']},

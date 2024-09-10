@@ -1,5 +1,5 @@
 import random
-
+import dice
 from Autostatter import get_gender
 from CollectData import eggdex, infodex, town_list
 from Constants import *
@@ -27,12 +27,14 @@ def roll_details():
     return "This pokemon has a {0[0]} nature, is a {0[1]} gender if allowed, and has ability option {0[2]} " \
            "if there are multiple options.".format(result_array)
 
+
 def roll_mon_details(pokemon):
     nature = roll_nature()
     gender = get_gender(pokemon)
     ability = random.choice(pokemon['abilities'])
     result_array = [nature, gender, ability]
     return "This pokemon has a {0[0]} nature, is a {0[1]} gender, and has the ability {0[2]}.".format(result_array)
+
 
 def roll_flora(tier, amount):
     flora_list = []
@@ -287,3 +289,33 @@ def roll_town(region):
         towns = town_list.col_values(match.col)
         index = random.randrange(1, len(towns))
         return towns[index]
+
+
+def roll_mining():
+    roll = random.randint(1, 30)
+
+    if 1 <= roll <= 10:
+        shard_amt = int(dice.roll("2d5"))
+        shard_type = int(dice.roll("1d6"))
+        shard_colors = ["Red", "Orange", "Yellow", "Green", "Blue", "Violet"]
+        ret_val = "You unearthed {amt} {color} Shards!".format(amt=shard_amt, color=shard_colors[shard_type - 1])
+        return ret_val
+
+    elif 11 <= roll <= 20:
+        valuables = ['Large Pearl', 'Nugget', 'White Diamond']
+        return "You have unearthed a {0}!".format(random.choice(valuables))
+
+    elif 21 <= roll <= 25:
+        evo_stones = ["Fire", "Water", "Leaf", "Thunder", "Ice", "Moon", "Sun", "Shiny", "Dusk", "Dawn"]
+        return "You have unearthed a {0} Stone!".format(random.choice(evo_stones))
+
+    elif 26 <= roll <= 29:
+        ores = ["Amber", "Ancient", "Elemental", "Expensive", "Ferric", "Lapis", "Molten", "Mossy", "Plasmic",
+                " Psionic", "Selenite", "Terran", "Toxinite", "Voltaic", "Haunted", "Protein", "Igneous", "Toxeus",
+                "Aethite", "Phantasmal", "Zainite", "Lunar", "Draconic", "Emerald"]
+        return "You have unearthed a(n) {0} Ore!".format(random.choice(ores))
+    elif roll == 30:
+        chosen_type = TYPES[random.randrange(0, len(TYPES))].title()
+        mon_index = random.choice(list(eggdex[chosen_type].keys()))
+        mon = eggdex[chosen_type][mon_index]
+        return "Congratulations! You have unearthed the Ancient {0} fossil! This pokemon will become a Rock Type Abberation, or a Dragon Type Abberation if they were already a Rock Type."

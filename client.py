@@ -871,10 +871,25 @@ async def affiliations(ctx, *arg):
     (await ctx.send(ret_string))
 
 
+@bot.command(name="factions", aliases=["faction", "fact"])
+async def factions(ctx, *arg):
+    arg_full = ' '.join(arg)
+    result = get_faction_data(arg_full)
+    ret_string = ''.join(result)
+    (await ctx.send(ret_string))
+
+
+
+
 @bot.command(name='worldevent')
 async def worldevent(ctx):
     generator = WorldEventGenerator()
     await ctx.send(generator.select_event())
+
+
+@bot.group()
+async def mining(ctx):
+    await ctx.send(roll_mining())
 
 
 @bot.group()

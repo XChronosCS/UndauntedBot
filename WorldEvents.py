@@ -20,6 +20,7 @@ class WorldEventGenerator:
         "leyline_flux",
         "local_contagion",
         "regional_tournament",
+        "gold_rush"
     ]
 
     very_rare_events = ["guardian_insurgence"]
@@ -235,3 +236,7 @@ class WorldEventGenerator:
         project = random.choice(list(self.public_projects.keys()))
         return "**__Public Project!__**\n*Hiring All Willing Workers*\n" + city + " is requesting assistance with a " + project + "**Moderator will come up with a Scenario as to the specifics of what the Project will be fluffed as.** A total of 50 Stamina needs to be invested in the Project by the end of the Game Week to be considered completed. (Players tell Moderators to keep a tracker). If the Project is completed, anyone who invested at least 5 Stamina will gain +5 Fame with Notoriety going towards the associated Region of that City. Whenever someone invests Stamina in this Project, they gain Money equal to 1.5x their Income value. Only individuals with one of the following qualifications can contribute:\n" + \
             ", ".join(self.public_projects[project])
+
+    def gold_rush(self):
+        chosen_cave = random.choice(self.cave_areas)
+        return "**__Gold Rush__**\n*Diancie has refreshed a location!*\n The Cave Area {0} has been refreshed. At the end of a Successful Encounter in {0}, anyone with a Mining Kit may spend 3 Stamina to have a chance at gaining valuable ore and treasures. To do so, use the /mining command.".format(chosen_cave)

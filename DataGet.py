@@ -39,6 +39,7 @@ influences = infodex["influences"]
 habitats = infodex["habitats"]
 patrons = bossdex["Patrons"]
 guardians = bossdex["Guardians"]
+factions = infodex["factions"]
 
 # Finding Treasure Sheets Loading
 
@@ -504,6 +505,21 @@ def get_affiliation_data(name):
     else:
         similar_word = find_most_similar_string(affiliations.keys(), name.lower())
         return ["There is no affiliation by that name. Did you mean " + similar_word + "?"]
+
+
+def get_faction_data(name):
+    criteria = re.compile('(?i)^' + re.escape(name) + "$")
+    if any((match := criteria.search(item)) for item in factions.keys()):
+        data_block = factions[match.group(0)]
+        faction_building = "**__" + data_block["Building"] + "__**"
+        faction_narrative = "\n**Narrative Effect**: " + data_block["Narrative Effect"]
+        faction_occupied = "\n**Occupuied Bonus**: " + data_block["Occupied Bonus"]
+        faction_rank_1 = "\n**Rank 1 Effect**: " + data_block["Rank 1 Effect"]
+        faction_rank_2 = "\n**Rank 2 Effect**: " + data_block["Rank 2 Effect"]
+        return [faction_building, faction_narrative, faction_occupied, faction_rank_1, faction_rank_2]
+    else:
+        similar_word = find_most_similar_string(factions.keys(), name.lower())
+        return ["There is no faction building by that name. Did you mean " + similar_word + "?"]
 
 
 def get_influence_data(name):
