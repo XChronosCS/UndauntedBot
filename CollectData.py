@@ -96,11 +96,11 @@ for i, row in enumerate(habitat_data):
 infodex["habitats"] = habitat_dict
 
 # Adds the tier to the moves in infodex.
-mb = openpyxl.load_workbook('Documents/Homebrew Attacks.xlsx')
-attack_table = mb["Moves"]
-for row in attack_table.iter_rows(min_row=2, max_row=attack_table.max_row, min_col=1, max_col=attack_table.max_column):
-    if row[0].value in list(infodex["moves"].keys()):
-        infodex["moves"][row[0].value]["Tier"] = row[9].value
+# mb = openpyxl.load_workbook('Documents/Homebrew Attacks.xlsx')
+# attack_table = mb["Moves"]
+# for row in attack_table.iter_rows(min_row=2, max_row=attack_table.max_row, min_col=1, max_col=attack_table.max_column):
+#     if row[0].value in list(infodex["moves"].keys()):
+#         infodex["moves"][row[0].value]["Tier"] = row[9].value
 
 # Filling Out Worlddex
 wb = openpyxl.load_workbook('Documents/Porybot2 Encounters Sheet.xlsx')
